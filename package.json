@@ -14,6 +14,8 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "start:prod-prisma": "prisma db push && npm run start:prod",
+    "start:prod-docker": "docker compose -f ./docker/prod/docker-compose.yml -p ft_transcendence down && docker compose -f ./docker/prod/docker-compose.yml -p ft_transcendence up -d --build",
+    "start:dev-docker": "docker compose -f ./docker/dev/docker-compose.yml -p ft_transcendence_dev down && docker compose -f ./docker/dev/docker-compose.yml -p ft_transcendence_dev up -d --build",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
