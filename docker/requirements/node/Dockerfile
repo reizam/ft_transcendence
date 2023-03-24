@@ -14,11 +14,11 @@ COPY package-lock.json ./
 RUN npm i
 
 COPY . ./
+COPY prisma/schema.prisma ./prisma/schema.prisma
 
-RUN npx prisma migrate deploy
 RUN npx prisma generate
 RUN npm run build
 
 EXPOSE 3000
 
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start:prod-prisma"]
