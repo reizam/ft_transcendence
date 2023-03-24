@@ -3,8 +3,10 @@ version: '3.8'
 services:
   node:
     build:
-      context: ../
-      dockerfile: ./docker/requirements/node/Dockerfile
+      context: ../../
+      dockerfile: ./docker/dev/requirements/node/Dockerfile
+    volumes:
+      - ../../:/app
     environment:
       DATABASE_URL: ${DATABASE_URL}
     ports:

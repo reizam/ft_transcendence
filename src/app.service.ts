@@ -10,6 +10,10 @@ export class AppService {
       },
     });
 
-    return user.email;
+    if (user) {
+      return `Il y a ${user.name} dans la BDD 😉`;
+    }
+
+    return `Il n'y a personne dans la BDD 😢`;
   }
 }
