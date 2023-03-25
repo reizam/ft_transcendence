@@ -16,7 +16,7 @@ async function testInit() {
   }
 }
 
-async function bootstrap() {
+async function setupServer() {
   const app = await NestFactory.create(AppModule);
 
   await testInit();
@@ -24,4 +24,4 @@ async function bootstrap() {
   await app.listen(3000);
 }
 
-bootstrap();
+setupServer();
