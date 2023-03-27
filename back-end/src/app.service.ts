@@ -13,7 +13,7 @@ export class AppService {
     });
 
     if (user) {
-      return `Il y a ${user.name} dans la BDD 😉`;
+      return `Il y a ${user.username} dans la BDD 😉`;
     }
 
     return `Il n'y a personne dans la BDD 😢`;
