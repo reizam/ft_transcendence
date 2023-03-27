@@ -27,6 +27,8 @@ services:
       - api-node
   postgres:
     image: postgres:13
+    expose:
+      - "5432:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
