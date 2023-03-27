@@ -1,16 +1,16 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  node:
+  api-node:
     build:
-      context: ../../
-      dockerfile: ./docker/dev/requirements/node/Dockerfile
+      context: ../../back-end
+      dockerfile: ../docker/dev/requirements/api-node/Dockerfile
     volumes:
-      - ../../:/app
+      - ../../back-end:/app
     environment:
       DATABASE_URL: ${DATABASE_URL}
     ports:
-      - '3000:3000'
+      - "3000:3000"
     depends_on:
       - postgres
   postgres:

@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+  engineType = "binary"
+  binaryTargets = ["native", "darwin-arm64"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int     @id @default(autoincrement())
+
+  profilePicture     String?
+  user42Id           String? @unique
+  username           String? @unique
+
+  has2FA            Boolean
+
+  friends           String[] @default([])
+  blockedUsers      String[]
+
+  createdAt       DateTime @default(now())
+}
+
+model Game {
+  id               Int     @id @default(autoincrement())
+
+  playerOne        String
+  playerTwo        String
+  playerOneScore   Int
+  playerTwoScore   Int
+
+  status          String // waiting, pending, finished
+
+  createdAt       DateTime @default(now())
+}
+
+
+model Channel {
+  id              Int     @id @default(autoincrement())
+
+  private         Boolean @default(false)
+
+  owner           String
+  admins          String[] 
+  users           String[]
+
+  password        String?
+  createdAt       DateTime @default(now())
+}
+
+model ChannelSanction {
+  id              Int     @id @default(autoincrement())
+
+  channelId       String
+  user            String
+  expiresAt       DateTime?
+
+  type            String
+  createdAt       DateTime @default(now())
+}
+
+model Message {
+  id               Int     @id @default(autoincrement())
+
+  channelId       String
+  userId          String
+  message         String
+
+  gameId          String?
+
+  createdAt       DateTime @default(now())
+}
+
+model VerificationToken {
+  id            Int     @id @default(autoincrement())
+  userId        String  
+  accessToken   String
+  refreshToekn  String
+
+  createdAt       DateTime @default(now())
+}

@@ -1,0 +1,1 @@
+docker compose -f ./docker/prod/docker-compose.yml -p ft_transcendence down && docker compose -f ./docker/prod/docker-compose.yml -p ft_transcendence up -d --build;
