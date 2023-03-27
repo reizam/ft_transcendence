@@ -5,7 +5,13 @@ module.exports = {
     fontFamily: {
       sans: ["Inter", "sans-serif"],
     },
-    extend: {},
+    extend: {
+      colors: {
+        "dark-purple": "#03001E",
+        purple: "#9F4DD2",
+        "light-white": "#FDEFF9",
+      },
+    },
   },
   plugins: [],
 };
