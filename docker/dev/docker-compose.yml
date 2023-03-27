@@ -13,6 +13,18 @@ services:
       - "3000:3000"
     depends_on:
       - postgres
+  web-node:
+    build:
+      context: ../../front-end
+      dockerfile: ../docker/dev/requirements/web-node/Dockerfile
+    volumes:
+      - ../../front-end:/app
+    environment:
+      DATABASE_URL: http://api-node:3000
+    ports:
+      - "80:4000"
+    depends_on:
+      - api-node
   postgres:
     image: postgres:13
     environment:
