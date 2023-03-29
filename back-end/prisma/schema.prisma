@@ -13,7 +13,7 @@ model User {
   id        Int     @id @default(autoincrement())
 
   profilePicture     String?
-  user42Id           String? @unique
+  fortytwoId         Int     @unique
   username           String? @unique
 
   has2FA            Boolean
