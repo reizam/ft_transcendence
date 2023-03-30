@@ -27,7 +27,7 @@ services:
     volumes:
       - ../../front-end:/app
     environment:
-      DATABASE_URL: http://api-node:3000
+      BACKEND_URL: http://localhost:3000
     ports:
       - "80:4000"
     depends_on:
