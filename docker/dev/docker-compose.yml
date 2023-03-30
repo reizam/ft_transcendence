@@ -9,6 +9,13 @@ services:
       - ../../back-end:/app
     environment:
       DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      FORTYTWO_APP_ID: ${FORTYTWO_APP_ID}
+      FORTYTWO_APP_SECRET: ${FORTYTWO_APP_SECRET}
+      FORTYTWO_CALLBACK_URL: ${FORTYTWO_CALLBACK_URL}
+      FRONTEND_URL: ${FRONTEND_URL}
+    expose:
+      - 3000
     ports:
       - "3000:3000"
     depends_on:
@@ -28,6 +35,8 @@ services:
   postgres:
     image: postgres:13
     expose:
+      - 5432
+    ports:
       - "5432:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER}

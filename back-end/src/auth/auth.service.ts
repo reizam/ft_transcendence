@@ -31,7 +31,9 @@ export class AuthService {
     const payload: IJWTPayload = { fortytwoId: user.fortytwoId, sub: user.id };
 
     return {
-      accessToken: this.jwtService.sign(payload),
+      accessToken: this.jwtService.sign(payload, {
+        expiresIn: '24d',
+      }),
     };
   }
 }
