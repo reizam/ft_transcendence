@@ -1,9 +1,10 @@
 import { AuthStatus, IAuthContext } from "@/providers/auth/auth.interface";
 import { createContext, useContext, useEffect, useState } from "react";
-import { getCookie } from "cookies-next";
+import { deleteCookie, getCookie } from "cookies-next";
 import { useRouter } from "next/router";
 
 export const AuthContext = createContext<IAuthContext>({
+  logout: () => Promise.resolve(),
   getAccessToken: () => Promise.resolve(null),
   status: "loading",
 });
@@ -28,6 +29,14 @@ export const useProvideAuth = (): IAuthContext => {
     return null;
   };
 
+  const logout = async () => {
+    setAccessToken(null);
+    setStatus("unauthenticated");
+    deleteCookie("jwt", {
+      sameSite: "strict",
+    });
+  };
+
   useEffect(() => {
     const update = async () => {
       const token = await getAccessToken();
@@ -41,6 +50,7 @@ export const useProvideAuth = (): IAuthContext => {
 
   return {
     getAccessToken,
+    logout,
     status,
   };
 };

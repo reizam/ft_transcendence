@@ -6,7 +6,7 @@ import type { AppProps } from "next/app";
 function ft_transcendence({ Component, pageProps }: AppProps) {
   return (
     <AuthProvider>
-      <Component {...pageProps} />;
+      <Component {...pageProps} />
     </AuthProvider>
   );
 }
