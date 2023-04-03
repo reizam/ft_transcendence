@@ -15,7 +15,8 @@ lerna-debug.log*
 .DS_Store
 
 # Docker
-docker/volumes/db-data/*
+docker/prod/volumes/db-data/*
+docker/dev/volumes/db-data/*
 
 # Tests
 /coverage

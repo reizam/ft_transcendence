@@ -1,6 +1,5 @@
 FROM node:14-alpine
 
-ENV NODE_ENV=development
 ARG DATABASE_URL
 ARG JWT_SECRET
 ARG FORTYTWO_APP_ID
@@ -8,6 +7,7 @@ ARG FORTYTWO_APP_SECRET
 ARG FORTYTWO_CALLBACK_URL
 ARG FRONTEND_URL
 
+ENV NODE_ENV development
 ENV DATABASE_URL ${DATABASE_URL}
 ENV JWT_SECRET ${JWT_SECRET}
 ENV FORTYTWO_APP_ID ${FORTYTWO_APP_ID}
@@ -21,6 +21,9 @@ ENV PATH /app/node_modules/.bin:$PATH
 
 COPY package.json ./
 COPY package-lock.json ./
+
+RUN npm install -g prisma
+RUN npm install -g @nestjs/cli
 RUN npm install
 
 COPY . ./

@@ -2,11 +2,12 @@ version: "3.8"
 
 services:
   api-node:
+    container_name: api-node
     build:
       context: ../../back-end
       dockerfile: ../docker/dev/requirements/api-node/Dockerfile
     volumes:
-      - ../../back-end:/app
+      - ../../back-end/src:/app/src
     environment:
       DATABASE_URL: ${DATABASE_URL}
       JWT_SECRET: ${JWT_SECRET}
@@ -19,13 +20,15 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
   web-node:
+    container_name: web-node
     build:
       context: ../../front-end
       dockerfile: ../docker/dev/requirements/web-node/Dockerfile
     volumes:
-      - ../../front-end:/app
+      - ../../front-end/src:/app/src
     environment:
       BACKEND_URL: http://localhost:3000
     ports:
@@ -33,6 +36,7 @@ services:
     depends_on:
       - api-node
   postgres:
+    container_name: postgres
     image: postgres:13
     expose:
       - 5432
@@ -44,5 +48,10 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - ./volumes/db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 volumes:
   db-data:

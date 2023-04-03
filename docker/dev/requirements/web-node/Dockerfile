@@ -1,4 +1,4 @@
-FROM node:14-alpine
+FROM node:16-alpine
 
 ARG BACKEND_URL
 
@@ -12,7 +12,7 @@ ENV PATH /app/node_modules/.bin:$PATH
 COPY package.json ./
 COPY package-lock.json ./
 
-RUN npm install
+RUN npm install --production=false
 
 COPY . ./
 
