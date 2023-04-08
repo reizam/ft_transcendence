@@ -1,8 +1,8 @@
+import React from "react";
 import Layout from "@/components/app/layouts/Layout";
 import { useAuth } from "@/providers/auth/auth.context";
 import { withProtected } from "@/providers/auth/auth.routes";
 import { NextPage } from "next";
-import React from "react";
 
 const Home: NextPage = () => {
   const { logout } = useAuth();
