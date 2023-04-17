@@ -20,6 +20,7 @@ function Layout({ title, children, className }: LayoutProps) {
           {title ? `${title} - ft_transcendence` : "ft_transcendence"}
         </title>
       </Head>
+      
       <main className={className}>{children}</main>
     </>
   );

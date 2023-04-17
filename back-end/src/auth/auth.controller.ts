@@ -23,7 +23,6 @@ export class AuthController {
     const jwt = await this.authService.login(req.user);
 
     const cookieOptions: CookieOptions = {
-      httpOnly: true,
       secure: this.configService.get<string>('NODE_ENV') === 'production',
       sameSite: 'strict',
       maxAge: 1000 * 60 * 60 * 24,
