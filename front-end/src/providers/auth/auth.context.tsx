@@ -14,7 +14,6 @@ export const useAuth = () => useContext(AuthContext);
 export const useProvideAuth = (): IAuthContext => {
   const router = useRouter();
 
-  const [accessToken, setAccessToken] = useState<string | null>(null);
   const [status, setStatus] = useState<AuthStatus>("loading");
 
   const getAccessToken = async () => {
@@ -30,7 +29,6 @@ export const useProvideAuth = (): IAuthContext => {
   };
 
   const logout = async () => {
-    setAccessToken(null);
     setStatus("unauthenticated");
     deleteCookie("jwt", {
       sameSite: "strict",
@@ -41,7 +39,6 @@ export const useProvideAuth = (): IAuthContext => {
     const update = async () => {
       const token = await getAccessToken();
 
-      setAccessToken(token || null);
       setStatus(token ? "authenticated" : "unauthenticated");
     };
 
