@@ -8,10 +8,11 @@ import { UserService } from './user/user.service';
 import { UserModule } from './user/user.module';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
+import { SocketsGateway } from '@/sockets/sockets.gateway';
 
 @Module({
   imports: [PrismaModule, AuthModule, UserModule, ConfigModule.forRoot()],
   controllers: [AppController],
-  providers: [AppService, AuthService, UserService, JwtService],
+  providers: [AppService, AuthService, UserService, JwtService, SocketsGateway],
 })
 export class AppModule {}

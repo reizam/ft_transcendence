@@ -9,6 +9,7 @@ import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from '@/prisma/prisma.module';
 import { HttpModule } from '@nestjs/axios';
+import { SocketsGateway } from '@/sockets/sockets.gateway';
 
 @Module({
   imports: [
@@ -23,7 +24,14 @@ import { HttpModule } from '@nestjs/axios';
     PrismaModule,
     HttpModule,
   ],
-  providers: [AuthService, UserService, JwtStrategy, FortyTwoStrategy],
+  providers: [
+    AuthService,
+    UserService,
+    JwtStrategy,
+    FortyTwoStrategy,
+    SocketsGateway,
+  ],
+  exports: [AuthService],
   controllers: [AuthController],
 })
 export class AuthModule {}

@@ -27,6 +27,18 @@ export class AuthService {
     return user;
   }
 
+  async validateToken(token: string): Promise<any> {
+    const payload = this.jwtService.verify(token);
+
+    const user = await this.prisma.user.findFirst({
+      where: {
+        id: payload.sub,
+      },
+    });
+
+    return user;
+  }
+
   async login(user: any) {
     const payload: IJWTPayload = { fortytwoId: user.fortytwoId, sub: user.id };
 

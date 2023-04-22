@@ -25,8 +25,8 @@ export function withProtected(Component: React.ComponentType<any>) {
   };
 }
 
-export function withPublic(Component: React.ComponentType<any>) {
-  return function WithPublic(props: any) {
+export function withPublic<T = any>(Component: React.ComponentType<T>) {
+  return function WithPublic(props: T) {
     const router = useRouter();
     const { status } = useAuth();
 
