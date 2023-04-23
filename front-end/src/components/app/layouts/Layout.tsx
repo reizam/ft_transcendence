@@ -1,5 +1,6 @@
 import React from "react";
 import Head from "next/head";
+import Header from "../header/header";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -21,6 +22,7 @@ function Layout({ title, children, className }: LayoutProps) {
         </title>
       </Head>
       
+      <Header {...{title}} />
       <main className={className}>{children}</main>
     </>
   );
