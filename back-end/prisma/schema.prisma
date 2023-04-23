@@ -78,7 +78,7 @@ model VerificationToken {
   id            Int     @id @default(autoincrement())
   userId        String  
   accessToken   String
-  refreshToekn  String
+  refreshToken  String
 
   createdAt       DateTime @default(now())
 }

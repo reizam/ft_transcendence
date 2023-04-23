@@ -22,6 +22,11 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      my_network:
+        aliases:
+          - back_hostname
+
   web-node:
     container_name: web-node
     build:
@@ -35,6 +40,11 @@ services:
       - "4000:4000"
     depends_on:
       - api-node
+    networks:
+      my_network:
+        aliases:
+          - front_hostname
+
   postgres:
     container_name: postgres
     image: postgres:13-bullseye
@@ -53,5 +63,13 @@ services:
       interval: 30s
       timeout: 5s
       retries: 30
+    networks:
+      my_network:
+        aliases:
+          - db_hostname
 volumes:
   db-data:
+
+networks:
+  my_network:
+    driver: bridge
