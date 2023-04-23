@@ -1,4 +1,5 @@
 import React from "react";
+import titleStyles from "./title.module.css";
 
 interface titleProps {
   title?: string;
@@ -6,8 +7,8 @@ interface titleProps {
 
 function Title({ title }: titleProps) {
   return (
-    <div className="title">
-        <h1>{title}</h1>
+    <div className={titleStyles.title}>
+        <h1 className={titleStyles.h1__title}>{title}</h1>
     </div>
   );
 }

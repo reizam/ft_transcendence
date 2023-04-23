@@ -1,0 +1,10 @@
+@import url('https://fonts.cdnfonts.com/css/games');
+
+.title {
+    width: 88%;
+    text-align: center;
+}
+
+.h1__title {
+    font-family: 'Games', sans-serif;
+}

@@ -4,7 +4,12 @@
 
 :root {
     --header-height: 3rem;
-    
+	--container-background-color: #03001E;
+	--container-color: aliceblue;
+
+	/*---- Colors Theme ----*/
+	--main-theme-color: #DF00FE;
+	
 
     	/*---- Font Weight ----*/
 		--font-normal: 400;

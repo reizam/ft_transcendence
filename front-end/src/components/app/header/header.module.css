@@ -1,0 +1,10 @@
+.ctn__header {
+    background-color: var(--container-background-color);
+    color: var(--container-color);
+    height: var(--header-height);
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    z-index: 200;
+}

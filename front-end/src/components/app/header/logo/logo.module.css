@@ -1,0 +1,39 @@
+.ctn__logo {
+    background-color: var(--container-background-color);
+    width: 6%;
+    min-width: 80px;
+    text-align: center;
+}
+
+@import url(https://fonts.googleapis.com/css?family=Exo+2:200i);
+
+.h2__logo {
+    font-family: 'Exo 2', sans-serif;
+    color: var(--main-theme-color);
+    font-weight: var(--font-semi-bold);
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 10px var(--main-theme-color), 
+                    0 0 20px var(--main-theme-color),
+                    0 0 40px var(--main-theme-color),
+                    0 0 80px var(--main-theme-color),
+                    0 0 120px var(--main-theme-color);
+    animation: animate 3s infinite alternate;
+}
+
+@keyframes animate{
+    40%{
+        opacity: 1;
+    }
+    42%{
+        opacity: 0.8;
+    }
+    43%{
+        opacity: 1;
+    }
+    45%{
+        opacity: 0.3;
+    }
+    46%{
+        opacity: 1;
+    }
+}
