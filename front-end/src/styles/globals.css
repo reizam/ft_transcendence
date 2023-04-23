@@ -7,9 +7,13 @@
 	--container-background-color: #03001E;
 	--container-color: aliceblue;
 
+	--button-background-color: #1B1935;
+	--button-background-color-hover: #2c285f;
+
+
 	/*---- Colors Theme ----*/
 	--main-theme-color: #DF00FE;
-	
+
 
     	/*---- Font Weight ----*/
 		--font-normal: 400;

@@ -3,6 +3,7 @@
     width: 6%;
     min-width: 80px;
     text-align: center;
+    vertical-align: middle;
 }
 
 @import url(https://fonts.googleapis.com/css?family=Exo+2:200i);
@@ -10,7 +11,8 @@
 .h2__logo {
     font-family: 'Exo 2', sans-serif;
     color: var(--main-theme-color);
-    font-weight: var(--font-semi-bold);
+    font-size: 1.5em;
+    margin-top: 5px;
     letter-spacing: 0.1em;
     text-shadow: 0 0 10px var(--main-theme-color), 
                     0 0 20px var(--main-theme-color),
