@@ -1,4 +1,5 @@
 import AuthProvider from "@/providers/auth/auth.provider";
+import SocketProvider from "@/providers/socket/socket.provider";
 import "@/styles/globals.css";
 
 import type { AppProps } from "next/app";
@@ -6,7 +7,9 @@ import type { AppProps } from "next/app";
 function ft_transcendence({ Component, pageProps }: AppProps) {
   return (
     <AuthProvider>
-      <Component {...pageProps} />
+      <SocketProvider>
+        <Component {...pageProps} />
+      </SocketProvider>
     </AuthProvider>
   );
 }
