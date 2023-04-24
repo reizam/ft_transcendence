@@ -27,3 +27,7 @@
 		--font-semi-bold: 600;
 }
 
+body {
+	background-color: var(--background);
+}
+
