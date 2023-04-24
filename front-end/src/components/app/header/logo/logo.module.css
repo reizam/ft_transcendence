@@ -1,6 +1,6 @@
 .ctn__logo {
     background-color: var(--container-background-color);
-    width: var(--navbar-width);
+    width: 6rem;
     text-align: center;
     vertical-align: middle;
 }
@@ -11,7 +11,7 @@
     font-family: 'Exo 2', sans-serif;
     color: var(--main-theme-color);
     font-size: 1.5em;
-    margin-top: 5px;
+    margin-top: 0.75rem;
     letter-spacing: 0.1em;
     text-shadow: 0 0 10px var(--main-theme-color), 
                     0 0 20px var(--main-theme-color),

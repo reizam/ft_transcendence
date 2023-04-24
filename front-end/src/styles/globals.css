@@ -4,9 +4,9 @@
 
 :root {
 	--background: rgba(3, 0, 30, 0.9);
-	--navbar-width: 7rem;
+	--navbar-width: 5rem;
 	--navbar-height: 100vh;
-    --header-height: 3rem;
+    --header-height: 4rem;
 	--container-background-color: #03001E;
 	--container-color: aliceblue;
 
@@ -14,7 +14,7 @@
 	--button-background-color: #1B1935;
 	--button-background-color-hover: #2c285f;
 	--button-border-radius: 20%;
-	--button-navbar-size: 5rem;
+	--button-navbar-size: 3.5rem;
 
 
 	/*---- Colors Theme ----*/
@@ -29,5 +29,6 @@
 
 body {
 	background-color: var(--background);
+	color: var(--container-color);
 }
 

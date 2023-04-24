@@ -7,7 +7,7 @@ const Home: NextPage = () => {
 
 	return (
 		<Layout
-			className="flex items-center justify-center h-screen bg-purple"
+			className="flex items-center justify-center h-screen"
 			title="Home"
 		>
 			<div className="flex flex-col items-center space-y-8">
