@@ -1,7 +1,6 @@
 .ctn__logo {
     background-color: var(--container-background-color);
-    width: 6%;
-    min-width: 80px;
+    width: var(--navbar-width);
     text-align: center;
     vertical-align: middle;
 }

@@ -3,12 +3,18 @@
 @tailwind utilities;
 
 :root {
+	--background: rgba(3, 0, 30, 0.9);
+	--navbar-width: 7rem;
+	--navbar-height: 100vh;
     --header-height: 3rem;
 	--container-background-color: #03001E;
 	--container-color: aliceblue;
 
+	/* Button Setup */
 	--button-background-color: #1B1935;
 	--button-background-color-hover: #2c285f;
+	--button-border-radius: 20%;
+	--button-navbar-size: 5rem;
 
 
 	/*---- Colors Theme ----*/
@@ -20,3 +26,4 @@
 		--font-medium: 500;
 		--font-semi-bold: 600;
 }
+
