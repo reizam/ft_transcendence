@@ -1,18 +1,20 @@
+import { useState, useEffect, FC } from 'react';
+import { getCookie } from 'cookies-next';
+import { BACKEND_URL } from "@/constants/env";
 
 interface ProfileCardProps {
-    username: string,
-    picture: string,
-    twoFAIsEnabled: boolean
+  username: string,
+  picture: string,
+  twoFAIsEnabled: boolean
 }
 
-export default function ProfileCard({username, picture, twoFAIsEnabled}: ProfileCardProps) {
 
+function ProfileCard() {
   return (
-    <div className="flex">
-        <h1>Profile</h1>
-        <h2>{username}</h2>
-        <h2>{picture}</h2>
-        <h1>{twoFAIsEnabled ? "2FA enable" : "2FA disable"}</h1>
+    <div>
+      <h1>Profile Card</h1>
     </div>
   );
-}
+};
+
+export default ProfileCard;

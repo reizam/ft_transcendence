@@ -7,9 +7,9 @@ import type { AppProps } from "next/app";
 function ft_transcendence({ Component, pageProps }: AppProps) {
   return (
     <AuthProvider>
-      <SocketProvider>
+      {/* <SocketProvider> */}
         <Component {...pageProps} />
-      </SocketProvider>
+      {/* </SocketProvider> */}
     </AuthProvider>
   );
 }

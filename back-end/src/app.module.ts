@@ -9,6 +9,7 @@ import { UserModule } from './user/user.module';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { SocketsGateway } from '@/sockets/sockets.gateway';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
   imports: [PrismaModule, AuthModule, UserModule, ConfigModule.forRoot(), ProfileModule],

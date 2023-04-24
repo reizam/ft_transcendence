@@ -1,58 +1,36 @@
-import React from "react";
-import Layout from "@/components/app/layouts/Layout";
-import ProfileCard from "@/components/app/profile/ProfileCard";
-import { useAuth } from "@/providers/auth/auth.context";
+import { useState, useEffect } from 'react'
 import { withProtected } from "@/providers/auth/auth.routes";
-import { NextPage } from "next";
 import { BACKEND_URL } from "@/constants/env";
-import { GetServerSideProps } from 'next'
+import LoadingScreen from '../../components/app/screen/LoadingScreen';
+import { getCookie } from "cookies-next";
 
-interface ProfileCardProps {
-    username: string,
-    picture: string,
-    twoFAIsEnabled: boolean
-}
+function Profile() {
+  const [data, setData] = useState(null)
+  const [isLoading, setLoading] = useState(true)
+  const jwtToken = getCookie('jwt');
+  console.log(jwtToken);
 
-const Profile: NextPage = (props: ProfileCardProps) => {
+  useEffect(() => {
+    setLoading(true)
+    fetch(`${BACKEND_URL}/profile`, {
+      credentials: 'include'
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setData(data)
+        setLoading(false)
+      })
+  }, [])
+
+  if (isLoading) return <LoadingScreen/>
+  if (!data) return <p>No profile data</p>
+
   return (
-    <Layout
-      className="flex"
-      title="Profile"
-    >
-      <div className="flex">
-          <h1>Profile</h1>
-          <h2>{props.username}</h2>
-          <h2>{props.picture}</h2>
-          <h1>{props.twoFAIsEnabled ? "2FA enable" : "2FA disable"}</h1>
-      </div>
-    </Layout>
-  );
-};
-
-// export async function getServerSideProps (context) {
-export const getServerSideProps: GetServerSideProps = async (context: any) => {
-        console.log(context.req.cookies)
-
-    const response = await fetch(`http://back_hostname:3000/profile`, {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        'Cookie': context.req.cookies.jwt
-      }}
-    );
-
-    const data = await response.json();
-
-    return (
-        {
-            props: {
-                username: data.ip,
-                picture: data.ip,
-                twoFAIsEnabled: data.ip,
-            }
-        }
-    );
+    <div>
+      <h1>{data.username}</h1>
+      <p>paragraph</p>
+    </div>
+  )
 }
 
 export default withProtected(Profile);
