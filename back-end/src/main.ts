@@ -10,9 +10,9 @@ async function bootstrap() {
   app.useWebSocketAdapter(new JwtSocket(app, app.get(AuthService)));
   app.enableCors({
     origin: 'http://localhost:4000',
-    credentials: true
+    methods: "GET,POST",
+    credentials: true,
   });
-  // app.use(cookieParser()); // add cookie parser middleware
   
   await app.listen(3000);
 }
