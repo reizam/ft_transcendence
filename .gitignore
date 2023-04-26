@@ -37,3 +37,7 @@ docker/dev/volumes/db-data/*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# NPM
+front/package-lock.json
+package/package-lock.json
