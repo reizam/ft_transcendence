@@ -1,8 +1,9 @@
 import { AuthService } from '@/auth/auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Controller } from '@nestjs/common';
-import { Get, Req, Res, UseGuards } from '@nestjs/common';
+import { Get, Req, Res, UseGuards, Param } from '@nestjs/common';
 import { CookieOptions, Request, Response } from 'express';
+import { PrismaService } from '@/prisma/prisma.service';
 
 @Controller('profile')
 export class ProfileController {
@@ -11,13 +12,22 @@ export class ProfileController {
   sendInfo(@Req() req: Request, @Res() res: Response): any {
     // Access the user object from the request
     const user = req.user;
-    console.log(user);
-    // You can now use the user information in your response
-    const profile = {
-      username: 'test', // Assuming the user object has a 'username' property
-      // Add any other user properties you'd like to include in the response
-    };
-
-    return res.status(200).json(profile);
+    return res.status(200).json(user);
   }
+
+  @Get(':id')
+  @UseGuards(AuthGuard('jwt'))
+  async sendInfoId(
+    @Param('id') id: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<any> {
+    const result = await this.prisma.user.findUnique({
+      where: {
+        id: 42,
+      },
+    });
+
+  //   return res.status(200).json(result);
+  // }
 }
