@@ -39,5 +39,4 @@ docker/dev/volumes/db-data/*
 !.vscode/extensions.json
 
 # NPM
-front/package-lock.json
-package/package-lock.json
+*package-lock.json

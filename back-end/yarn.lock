@@ -689,7 +689,7 @@
   "resolved" "https://registry.npmjs.org/@nestjs/axios/-/axios-2.0.0.tgz"
   "version" "2.0.0"
 
-"@nestjs/cli@^9.0.0":
+"@nestjs/cli@^9.4.1":
   "integrity" "sha512-m58dYogFRjFqxe0/U6J9J877z/9opdtrRlxrjcsv1mEO9ZlQ07hEuub9um1Vleu+i6iG11lW+G464kn85rUsNw=="
   "resolved" "https://registry.npmjs.org/@nestjs/cli/-/cli-9.4.1.tgz"
   "version" "9.4.1"

@@ -5,29 +5,28 @@ import LoadingScreen from "../../components/app/screen/LoadingScreen";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
 
-interface ProfileCardProps {
-  username: string;
-  picture: string;
-  twoFAIsEnabled: boolean;
+interface IData {
+  fortytwoId: number,
+  createdAt: string,
+  username: string,
+  has2FA: false,
 }
 
-const Post = () => {
-  const [data, setData] = useState(null);
+const Profile = () => {
+  const [data, setData] = useState<IData>({fortytwoId: 0, createdAt: "", username: "", has2FA: false});
   const [isLoading, setLoading] = useState(true);
+  const jwtToken = getCookie("jwt");
+  
   const router = useRouter();
   const { id } = router.query;
-  const jwtToken = getCookie("jwt");
 
-  console.log("test", id);
   useEffect(() => {
-    // setLoading(true);
-    // console.log(id);
+    setLoading(true);
     if (router.isReady) {
       fetch(BACKEND_URL + "/profile/" + id, {
         method: "GET",
         credentials: "include",
         headers: {
-          // Remplacez "Bearer" par `Bearer ${jwtToken}` pour inclure le token JWT dans la requête
           Authorization: `Bearer ${jwtToken}`,
         },
       })
@@ -39,15 +38,21 @@ const Post = () => {
     }
   }, [router.isReady]);
 
+
+
+
   if (isLoading) return <LoadingScreen />;
   if (!data) return <p>No profile data</p>;
 
   return (
     <div>
       <h1>Profile</h1>
-      <p>{id}</p>
+      <p>fortytwoId: {data.fortytwoId}</p>
+      <p>createdAt: {data.createdAt}</p>
+      <p>username: {data.username}</p>
+      <p>has2FA: {data.has2FA ? "enabled" : "disabled"}</p>
     </div>
   );
 };
 
-export default Post;
+export default Profile;

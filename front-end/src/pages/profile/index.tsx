@@ -4,19 +4,24 @@ import { BACKEND_URL } from "@/constants/env";
 import LoadingScreen from "../../components/app/screen/LoadingScreen";
 import { getCookie } from "cookies-next";
 
-function Profile() {
-  const [data, setData] = useState(null);
+interface IData {
+  fortytwoId: number,
+  createdAt: string,
+  username: string,
+}
+
+function Dashboard() {
+  const [data, setData] = useState<IData>({fortytwoId: 0, createdAt: "", username: ""});
   const [isLoading, setLoading] = useState(true);
   const jwtToken = getCookie("jwt");
-  console.log(jwtToken);
 
+  console.log(jwtToken);
   useEffect(() => {
-    // setLoading(true);
+    setLoading(true);
     fetch(`${BACKEND_URL}/profile`, {
       method: "GET",
       credentials: "include",
       headers: {
-        // Remplacez "Bearer" par `Bearer ${jwtToken}` pour inclure le token JWT dans la requête
         Authorization: `Bearer ${jwtToken}`,
       },
     })
@@ -26,17 +31,18 @@ function Profile() {
         setLoading(false);
       });
   }, []);
-  console.log(data);
+
   if (isLoading) return <LoadingScreen />;
-  if (!data) return <p>No profile data</p>;
+  if (!data) return <p>No dashboard data</p>;
 
   return (
     <div>
-      <h1>Profile</h1>
+      <h1>Dashboard</h1>
       <p>Id: {data.fortytwoId}</p>
       <p>date: {data.createdAt}</p>
+      <p>username: {data.username}</p>
     </div>
   );
 }
 
-export default withProtected(Profile);
+export default withProtected(Dashboard);

@@ -20,6 +20,7 @@ export class AuthService {
         data: {
           has2FA: false,
           fortytwoId: profile.fortytwoId,
+          username: profile.login,
         },
       });
     }
@@ -40,7 +41,7 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const payload: IJWTPayload = { fortytwoId: user.fortytwoId, sub: user.id };
+    const payload: IJWTPayload = { fortytwoId: user.fortytwoId, sub: user.id, login: user.username };
 
     return {
       accessToken: this.jwtService.sign(payload, {
@@ -49,7 +50,3 @@ export class AuthService {
     };
   }
 }
-
-
-// user profile/733333
-// BACK: check TOKEN
