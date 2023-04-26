@@ -5,7 +5,7 @@
 }
 
 .h1__title {
-    font-family: 'Games', sans-serif;
+    font-family: var(--title-font);
     margin-top: 0.7rem;
     font-size: 2em;
 }
