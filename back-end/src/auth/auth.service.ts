@@ -20,11 +20,12 @@ export class AuthService {
         data: {
           has2FA: false,
           fortytwoId: profile.fortytwoId,
-          username: profile.login,
+          username: profile.username,
+          firstName: profile.firstName,
+          lastName: profile.lastName,
         },
       });
     }
-
     return user;
   }
 
@@ -41,7 +42,13 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const payload: IJWTPayload = { fortytwoId: user.fortytwoId, sub: user.id, login: user.username };
+    const payload: IJWTPayload = {
+      fortytwoId: user.fortytwoId,
+      sub: user.id,
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+    };
 
     return {
       accessToken: this.jwtService.sign(payload, {

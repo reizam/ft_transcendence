@@ -1,4 +1,6 @@
 export interface IUserValidate {
   fortytwoId: number;
-  login: string;
+  username: string;
+  firstName: string;
+  lastName: string;
 }

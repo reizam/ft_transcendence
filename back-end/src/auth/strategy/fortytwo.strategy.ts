@@ -16,8 +16,10 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
       clientSecret: configService.get<string>('FORTYTWO_APP_SECRET'),
       callbackURL: configService.get<string>('FORTYTWO_CALLBACK_URL'),
       profileFields: {
-        'username': 'login'
-      }
+        username: 'login',
+        firstName: 'first_name',
+        lastName: 'last_name',
+      },
     });
   }
 
@@ -28,13 +30,14 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
   ) {
     const user = await this.authService.validateUser({
       fortytwoId: profile.id as number,
-      login: profile.login as string,
+      username: profile.login as string,
+      firstName: profile.first_name as string,
+      lastName: profile.last_name as string,
     });
 
     if (!user) {
       throw new UnauthorizedException();
     }
-
     return user;
   }
 }

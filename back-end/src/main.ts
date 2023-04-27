@@ -10,10 +10,10 @@ async function bootstrap() {
   app.useWebSocketAdapter(new JwtSocket(app, app.get(AuthService)));
   app.enableCors({
     origin: 'http://localhost:4000',
-    methods: "GET, POST",
+    methods: 'GET, POST',
     credentials: true,
   });
-  
+
   await app.listen(3000);
 }
 

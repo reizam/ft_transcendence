@@ -1,5 +1,7 @@
 export interface IJWTPayload {
   fortytwoId: number;
   sub: number;
-  login: string;
+  username: string;
+  firstName: string;
+  lastName: string;
 }

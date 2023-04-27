@@ -10,18 +10,20 @@ datasource db {
 }
 
 model User {
-  id        Int     @id @default(autoincrement())
+  id                Int     @id @default(autoincrement())
 
-  profilePicture     String?
-  fortytwoId         Int     @unique
-  username           String? @unique
+  profilePicture    String?
+  fortytwoId        Int     @unique
+  username          String  @unique
+  firstName         String
+  lastName          String
 
   has2FA            Boolean
 
   friends           String[] @default([])
   blockedUsers      String[]
 
-  createdAt       DateTime @default(now())
+  createdAt         DateTime @default(now())
 }
 
 model Game {
@@ -32,9 +34,9 @@ model Game {
   playerOneScore   Int
   playerTwoScore   Int
 
-  status          String // waiting, pending, finished
+  status           String // waiting, pending, finished
 
-  createdAt       DateTime @default(now())
+  createdAt        DateTime @default(now())
 }
 
 
@@ -52,18 +54,18 @@ model Channel {
 }
 
 model ChannelSanction {
-  id              Int     @id @default(autoincrement())
+  id              Int       @id @default(autoincrement())
 
   channelId       String
   user            String
   expiresAt       DateTime?
 
   type            String
-  createdAt       DateTime @default(now())
+  createdAt       DateTime  @default(now())
 }
 
 model Message {
-  id               Int     @id @default(autoincrement())
+  id              Int      @id @default(autoincrement())
 
   channelId       String
   userId          String
@@ -75,10 +77,10 @@ model Message {
 }
 
 model VerificationToken {
-  id            Int     @id @default(autoincrement())
+  id            Int        @id @default(autoincrement())
   userId        String  
   accessToken   String
   refreshToken  String
 
-  createdAt       DateTime @default(now())
+  createdAt     DateTime   @default(now())
 }

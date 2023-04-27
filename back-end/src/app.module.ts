@@ -12,7 +12,13 @@ import { SocketsGateway } from '@/sockets/sockets.gateway';
 import { ProfileModule } from './profile/profile.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, UserModule, ConfigModule.forRoot(), ProfileModule],
+  imports: [
+    PrismaModule,
+    AuthModule,
+    UserModule,
+    ConfigModule.forRoot(),
+    ProfileModule,
+  ],
   controllers: [AppController],
   providers: [AppService, AuthService, UserService, JwtService, SocketsGateway],
 })

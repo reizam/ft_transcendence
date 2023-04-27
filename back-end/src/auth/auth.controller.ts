@@ -21,7 +21,6 @@ export class AuthController {
   @Get('42/callback')
   async loginWithFortyTwoCallback(@Req() req: Request, @Res() res: Response) {
     const jwt = await this.authService.login(req.user);
-
     const cookieOptions: CookieOptions = {
       secure: this.configService.get<string>('NODE_ENV') === 'production',
       sameSite: 'strict',
@@ -29,7 +28,6 @@ export class AuthController {
     };
 
     res.cookie('jwt', jwt.accessToken, cookieOptions);
-
     res.redirect(this.configService.get<string>('FRONTEND_URL'));
   }
 }
