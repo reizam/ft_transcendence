@@ -4,6 +4,7 @@ import gameStyles from "../styles/game.module.css";
 import { withProtected } from "@/providers/auth/auth.routes";
 import { NextPage } from "next";
 import ToggleSwitch from "@/components/app/toggle/toggle";
+import { ThemeContext } from "./ThemeContext";
 
 
 const Game: NextPage = () => {
@@ -23,105 +24,102 @@ const Game: NextPage = () => {
 	};
 
 	return (
+		<ThemeContext.Provider value={{ borderColor, setBorderColor }}>
 		<Layout
 			title="Game"
 		>
-			<div>
-				<div className={gameStyles.ctn__main__game}>	
-					<div className={gameStyles.ctn__game}>
-						<div className={gameStyles.ctn__canvas}>
-						<div
-							className={gameStyles.ctn__game__canvas}
-							style={{
-								borderColor: borderColor,
-								boxShadow: `0 0 1px ${borderColor}, 0 0 2px ${borderColor}, 0 0 4px ${borderColor}, 0 0 8px ${borderColor}, 0 0 12px ${borderColor}`,
-							}}
-						>
-  Ceci sera le Jeu
-</div>
+				<div>
+					<div className={gameStyles.ctn__main__game}>
+						<div className={gameStyles.ctn__game}>
+							<div className={gameStyles.ctn__canvas}>
+								<div
+									className={gameStyles.ctn__game__canvas}
+									style={{
+										borderColor: borderColor,
+										boxShadow: `0 0 1px ${borderColor}, 0 0 2px ${borderColor}, 0 0 4px ${borderColor}, 0 0 8px ${borderColor}, 0 0 12px ${borderColor}`,
+									}}
+								>
+									Ceci sera le Jeu
+								</div>
 
-							<div className={gameStyles.ctn__game__rslt}>
-								Ceci sera le Résultat
-							</div>
-						</div>
-						<div className={gameStyles.ctn__select__theme}>
-							<h3 className={gameStyles.cnt__theme__h3}>Themes</h3>
-							<div className={gameStyles.box__theme}>
-								<div className={gameStyles.name__theme}>
-									Classic
-								</div>
-								<div className={gameStyles.toggle__theme}>
-									<ToggleSwitch
-										onToggle={(checked) => handleToggle(0, checked, "var(--main-theme-color)")}
-										backgroundColor="var(--toggle-color)"
-										checkedBackgroundColor="var(--main-theme-color)"
-										sliderColor="var(--button-background-color-hover)"
-										checked={activeToggle === 0}
-									/>
+								<div className={gameStyles.ctn__game__rslt}>
+									Ceci sera le Résultat
 								</div>
 							</div>
-							<div className={gameStyles.box__theme}>
-								<div className={gameStyles.name__theme}>
-									R.Garros
+							<div className={gameStyles.ctn__select__theme}>
+								<h3 className={gameStyles.cnt__theme__h3}>Themes</h3>
+								<div className={gameStyles.box__theme}>
+									<div className={gameStyles.name__theme}>
+										Classic
+									</div>
+									<div className={gameStyles.toggle__theme}>
+										<ToggleSwitch
+											onToggle={(checked) => handleToggle(0, checked, "var(--main-theme-color)")}
+											backgroundColor="var(--toggle-color)"
+											checkedBackgroundColor="var(--main-theme-color)"
+											sliderColor="var(--button-background-color-hover)"
+											checked={activeToggle === 0} />
+									</div>
 								</div>
-								<div className={gameStyles.toggle__theme}>
-									<ToggleSwitch
-										onToggle={(checked) => handleToggle(1, checked, "var(--rg-field-color)")}
-										backgroundColor="var(--toggle-color)"
-										checkedBackgroundColor="var(--rg-ball-color)"
-										sliderColor="var(--rg-field-color)"
-										checked={activeToggle === 1}
-									/>
+								<div className={gameStyles.box__theme}>
+									<div className={gameStyles.name__theme}>
+										R.Garros
+									</div>
+									<div className={gameStyles.toggle__theme}>
+										<ToggleSwitch
+											onToggle={(checked) => handleToggle(1, checked, "var(--rg-field-color)")}
+											backgroundColor="var(--toggle-color)"
+											checkedBackgroundColor="var(--rg-ball-color)"
+											sliderColor="var(--rg-field-color)"
+											checked={activeToggle === 1} />
+									</div>
 								</div>
-							</div>
-							<div className={gameStyles.box__theme}>
-								<div className={gameStyles.name__theme}>
-									Wimbledon
+								<div className={gameStyles.box__theme}>
+									<div className={gameStyles.name__theme}>
+										Wimbledon
+									</div>
+									<div className={gameStyles.toggle__theme}>
+										<ToggleSwitch
+											onToggle={(checked) => handleToggle(2, checked, "var(--wb-field-color)")}
+											backgroundColor="var(--toggle-color)"
+											checkedBackgroundColor="var(--wb-ball-color)"
+											sliderColor="var(--wb-field-color)"
+											checked={activeToggle === 2} />
+									</div>
 								</div>
-								<div className={gameStyles.toggle__theme}>
-									<ToggleSwitch
-										onToggle={(checked) => handleToggle(2, checked, "var(--wb-field-color)")}
-										backgroundColor="var(--toggle-color)"
-										checkedBackgroundColor="var(--wb-ball-color)"
-										sliderColor="var(--wb-field-color)"
-										checked={activeToggle === 2}
-									/>
+								<div className={gameStyles.box__theme}>
+									<div className={gameStyles.name__theme}>
+										Retro
+									</div>
+									<div className={gameStyles.toggle__theme}>
+										<ToggleSwitch
+											onToggle={(checked) => handleToggle(3, checked, "var(--re-ball-color)")}
+											backgroundColor="var(--toggle-color)"
+											checkedBackgroundColor="var(--re-ball-color)"
+											sliderColor="var(--re-field-color)"
+											checked={activeToggle === 3} />
+									</div>
 								</div>
-							</div>
-							<div className={gameStyles.box__theme}>
-								<div className={gameStyles.name__theme}>
-									Retro
-								</div>
-								<div className={gameStyles.toggle__theme}>
-									<ToggleSwitch
-										onToggle={(checked) => handleToggle(3, checked, "var(--re-ball-color)")}
-										backgroundColor="var(--toggle-color)"
-										checkedBackgroundColor="var(--re-ball-color)"
-										sliderColor="var(--re-field-color)"
-										checked={activeToggle === 3}
-									/>
-								</div>
-							</div>
-							<div className={gameStyles.box__theme}>
-								<div className={gameStyles.name__theme}>
-									Matrix
-								</div>
-								<div className={gameStyles.toggle__theme}>
-									<ToggleSwitch
-										onToggle={(checked) => handleToggle(4, checked, "var(--ma-ball-color)")}
-										backgroundColor="var(--toggle-color)"
-										checkedBackgroundColor="var(--ma-ball-color)"
-										sliderColor="var(--ma-field-color)"
-										checked={activeToggle === 4}
-									/>
+								<div className={gameStyles.box__theme}>
+									<div className={gameStyles.name__theme}>
+										Matrix
+									</div>
+									<div className={gameStyles.toggle__theme}>
+										<ToggleSwitch
+											onToggle={(checked) => handleToggle(4, checked, "var(--ma-ball-color)")}
+											backgroundColor="var(--toggle-color)"
+											checkedBackgroundColor="var(--ma-ball-color)"
+											sliderColor="var(--ma-field-color)"
+											checked={activeToggle === 4} />
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-      		</div>
-    	</Layout>
-	)
-}
+			</Layout>
+		</ThemeContext.Provider>
+	);
+};
 
 export default withProtected(Game);
