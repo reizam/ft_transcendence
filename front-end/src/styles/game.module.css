@@ -28,6 +28,10 @@
 	border-radius: var(--radius-container);
 }
 
+.cnt__theme__h3 {
+	font-size: 1.2em;
+}
+
 .ctn__game__canvas {
 	margin-top: 5%;
 	margin-left: auto;
@@ -76,3 +80,16 @@
 	margin-top: 4vh;
 	font-family: var(--title-font);
 }
+
+.box__theme {
+	margin-top: 2.5em;
+	display: flex;
+}
+
+.name__theme {
+	width: 55%;
+	margin-right: 7%;
+	text-align: right	;
+}
+
+

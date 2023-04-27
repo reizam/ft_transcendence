@@ -21,6 +21,23 @@
 	--button-background-color-hover: #2c285f;
 	--button-border-radius: 20%;
 	--button-navbar-size: 3.5rem;
+	--toggle-color: #f2f2f2;
+
+	/* RG-THEME */
+	--rg-ball-color: #EBD93D;
+	--rg-field-color: #BF5C00;
+
+	/* WB-THEME */
+	--wb-ball-color: #EBD93D;
+	--wb-field-color: #067C20;
+
+	/* RE-THEME */
+	--re-ball-color: #D2D2D2;
+	--re-field-color: #1C1834;
+
+	/* MA-THEME */
+	--ma-ball-color: #55C100;
+	--ma-field-color: #1C1834;
 
 
 	/*---- Colors Theme ----*/
