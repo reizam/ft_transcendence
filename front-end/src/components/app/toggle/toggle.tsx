@@ -7,6 +7,7 @@ interface	ToggleSwitchProps {
 	backgroundColor?: string;
 	sliderColor?: string;
 	checkedBackgroundColor?: string;
+	checked?: boolean;
 }
 
 const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ 
@@ -15,11 +16,10 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
 	backgroundColor = "#03001E",
 	sliderColor = "var(--button-background-color-hover)",
 	checkedBackgroundColor = "#DF00FE",
+	checked = false,
 }) => {
-    const [checked, setChecked] = useState(initialChecked);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setChecked(e.target.checked);
 		if (onToggle) {
 			onToggle(e.target.checked);
 		}
