@@ -1,4 +1,4 @@
-export interface IUserValidate {
+export interface IUser {
   fortytwoId: number;
   username: string;
   firstName: string;

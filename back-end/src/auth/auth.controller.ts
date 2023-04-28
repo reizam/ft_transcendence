@@ -21,6 +21,7 @@ export class AuthController {
   @Get('42/callback')
   async loginWithFortyTwoCallback(@Req() req: Request, @Res() res: Response) {
     const jwt = await this.authService.login(req.user);
+    console.log(req.user);
     const cookieOptions: CookieOptions = {
       secure: this.configService.get<string>('NODE_ENV') === 'production',
       sameSite: 'strict',

@@ -21,7 +21,7 @@ export class ProfileController {
   @Get()
   getDashboard(@Req() req: Request, @Res() res: Response): any {
     const user = req.user;
-    // console.log(user);
+    console.log('user: ', user);
     return res.status(200).json(user);
   }
 
@@ -42,8 +42,22 @@ export class ProfileController {
 
   @Post()
   postDashboard(@Req() req: Request, @Res() res: Response): any {
-    const user = req.body;
-    console.log(user);
-    return res.status(200).json(user);
+    let result: any;
+    const _json = req.body;
+
+    if (_json.switch2FA) {
+      // function to switch 2FA value, then load result to
+      // be displayed in front-end, wether it has worked or not
+    }
+    if (_json.changePicture) {
+      // function to switch picture value, then load result to
+      // be displayed in front-end, wether it has worked or not
+    }
+    if (_json.changeUsername) {
+      // function to switch picture value, then load result to
+      // be displayed in front-end, wether it has worked or not
+    }
+    console.log(_json);
+    return res.status(200).json(result);
   }
 }
