@@ -1,7 +1,10 @@
+export interface FortytwoImage {
+  link: string;
+}
 export interface FortytwoUser {
   id: number;
-  email: string;
+  login: string;
   first_name: string;
   last_name: string;
-  login: string;
+  image: FortytwoImage;
 }

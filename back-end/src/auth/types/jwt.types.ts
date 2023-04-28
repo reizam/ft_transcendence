@@ -4,4 +4,5 @@ export interface IJWTPayload {
   username: string;
   firstName: string;
   lastName: string;
+  profilePicture: string;
 }

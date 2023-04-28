@@ -15,11 +15,6 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
       clientID: configService.get<string>('FORTYTWO_APP_ID'),
       clientSecret: configService.get<string>('FORTYTWO_APP_SECRET'),
       callbackURL: configService.get<string>('FORTYTWO_CALLBACK_URL'),
-      profileFields: {
-        username: 'login',
-        firstName: 'first_name',
-        lastName: 'last_name',
-      },
     });
   }
 
@@ -33,6 +28,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
       username: profile.login as string,
       firstName: profile.first_name as string,
       lastName: profile.last_name as string,
+      profilePicture: profile.image.link as string,
     });
 
     if (!user) {

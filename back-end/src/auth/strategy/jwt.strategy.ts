@@ -24,6 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       username: payload.username,
       firstName: payload.firstName,
       lastName: payload.lastName,
+      profilePicture: payload.profilePicture,
     });
     if (!user) {
       throw new UnauthorizedException();

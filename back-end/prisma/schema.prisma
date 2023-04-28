@@ -12,11 +12,11 @@ datasource db {
 model User {
   id                Int     @id @default(autoincrement())
 
-  profilePicture    String?
   fortytwoId        Int     @unique
   username          String  @unique
   firstName         String
   lastName          String
+  profilePicture    String
 
   has2FA            Boolean
 

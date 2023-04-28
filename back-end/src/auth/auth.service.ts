@@ -23,6 +23,7 @@ export class AuthService {
           username: profile.username,
           firstName: profile.firstName,
           lastName: profile.lastName,
+          profilePicture: profile.profilePicture,
         },
       });
     }
@@ -48,6 +49,7 @@ export class AuthService {
       username: user.username,
       firstName: user.firstName,
       lastName: user.lastName,
+      profilePicture: user.profilePicture,
     };
 
     return {

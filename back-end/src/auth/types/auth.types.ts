@@ -3,4 +3,5 @@ export interface IUserValidate {
   username: string;
   firstName: string;
   lastName: string;
+  profilePicture: string;
 }
