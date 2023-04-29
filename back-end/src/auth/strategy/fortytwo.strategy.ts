@@ -3,6 +3,7 @@ import { FortytwoUser } from '@/auth/types/fortytwo.types';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
+import { User } from '@prisma/client';
 import { Strategy } from 'passport-42';
 
 @Injectable()
@@ -22,13 +23,14 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     accessToken: string,
     refreshToken: string,
     { _json: profile }: { _json: FortytwoUser },
-  ) {
+  ): Promise<User> {
     const user = await this.authService.validateUser({
       fortytwoId: profile.id as number,
       username: profile.login as string,
       firstName: profile.first_name as string,
       lastName: profile.last_name as string,
       profilePicture: profile.image.link as string,
+      email: profile.email as string,
     });
 
     if (!user) {

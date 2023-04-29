@@ -2,9 +2,9 @@ import { AppModule } from '@/app.module';
 import { JwtSocket } from '@/sockets/jwt-socket.adapter';
 import { NestFactory } from '@nestjs/core';
 import { AuthService } from '@/auth/auth.service';
-import * as cookieParser from 'cookie-parser';
+import { ValidationPipe } from '@nestjs/common';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
 
   app.useWebSocketAdapter(new JwtSocket(app, app.get(AuthService)));
@@ -13,7 +13,11 @@ async function bootstrap() {
     methods: 'GET, POST',
     credentials: true,
   });
-
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+    }),
+  );
   await app.listen(3000);
 }
 

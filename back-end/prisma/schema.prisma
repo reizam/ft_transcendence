@@ -17,6 +17,7 @@ model User {
   firstName         String
   lastName          String
   profilePicture    String
+  email             String
 
   has2FA            Boolean
 

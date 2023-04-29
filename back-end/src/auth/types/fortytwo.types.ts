@@ -7,4 +7,5 @@ export interface FortytwoUser {
   first_name: string;
   last_name: string;
   image: FortytwoImage;
+  email: string;
 }

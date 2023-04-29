@@ -1,17 +1,19 @@
-import { AuthService } from '@/auth/auth.service';
 import { AuthGuard } from '@nestjs/passport';
-import { Controller } from '@nestjs/common';
+import { PrismaService } from '@/prisma/prisma.service';
+import type { User } from '@prisma/client';
 import {
+  Body,
+  Controller,
   Get,
-  Post,
-  Req,
-  Res,
-  UseGuards,
   Param,
   ParseIntPipe,
+  Post,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
-import { CookieOptions, Request, Response } from 'express';
-import { PrismaService } from '@/prisma/prisma.service';
+import { Response } from 'express';
+import { IUpdateProfile } from '@/profile/types/profile.types';
+import { DUser } from '@/decorators/user.decorator';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('profile')
@@ -19,8 +21,7 @@ export class ProfileController {
   constructor(private prisma: PrismaService) {}
 
   @Get()
-  getDashboard(@Req() req: Request, @Res() res: Response): any {
-    const user = req.user;
+  getDashboard(@DUser() user: User, @Res() res: Response): Response {
     console.log('user: ', user);
     return res.status(200).json(user);
   }
@@ -28,9 +29,8 @@ export class ProfileController {
   @Get(':id')
   async getProfile(
     @Param('id', ParseIntPipe) id: number,
-    @Req() req: Request,
     @Res() res: Response,
-  ) {
+  ): Promise<Response> {
     const user = await this.prisma.user.findFirst({
       where: {
         fortytwoId: id,
@@ -41,9 +41,13 @@ export class ProfileController {
   }
 
   @Post()
-  postDashboard(@Req() req: Request, @Res() res: Response): any {
+  postDashboard(
+    @DUser() user: User,
+    @Body() updateDto: IUpdateProfile,
+    @Res() res: Response,
+  ): Response {
     let result: any;
-    const _json = req.body;
+    let _json: any;
 
     if (_json.switch2FA) {
       // function to switch 2FA value, then load result to

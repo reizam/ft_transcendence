@@ -1,8 +1,10 @@
 import { AuthGuard } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from '@/auth/auth.service';
-import { CookieOptions, Request, Response } from 'express';
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { CookieOptions, Response } from 'express';
+import { Controller, Get, Res, UseGuards } from '@nestjs/common';
+import { User } from '@prisma/client';
+import { DUser } from '@/decorators/user.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -13,15 +15,18 @@ export class AuthController {
 
   @UseGuards(AuthGuard('42'))
   @Get('42')
-  async loginWithFortyTwo() {
+  async loginWithFortyTwo(): Promise<void> {
     // Empty
   }
 
   @UseGuards(AuthGuard('42'))
   @Get('42/callback')
-  async loginWithFortyTwoCallback(@Req() req: Request, @Res() res: Response) {
-    const jwt = await this.authService.login(req.user);
-    console.log(req.user);
+  async loginWithFortyTwoCallback(
+    @DUser() user: User,
+    @Res() res: Response,
+  ): Promise<void> {
+    const jwt = await this.authService.login(user);
+    console.log(user);
     const cookieOptions: CookieOptions = {
       secure: this.configService.get<string>('NODE_ENV') === 'production',
       sameSite: 'strict',

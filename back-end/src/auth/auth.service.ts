@@ -1,6 +1,7 @@
 import { IUser } from '@/auth/types/auth.types';
 import { IJWTPayload } from '@/auth/types/jwt.types';
 import { PrismaService } from '@/prisma/prisma.service';
+import type { User } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
@@ -8,12 +9,12 @@ import { JwtService } from '@nestjs/jwt';
 export class AuthService {
   constructor(private jwtService: JwtService, private prisma: PrismaService) {}
 
-  async validateUser(profile: IUser | IJWTPayload): Promise<any> {
+  async validateUser(profile: IUser | IJWTPayload): Promise<User | null> {
     type payload = IUser | IJWTPayload;
     const isUser = (obj: payload): obj is IUser => {
       return 'fortytwoId' in obj;
     };
-    let user: any;
+    let user: User | null;
 
     if (!isUser(profile)) {
       user = await this.prisma.user.findFirst({
@@ -37,13 +38,14 @@ export class AuthService {
           firstName: profile.firstName,
           lastName: profile.lastName,
           profilePicture: profile.profilePicture,
+          email: profile.email,
         },
       });
     }
     return user;
   }
 
-  async validateToken(token: string): Promise<any> {
+  async validateToken(token: string): Promise<User | null> {
     const payload = this.jwtService.verify(token);
     const user = await this.prisma.user.findFirst({
       where: {
@@ -54,7 +56,7 @@ export class AuthService {
     return user;
   }
 
-  async login(user: any) {
+  async login(user: User): Promise<{ accessToken: string }> {
     const payload: IJWTPayload = {
       sub: user.id,
     };

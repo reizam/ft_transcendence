@@ -40,3 +40,6 @@ docker/dev/volumes/db-data/*
 
 # NPM
 *package-lock.json
+
+# Yarn
+*yarn.lock
