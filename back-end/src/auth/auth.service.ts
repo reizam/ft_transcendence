@@ -17,30 +17,51 @@ export class AuthService {
     let user: User | null;
 
     if (!isUser(profile)) {
-      user = await this.prisma.user.findFirst({
-        where: {
-          id: profile.sub,
-        },
-      });
+      user = await this.prisma.user
+        .findFirst({
+          where: {
+            id: profile.sub,
+          },
+        })
+        .catch((error) => {
+          console.error(`Error while looking for user ${profile.sub}:`, error);
+          return null;
+        });
       return user;
     }
-    user = await this.prisma.user.findFirst({
-      where: {
-        fortytwoId: profile.fortytwoId,
-      },
-    });
-    if (!user) {
-      user = await this.prisma.user.create({
-        data: {
-          has2FA: false,
+    user = await this.prisma.user
+      .findFirst({
+        where: {
           fortytwoId: profile.fortytwoId,
-          username: profile.username,
-          firstName: profile.firstName,
-          lastName: profile.lastName,
-          profilePicture: profile.profilePicture,
-          email: profile.email,
         },
+      })
+      .catch((error) => {
+        console.error(
+          `Error while looking for user ${profile.fortytwoId}`,
+          error,
+        );
+        return null;
       });
+    if (!user) {
+      user = await this.prisma.user
+        .create({
+          data: {
+            has2FA: false,
+            fortytwoId: profile.fortytwoId,
+            username: profile.username,
+            firstName: profile.firstName,
+            lastName: profile.lastName,
+            profilePicture: profile.profilePicture,
+            email: profile.email,
+          },
+        })
+        .catch((error) => {
+          console.error(
+            `Error while creating for user ${profile.fortytwoId}`,
+            error,
+          );
+          return null;
+        });
     }
     return user;
   }
@@ -56,7 +77,7 @@ export class AuthService {
     return user;
   }
 
-  async login(user: User): Promise<{ accessToken: string }> {
+  login(user: User): { accessToken: string } {
     const payload: IJWTPayload = {
       sub: user.id,
     };

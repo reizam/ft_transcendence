@@ -21,4 +21,6 @@ async function bootstrap(): Promise<void> {
   await app.listen(3000);
 }
 
-bootstrap();
+bootstrap().catch((error) => {
+  console.log('Error while launching the app:', error);
+});

@@ -1,14 +1,18 @@
 import { AuthGuard } from '@nestjs/passport';
+import { ProfileService } from './profile.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import type { User } from '@prisma/client';
 import {
   Body,
+  ConflictException,
   Controller,
   Get,
+  InternalServerErrorException,
   Param,
   ParseIntPipe,
   Post,
   Res,
+  UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -18,7 +22,10 @@ import { DUser } from '@/decorators/user.decorator';
 @UseGuards(AuthGuard('jwt'))
 @Controller('profile')
 export class ProfileController {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private profileService: ProfileService,
+    private prisma: PrismaService,
+  ) {}
 
   @Get()
   getDashboard(@DUser() user: User, @Res() res: Response): Response {
@@ -41,27 +48,46 @@ export class ProfileController {
   }
 
   @Post()
-  postDashboard(
+  async postDashboard(
     @DUser() user: User,
     @Body() updateDto: IUpdateProfile,
     @Res() res: Response,
-  ): Response {
-    let result: any;
-    let _json: any;
-
-    if (_json.switch2FA) {
-      // function to switch 2FA value, then load result to
-      // be displayed in front-end, wether it has worked or not
+  ): Promise<Response> {
+    console.log(updateDto);
+    if (updateDto.has2FA) {
+      await this.profileService
+        .switch2FA(user.id, updateDto.has2FA)
+        .catch((error) => {
+          console.error({ error });
+          throw new InternalServerErrorException();
+        });
+      return res.status(200).send();
     }
-    if (_json.changePicture) {
-      // function to switch picture value, then load result to
-      // be displayed in front-end, wether it has worked or not
+    if (updateDto.profilePicture) {
+      await this.profileService
+        .updatePicture(user.id, updateDto.profilePicture)
+        .catch((error) => {
+          console.error({ error });
+          throw new InternalServerErrorException();
+        });
+      return res.status(200).send();
     }
-    if (_json.changeUsername) {
-      // function to switch picture value, then load result to
-      // be displayed in front-end, wether it has worked or not
+    if (updateDto.username) {
+      if (
+        await this.profileService
+          .updateUsername(user.id, updateDto.username)
+          .catch((error) => {
+            console.error({ error });
+            throw new InternalServerErrorException();
+          })
+      )
+        return res.status(200).send();
+      else {
+        throw new ConflictException(
+          `The username ${updateDto.username} already exists`,
+        );
+      }
     }
-    console.log(_json);
-    return res.status(200).json(result);
+    throw new UnprocessableEntityException();
   }
 }

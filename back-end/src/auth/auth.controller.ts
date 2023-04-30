@@ -25,8 +25,7 @@ export class AuthController {
     @DUser() user: User,
     @Res() res: Response,
   ): Promise<void> {
-    const jwt = await this.authService.login(user);
-    console.log(user);
+    const jwt = this.authService.login(user);
     const cookieOptions: CookieOptions = {
       secure: this.configService.get<string>('NODE_ENV') === 'production',
       sameSite: 'strict',
@@ -34,6 +33,8 @@ export class AuthController {
     };
 
     res.cookie('jwt', jwt.accessToken, cookieOptions);
-    res.redirect(this.configService.get<string>('FRONTEND_URL'));
+    res.redirect(
+      this.configService.get<string>('FRONTEND_URL', 'localhost:4000'),
+    );
   }
 }

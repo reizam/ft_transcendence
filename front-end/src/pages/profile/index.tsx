@@ -5,22 +5,24 @@ import LoadingScreen from "../../components/app/screen/LoadingScreen";
 import { getCookie } from "cookies-next";
 
 interface IData {
-  fortytwoId: number,
-  createdAt: string,
-  username: string,
+  fortytwoId: number;
+  createdAt: string;
+  username: string;
 }
 
 function Dashboard() {
-  const [data, setData] = useState<IData>({fortytwoId: 0, createdAt: "", username: ""});
+  const [data, setData] = useState<IData>({
+    fortytwoId: 0,
+    createdAt: "",
+    username: "",
+  });
   const [isLoading, setLoading] = useState(true);
   const jwtToken = getCookie("jwt");
 
-  console.log(jwtToken);
   useEffect(() => {
     setLoading(true);
     fetch(`${BACKEND_URL}/profile`, {
       method: "GET",
-      credentials: "include",
       headers: {
         Authorization: `Bearer ${jwtToken}`,
       },
@@ -29,6 +31,9 @@ function Dashboard() {
       .then((data) => {
         setData(data);
         setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
       });
   }, []);
 

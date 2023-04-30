@@ -5,8 +5,8 @@ import { Injectable } from '@nestjs/common';
 export class ProfileService {
   constructor(private prisma: PrismaService) {}
 
-  async switch2FA(userId: number, value: boolean) {
-    const user = await this.prisma.user.update({
+  async switch2FA(userId: number, value: boolean): Promise<void> {
+    await this.prisma.user.update({
       where: {
         id: userId,
       },
@@ -14,6 +14,36 @@ export class ProfileService {
         has2FA: value,
       },
     });
-    return user;
+  }
+
+  async updatePicture(userId: number, value: string): Promise<void> {
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        profilePicture: value,
+      },
+    });
+  }
+
+  async updateUsername(userId: number, value: string): Promise<boolean> {
+    if (
+      await this.prisma.user.findUnique({
+        where: {
+          username: value,
+        },
+      })
+    )
+      return false;
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        username: value,
+      },
+    });
+    return true;
   }
 }
