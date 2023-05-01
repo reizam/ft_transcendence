@@ -1,53 +1,58 @@
-import { useState, useEffect } from "react";
-import { withProtected } from "@/providers/auth/auth.routes";
-import { BACKEND_URL } from "@/constants/env";
-import LoadingScreen from "../../components/app/screen/LoadingScreen";
-import { getCookie } from "cookies-next";
+import Profile from '@/components/app/profile/Profile';
+import LoadingScreen from '@/components/app/screen/LoadingScreen';
+import { BACKEND_URL } from '@/constants/env';
+import { withProtected } from '@/providers/auth/auth.routes';
+import { getCookie } from 'cookies-next';
+import { useEffect, useState } from 'react';
 
-interface IData {
-  fortytwoId: number;
-  createdAt: string;
+interface IUserData {
   username: string;
+  has2FA: boolean;
+  profilePicture: string;
+  createdAt: string;
+  fortytwoId: number;
 }
 
-function Dashboard() {
-  const [data, setData] = useState<IData>({
-    fortytwoId: 0,
-    createdAt: "",
-    username: "",
-  });
+const INITIAL_STATE: IUserData = {
+  username: '',
+  has2FA: false,
+  profilePicture: '',
+  createdAt: '',
+  fortytwoId: 0,
+};
+
+function MyProfile() {
+  const [userData, setUserData] = useState<IUserData>(INITIAL_STATE);
   const [isLoading, setLoading] = useState(true);
-  const jwtToken = getCookie("jwt");
+  const jwtToken = getCookie('jwt');
 
   useEffect(() => {
     setLoading(true);
     fetch(`${BACKEND_URL}/profile`, {
-      method: "GET",
+      method: 'GET',
+      credentials: 'include',
       headers: {
         Authorization: `Bearer ${jwtToken}`,
       },
     })
       .then((res) => res.json())
-      .then((data) => {
-        setData(data);
+      .then(({ username, has2FA, profilePicture, createdAt, fortytwoId }) => {
+        setUserData({
+          username,
+          has2FA,
+          profilePicture,
+          createdAt,
+          fortytwoId,
+        });
         setLoading(false);
       })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
+      .catch((error) => console.error(`Could not fetch user data: ${error}`));
   }, []);
 
   if (isLoading) return <LoadingScreen />;
-  if (!data) return <p>No dashboard data</p>;
+  if (!userData) return <p>No profile data</p>;
 
-  return (
-    <div>
-      <h1>Dashboard</h1>
-      <p>Id: {data.fortytwoId}</p>
-      <p>date: {data.createdAt}</p>
-      <p>username: {data.username}</p>
-    </div>
-  );
+  return <Profile canEdit={true} userData={userData} />;
 }
 
-export default withProtected(Dashboard);
+export default withProtected(MyProfile);

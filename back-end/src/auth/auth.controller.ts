@@ -1,10 +1,10 @@
-import { AuthGuard } from '@nestjs/passport';
-import { ConfigService } from '@nestjs/config';
 import { AuthService } from '@/auth/auth.service';
-import { CookieOptions, Response } from 'express';
-import { Controller, Get, Res, UseGuards } from '@nestjs/common';
-import { User } from '@prisma/client';
 import { DUser } from '@/decorators/user.decorator';
+import { Controller, Get, Res, UseGuards } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { AuthGuard } from '@nestjs/passport';
+import { User } from '@prisma/client';
+import { CookieOptions, Response } from 'express';
 
 @Controller('auth')
 export class AuthController {

@@ -1,8 +1,7 @@
-import React from "react";
-import Image from "next/image";
-import Logo from "@public/images/logo.png";
-import Link from "next/link";
-import { BACKEND_URL } from "@/constants/env";
+import { BACKEND_URL } from '@/constants/env';
+import Logo from '@public/images/logo.png';
+import Image from 'next/image';
+import Link from 'next/link';
 
 function LoginContent() {
   return (

@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface BasicInputProps {
   type?: string;
@@ -7,15 +7,19 @@ interface BasicInputProps {
   value?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   className?: string;
+  checked?: boolean;
+  accept?: string;
 }
 
 function BasicInput({
+  accept,
   type,
   name,
   placeholder,
   value,
   onChange,
   className,
+  checked,
 }: BasicInputProps) {
   return (
     <input
@@ -25,6 +29,8 @@ function BasicInput({
       value={value}
       onChange={onChange}
       className={className}
+      checked={checked}
+      accept={accept}
     />
   );
 }

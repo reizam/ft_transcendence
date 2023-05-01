@@ -1,5 +1,5 @@
-import React from "react";
-import Head from "next/head";
+import Head from 'next/head';
+import React from 'react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -17,10 +17,10 @@ function Layout({ title, children, className }: LayoutProps) {
           content="width=device-width, initial-scale=1, shrink-to-fit=no"
         />
         <title>
-          {title ? `${title} - ft_transcendence` : "ft_transcendence"}
+          {title ? `${title} - ft_transcendence` : 'ft_transcendence'}
         </title>
       </Head>
-      
+
       <main className={className}>{children}</main>
     </>
   );

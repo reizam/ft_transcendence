@@ -1,20 +1,26 @@
-import { useState, useEffect, FC } from 'react';
-import { getCookie } from 'cookies-next';
-import { BACKEND_URL } from "@/constants/env";
+import Avatar from './Avatar';
+import TwoFASwitch from './TwoFASwitch';
+import Username from './Username';
 
-interface ProfileCardProps {
-  username: string,
-  picture: string,
-  twoFAIsEnabled: boolean
+interface IData {
+  username: string;
+  has2FA?: boolean;
+  profilePicture: string;
 }
 
+interface ProfileCardProps {
+  canEdit: boolean;
+  data: IData;
+}
 
-function ProfileCard() {
+function ProfileCard({ canEdit, data }: ProfileCardProps) {
   return (
-    <div>
-      <h1>Profile Card</h1>
-    </div>
+    <>
+      <Avatar canEdit={canEdit} src={data.profilePicture} />
+      <Username canEdit={canEdit} value={data.username} />
+      {canEdit && <TwoFASwitch checked={data.has2FA!} />}
+    </>
   );
-};
+}
 
 export default ProfileCard;
