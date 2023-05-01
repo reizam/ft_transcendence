@@ -1,16 +1,20 @@
-import AuthProvider from "@/providers/auth/auth.provider";
-import SocketProvider from "@/providers/socket/socket.provider";
-import "@/styles/globals.css";
+import NotificationBar from '@/components/app/notification';
+import AuthProvider from '@/providers/auth/auth.provider';
+import { NotificationProvider } from '@/providers/notification/notification.provider';
+import '@/styles/globals.css';
 
-import type { AppProps } from "next/app";
+import type { AppProps } from 'next/app';
 
 function ft_transcendence({ Component, pageProps }: AppProps) {
   return (
-    <AuthProvider>
-      {/* <SocketProvider> */}
+    <NotificationProvider>
+      <NotificationBar />
+      <AuthProvider>
+        {/* <SocketProvider> */}
         <Component {...pageProps} />
-      {/* </SocketProvider> */}
-    </AuthProvider>
+        {/* </SocketProvider> */}
+      </AuthProvider>
+    </NotificationProvider>
   );
 }
 
