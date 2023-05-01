@@ -1,6 +1,6 @@
 import { AuthService } from '@/auth/auth.service';
 import { FortytwoUser } from '@/auth/types/fortytwo.types';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { User } from '@prisma/client';
@@ -24,7 +24,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy42, '42') {
     refreshToken: string,
     { _json: profile }: { _json: FortytwoUser },
   ): Promise<User> {
-    const user = await this.authService.validateUser({
+    const user = await this.authService.validateOrCreateUser({
       fortytwoId: profile.id as number,
       username: profile.login as string,
       firstName: profile.first_name as string,
@@ -32,10 +32,6 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy42, '42') {
       profilePicture: profile.image.link as string,
       email: profile.email as string,
     });
-
-    if (!user) {
-      throw new UnauthorizedException();
-    }
     return user;
   }
 }

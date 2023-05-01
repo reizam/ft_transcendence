@@ -7,7 +7,6 @@ import {
   ConflictException,
   Controller,
   Get,
-  InternalServerErrorException,
   Param,
   ParseIntPipe,
   Post,
@@ -55,32 +54,18 @@ export class ProfileController {
   ): Promise<Response> {
     console.log(updateDto);
     if (updateDto.has2FA) {
-      await this.profileService
-        .switch2FA(user.id, updateDto.has2FA)
-        .catch((error) => {
-          console.error({ error });
-          throw new InternalServerErrorException();
-        });
+      await this.profileService.switch2FA(user.id, updateDto.has2FA);
       return res.status(200).send();
     }
     if (updateDto.profilePicture) {
-      await this.profileService
-        .updatePicture(user.id, updateDto.profilePicture)
-        .catch((error) => {
-          console.error({ error });
-          throw new InternalServerErrorException();
-        });
+      await this.profileService.updatePicture(
+        user.id,
+        updateDto.profilePicture,
+      );
       return res.status(200).send();
     }
     if (updateDto.username) {
-      if (
-        await this.profileService
-          .updateUsername(user.id, updateDto.username)
-          .catch((error) => {
-            console.error({ error });
-            throw new InternalServerErrorException();
-          })
-      )
+      if (await this.profileService.updateUsername(user.id, updateDto.username))
         return res.status(200).send();
       else {
         throw new ConflictException(

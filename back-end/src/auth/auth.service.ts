@@ -9,59 +9,27 @@ import { JwtService } from '@nestjs/jwt';
 export class AuthService {
   constructor(private jwtService: JwtService, private prisma: PrismaService) {}
 
-  async validateUser(profile: IUser | IJWTPayload): Promise<User | null> {
-    type payload = IUser | IJWTPayload;
-    const isUser = (obj: payload): obj is IUser => {
-      return 'fortytwoId' in obj;
-    };
-    let user: User | null;
+  async validateUser(profile: IJWTPayload): Promise<User | null> {
+    return await this.prisma.user.findFirst({
+      where: {
+        id: profile.sub,
+      },
+    });
+  }
 
-    if (!isUser(profile)) {
-      user = await this.prisma.user
-        .findFirst({
-          where: {
-            id: profile.sub,
-          },
-        })
-        .catch((error) => {
-          console.error(`Error while looking for user ${profile.sub}:`, error);
-          return null;
-        });
-      return user;
-    }
-    user = await this.prisma.user
-      .findFirst({
-        where: {
-          fortytwoId: profile.fortytwoId,
-        },
-      })
-      .catch((error) => {
-        console.error(
-          `Error while looking for user ${profile.fortytwoId}`,
-          error,
-        );
-        return null;
-      });
+  async validateOrCreateUser(profile: IUser): Promise<User> {
+    let user = await this.prisma.user.findFirst({
+      where: {
+        fortytwoId: profile.fortytwoId,
+      },
+    });
     if (!user) {
-      user = await this.prisma.user
-        .create({
-          data: {
-            has2FA: false,
-            fortytwoId: profile.fortytwoId,
-            username: profile.username,
-            firstName: profile.firstName,
-            lastName: profile.lastName,
-            profilePicture: profile.profilePicture,
-            email: profile.email,
-          },
-        })
-        .catch((error) => {
-          console.error(
-            `Error while creating for user ${profile.fortytwoId}`,
-            error,
-          );
-          return null;
-        });
+      user = await this.prisma.user.create({
+        data: {
+          ...profile,
+          has2FA: false,
+        },
+      });
     }
     return user;
   }
