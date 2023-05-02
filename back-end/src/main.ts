@@ -2,12 +2,14 @@ import { AppModule } from '@/app.module';
 import { AuthService } from '@/auth/auth.service';
 import { JwtSocket } from '@/sockets/jwt-socket.adapter';
 import { ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { json } from 'express';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
+  const httpAdapter = app.get(HttpAdapterHost);
 
+  app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
   app.useWebSocketAdapter(new JwtSocket(app, app.get(AuthService)));
   app.use(json({ limit: '5mb' }));
   app.enableCors({
