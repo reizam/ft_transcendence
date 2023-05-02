@@ -17,7 +17,7 @@ function TwoFASwitch({ checked }: TwoFASwitchProps) {
         Authorization: `Bearer ${getCookie('jwt')}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ switch2FA: has2FA }),
+      body: JSON.stringify({ has2FA }),
     })
       .then((res) => res.json())
       .then((data) => console.log(data))

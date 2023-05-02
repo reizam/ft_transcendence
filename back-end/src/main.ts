@@ -1,13 +1,15 @@
 import { AppModule } from '@/app.module';
-import { JwtSocket } from '@/sockets/jwt-socket.adapter';
-import { NestFactory } from '@nestjs/core';
 import { AuthService } from '@/auth/auth.service';
+import { JwtSocket } from '@/sockets/jwt-socket.adapter';
 import { ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import { json } from 'express';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
 
   app.useWebSocketAdapter(new JwtSocket(app, app.get(AuthService)));
+  app.use(json({ limit: '5mb' }));
   app.enableCors({
     origin: 'http://localhost:4000',
     methods: 'GET, POST',

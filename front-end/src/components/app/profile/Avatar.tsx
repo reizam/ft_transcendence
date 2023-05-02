@@ -4,16 +4,17 @@ import { getCookie } from 'cookies-next';
 import Image from 'next/image';
 import { useContext, useState } from 'react';
 import BasicInput from '../inputs/BasicInput';
+import { ProfileEditContext } from './ProfileEditContext';
 
 interface AvatarProps {
-  canEdit: boolean;
   src: string;
 }
 
-function Avatar({ canEdit, src }: AvatarProps) {
+function Avatar({ src }: AvatarProps) {
   const [selectedFile, setSelectedFile] = useState<File>();
   const [errorMsg, setErrorMsg] = useState('');
   const notificationCtx = useContext(NotificationContext);
+  const canEdit = useContext(ProfileEditContext);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -57,7 +58,7 @@ function Avatar({ canEdit, src }: AvatarProps) {
         Authorization: `Bearer ${getCookie('jwt')}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ changePicture: true, selectedFile }),
+      body: JSON.stringify({ profilePicture: await selectedFile.text() }),
     })
       .then((res) => res.json())
       .then((data) => console.log(data))

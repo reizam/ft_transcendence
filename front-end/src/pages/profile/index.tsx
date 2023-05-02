@@ -1,4 +1,5 @@
 import Profile from '@/components/app/profile/Profile';
+import { ProfileEditContext } from '@/components/app/profile/ProfileEditContext';
 import LoadingScreen from '@/components/app/screen/LoadingScreen';
 import { BACKEND_URL } from '@/constants/env';
 import { withProtected } from '@/providers/auth/auth.routes';
@@ -52,7 +53,11 @@ function MyProfile() {
   if (isLoading) return <LoadingScreen />;
   if (!userData) return <p>No profile data</p>;
 
-  return <Profile canEdit={true} userData={userData} />;
+  return (
+    <ProfileEditContext.Provider value={true}>
+      <Profile userData={userData} />;
+    </ProfileEditContext.Provider>
+  );
 }
 
 export default withProtected(MyProfile);

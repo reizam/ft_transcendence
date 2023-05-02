@@ -1,15 +1,16 @@
 import { BACKEND_URL } from '@/constants/env';
 import { getCookie } from 'cookies-next';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import BasicInput from '../inputs/BasicInput';
+import { ProfileEditContext } from './ProfileEditContext';
 
 interface UsernameProps {
-  canEdit: boolean;
   value: string;
 }
 
-function Username({ canEdit, value }: UsernameProps) {
+function Username({ value }: UsernameProps) {
   const [username, setUsername] = useState(value);
+  const canEdit = useContext(ProfileEditContext);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -20,7 +21,7 @@ function Username({ canEdit, value }: UsernameProps) {
         Authorization: `Bearer ${getCookie('jwt')}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ changeUsername: true, username }),
+      body: JSON.stringify({ username }),
     })
       .then((res) => res.json())
       .then((data) => console.log(data))
@@ -29,7 +30,7 @@ function Username({ canEdit, value }: UsernameProps) {
   };
 
   return (
-    <div className="relative mb-3" data-te-input-wrapper-init>
+    <div className="relative m-3" data-te-input-wrapper-init>
       {canEdit ? (
         <form onSubmit={handleSubmit}>
           <BasicInput

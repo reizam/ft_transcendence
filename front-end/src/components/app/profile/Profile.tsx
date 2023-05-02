@@ -11,17 +11,16 @@ interface IUserData {
 }
 
 interface ProfileProps {
-  canEdit: boolean;
   userData: IUserData;
 }
 
-function Profile({ canEdit, userData }: ProfileProps) {
+function Profile({ userData }: ProfileProps) {
   return (
     <Layout
       className="flex items-center justify-center h-screen bg-purple"
       title="Home"
     >
-      <ProfileCard canEdit={canEdit} data={userData} />
+      <ProfileCard data={userData} />
       {/* <Achievements /> */}
       {/* <MatchHistory /> */}
       {/* <Stats /> */}

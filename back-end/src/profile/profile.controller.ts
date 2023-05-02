@@ -1,7 +1,6 @@
-import { AuthGuard } from '@nestjs/passport';
-import { ProfileService } from './profile.service';
+import { DUser } from '@/decorators/user.decorator';
 import { PrismaService } from '@/prisma/prisma.service';
-import type { User } from '@prisma/client';
+import { IUpdateProfile } from '@/profile/types/profile.types';
 import {
   Body,
   ConflictException,
@@ -15,9 +14,10 @@ import {
   UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import type { User } from '@prisma/client';
 import { Response } from 'express';
-import { IUpdateProfile } from '@/profile/types/profile.types';
-import { DUser } from '@/decorators/user.decorator';
+import { ProfileService } from './profile.service';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('profile')
@@ -54,7 +54,7 @@ export class ProfileController {
     @Res() res: Response,
   ): Promise<Response> {
     console.log(updateDto);
-    if (updateDto.has2FA) {
+    if (updateDto.has2FA !== undefined) {
       await this.profileService
         .switch2FA(user.id, updateDto.has2FA)
         .catch((error) => {
@@ -63,7 +63,7 @@ export class ProfileController {
         });
       return res.status(200).send();
     }
-    if (updateDto.profilePicture) {
+    if (updateDto.profilePicture !== undefined) {
       await this.profileService
         .updatePicture(user.id, updateDto.profilePicture)
         .catch((error) => {
@@ -72,7 +72,7 @@ export class ProfileController {
         });
       return res.status(200).send();
     }
-    if (updateDto.username) {
+    if (updateDto.username !== undefined) {
       if (
         await this.profileService
           .updateUsername(user.id, updateDto.username)
