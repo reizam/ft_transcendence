@@ -4,6 +4,7 @@ import { JwtSocket } from '@/sockets/jwt-socket.adapter';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { json } from 'express';
+import { AllExceptionsFilter } from './filters/all-exceptions.filter';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);

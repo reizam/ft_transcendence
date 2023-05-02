@@ -2,7 +2,7 @@ import { BACKEND_URL } from '@/constants/env';
 import NotificationContext from '@/providers/notification/notification.context';
 import { getCookie } from 'cookies-next';
 import Image from 'next/image';
-import { useContext, useState } from 'react';
+import { ReactElement, useContext, useState } from 'react';
 import BasicInput from '../inputs/BasicInput';
 import { ProfileEditContext } from './ProfileEditContext';
 
@@ -10,7 +10,7 @@ interface AvatarProps {
   src: string;
 }
 
-function Avatar({ src }: AvatarProps) {
+function Avatar({ src }: AvatarProps): ReactElement {
   const [selectedFile, setSelectedFile] = useState<File>();
   const [errorMsg, setErrorMsg] = useState('');
   const notificationCtx = useContext(NotificationContext);

@@ -1,5 +1,5 @@
-import React from "react";
-import { AuthContext, useProvideAuth } from "@/providers/auth/auth.context";
+import { AuthContext, useProvideAuth } from '@/providers/auth/auth.context';
+import React from 'react';
 
 interface AuthProviderProps {
   children: React.ReactNode;

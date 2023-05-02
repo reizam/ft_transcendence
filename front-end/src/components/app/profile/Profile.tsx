@@ -1,31 +1,26 @@
-import { withProtected } from '@/providers/auth/auth.routes';
+import { IUserData } from '@/api/profile/profile.type';
 import Layout from '../layouts/Layout';
 import ProfileCard from './ProfileCard';
+import { ReactElement } from 'react';
 
-interface IUserData {
-  username: string;
-  has2FA: boolean;
-  profilePicture: string;
-  createdAt: string;
-  fortytwoId: number;
-}
-
-interface ProfileProps {
+interface UserDataProps {
   userData: IUserData;
 }
 
-function Profile({ userData }: ProfileProps) {
+function Profile({ userData }: UserDataProps): ReactElement {
   return (
-    <Layout
-      className="flex items-center justify-center h-screen bg-purple"
-      title="Home"
-    >
-      <ProfileCard data={userData} />
-      {/* <Achievements /> */}
-      {/* <MatchHistory /> */}
-      {/* <Stats /> */}
-    </Layout>
+    <>
+      <Layout
+        className="flex items-center justify-center h-screen bg-purple"
+        title="Home"
+      >
+        <ProfileCard userData={userData} />
+        {/* <Achievements /> */}
+        {/* <MatchHistory /> */}
+        {/* <Stats /> */}
+      </Layout>
+    </>
   );
 }
 
-export default withProtected(Profile);
+export default Profile;

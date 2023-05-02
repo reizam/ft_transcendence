@@ -1,12 +1,12 @@
 import { BACKEND_URL } from '@/constants/env';
 import { getCookie } from 'cookies-next';
-import { useState } from 'react';
+import { ReactElement, useState } from 'react';
 
 interface TwoFASwitchProps {
   checked: boolean;
 }
 
-function TwoFASwitch({ checked }: TwoFASwitchProps) {
+function TwoFASwitch({ checked }: TwoFASwitchProps): ReactElement {
   const [has2FA, switch2FA] = useState(checked);
 
   const handleSubmit = async (e: React.ChangeEvent<HTMLInputElement>) => {

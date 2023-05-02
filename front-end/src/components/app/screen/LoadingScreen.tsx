@@ -1,5 +1,3 @@
-import React from "react";
-
 function LoadingScreen() {
   return (
     <main className="flex items-center justify-center h-screen bg-dark-purple">

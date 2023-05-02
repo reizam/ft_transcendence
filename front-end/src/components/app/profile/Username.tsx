@@ -1,6 +1,6 @@
 import { BACKEND_URL } from '@/constants/env';
 import { getCookie } from 'cookies-next';
-import { useContext, useState } from 'react';
+import { ReactElement, useContext, useState } from 'react';
 import BasicInput from '../inputs/BasicInput';
 import { ProfileEditContext } from './ProfileEditContext';
 
@@ -8,7 +8,7 @@ interface UsernameProps {
   value: string;
 }
 
-function Username({ value }: UsernameProps) {
+function Username({ value }: UsernameProps): ReactElement {
   const [username, setUsername] = useState(value);
   const canEdit = useContext(ProfileEditContext);
 

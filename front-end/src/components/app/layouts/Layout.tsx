@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -7,7 +7,7 @@ interface LayoutProps {
   title?: string;
 }
 
-function Layout({ title, children, className }: LayoutProps) {
+function Layout({ title, children, className }: LayoutProps): ReactElement {
   return (
     <>
       <Head>

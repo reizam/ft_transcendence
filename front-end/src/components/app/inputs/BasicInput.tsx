@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 interface BasicInputProps {
   type?: string;
@@ -20,7 +20,7 @@ function BasicInput({
   onChange,
   className,
   checked,
-}: BasicInputProps) {
+}: BasicInputProps): ReactElement {
   return (
     <input
       type={type}

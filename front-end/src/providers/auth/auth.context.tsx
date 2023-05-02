@@ -1,12 +1,12 @@
-import { AuthStatus, IAuthContext } from "@/providers/auth/auth.interface";
-import { createContext, useContext, useEffect, useState } from "react";
-import { deleteCookie, getCookie } from "cookies-next";
-import { useRouter } from "next/router";
+import { AuthStatus, IAuthContext } from '@/providers/auth/auth.interface';
+import { deleteCookie, getCookie } from 'cookies-next';
+import { useRouter } from 'next/router';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 export const AuthContext = createContext<IAuthContext>({
   logout: () => Promise.resolve(),
   getAccessToken: () => Promise.resolve(null),
-  status: "loading",
+  status: 'loading',
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -14,11 +14,11 @@ export const useAuth = () => useContext(AuthContext);
 export const useProvideAuth = (): IAuthContext => {
   const router = useRouter();
 
-  const [status, setStatus] = useState<AuthStatus>("loading");
+  const [status, setStatus] = useState<AuthStatus>('loading');
 
   const getAccessToken = async () => {
-    const cookie = getCookie("jwt", {
-      sameSite: "strict",
+    const cookie = getCookie('jwt', {
+      sameSite: 'strict',
     });
 
     if (cookie) {
@@ -29,9 +29,9 @@ export const useProvideAuth = (): IAuthContext => {
   };
 
   const logout = async () => {
-    setStatus("unauthenticated");
-    deleteCookie("jwt", {
-      sameSite: "strict",
+    setStatus('unauthenticated');
+    deleteCookie('jwt', {
+      sameSite: 'strict',
     });
   };
 
@@ -39,7 +39,7 @@ export const useProvideAuth = (): IAuthContext => {
     const update = async () => {
       const token = await getAccessToken();
 
-      setStatus(token ? "authenticated" : "unauthenticated");
+      setStatus(token ? 'authenticated' : 'unauthenticated');
     };
 
     update();

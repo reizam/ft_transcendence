@@ -1,7 +1,7 @@
-import React from "react";
-import { ISocketContext } from "@/providers/socket/socket.interface";
-import { BACKEND_URL } from "@/constants/env";
-import { io } from "socket.io-client";
+import { BACKEND_URL } from '@/constants/env';
+import { ISocketContext } from '@/providers/socket/socket.interface';
+import React from 'react';
+import { io } from 'socket.io-client';
 
 export const SocketContext = React.createContext<ISocketContext>({
   socket: null,
@@ -13,7 +13,7 @@ export const SocketContext = React.createContext<ISocketContext>({
 export const useSocket = () => React.useContext(SocketContext);
 
 export const useProvideSocket = (): ISocketContext => {
-  const [socket, setSocket] = React.useState<ISocketContext["socket"]>(null);
+  const [socket, setSocket] = React.useState<ISocketContext['socket']>(null);
   const [connected, setConnected] = React.useState<boolean>(false);
 
   const connect = (token: string) => {
@@ -36,23 +36,22 @@ export const useProvideSocket = (): ISocketContext => {
 
   React.useEffect(() => {
     if (socket) {
-      socket.on("connect", () => {
+      socket.on('connect', () => {
         setConnected(true);
-        console.log("Socket connected");
+        console.log('Socket connected');
       });
 
-      socket.on("disconnect", () => {
+      socket.on('disconnect', () => {
         setConnected(false);
-        console.log("Socket disconnected");
+        console.log('Socket disconnected');
       });
 
       return () => {
-        socket.off("connect");
-        socket.off("disconnect");
+        socket.off('connect');
+        socket.off('disconnect');
       };
-
-      console.log("Socket connected");
     }
+    return;
   }, [socket]);
 
   return {

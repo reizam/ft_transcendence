@@ -1,8 +1,7 @@
-import React from "react";
-import { NextPage } from "next";
-import LoginContent from "@/components/login/LoginContent";
-import Layout from "@/components/app/layouts/Layout";
-import { withPublic } from "@/providers/auth/auth.routes";
+import Layout from '@/components/app/layouts/Layout';
+import LoginContent from '@/components/login/LoginContent';
+import { withPublic } from '@/providers/auth/auth.routes';
+import { NextPage } from 'next';
 
 const Login: NextPage = () => {
   return (

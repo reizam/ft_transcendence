@@ -1,7 +1,7 @@
 import NotificationContext from '@/providers/notification/notification.context';
-import { useContext } from 'react';
+import { ReactElement, useContext } from 'react';
 
-const NotificationBar = () => {
+const NotificationBar = (): ReactElement => {
   const notificationCtx = useContext(NotificationContext);
   return (
     <>

@@ -2,8 +2,9 @@ import { BACKEND_URL } from '@/constants/env';
 import Logo from '@public/images/logo.png';
 import Image from 'next/image';
 import Link from 'next/link';
+import { ReactElement } from 'react';
 
-function LoginContent() {
+function LoginContent(): ReactElement {
   return (
     <div className="flex flex-col space-y-16">
       <Image src={Logo} alt="Logo" width={320} height={100} priority />

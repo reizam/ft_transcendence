@@ -1,4 +1,5 @@
-import { useContext } from 'react';
+import { IUserData } from '@/api/profile/profile.type';
+import { ReactElement, useContext } from 'react';
 import Avatar from './Avatar';
 import { ProfileEditContext } from './ProfileEditContext';
 import TwoFASwitch from './TwoFASwitch';
@@ -10,17 +11,17 @@ interface IData {
   profilePicture: string;
 }
 
-interface ProfileCardProps {
-  data: IData;
+interface UserDataProps {
+  userData: IUserData;
 }
 
-function ProfileCard({ data }: ProfileCardProps) {
+function ProfileCard({ userData }: UserDataProps): ReactElement {
   const canEdit = useContext(ProfileEditContext);
   return (
     <>
-      <Avatar src={data.profilePicture} />
-      <Username value={data.username} />
-      {canEdit && <TwoFASwitch checked={data.has2FA!} />}
+      <Avatar src={userData.profilePicture} />
+      <Username value={userData.username} />
+      {canEdit && <TwoFASwitch checked={userData.has2FA!} />}
     </>
   );
 }
