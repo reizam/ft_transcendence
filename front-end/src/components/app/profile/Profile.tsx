@@ -1,23 +1,26 @@
 import { IUserData } from '@/api/profile/profile.type';
-import Layout from '../layouts/Layout';
-import ProfileCard from './ProfileCard';
+import Layout from '@/components/app/layouts/Layout';
+import ProfileCard from '@/components/app/profile/ProfileCard';
+import dashStyles from '@/styles/dash.module.css';
 import { ReactElement } from 'react';
 
 interface UserDataProps {
   userData: IUserData;
+  canEdit: boolean;
 }
 
-function Profile({ userData }: UserDataProps): ReactElement {
+function Profile({ userData, canEdit }: UserDataProps): ReactElement {
   return (
     <>
-      <Layout
-        className="flex items-center justify-center h-screen bg-purple"
-        title="Home"
-      >
-        <ProfileCard userData={userData} />
-        {/* <Achievements /> */}
-        {/* <MatchHistory /> */}
-        {/* <Stats /> */}
+      <Layout title="Profile">
+        <div className={dashStyles.ctn__dash}>
+          <div className={dashStyles.dash__profile}>
+            <ProfileCard profileData={userData} canEdit={canEdit} />
+            {/* <Achievements /> */}
+            {/* <MatchHistory /> */}
+            {/* <Stats /> */}
+          </div>
+        </div>
       </Layout>
     </>
   );
