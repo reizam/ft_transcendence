@@ -1,15 +1,15 @@
-import React from "react";
-import { FiSettings } from "react-icons/fi";
-import Link from "next/link";
-import settingsStyles from "./settings.module.css"
+import React from 'react';
+import { FiSettings } from 'react-icons/fi';
+import Link from 'next/link';
+import settingsStyles from './settings.module.css';
 
-function Settings() {
+function Settings(): React.ReactElement {
   return (
     <div className={settingsStyles.settings}>
       <Link href={`/`}>
         <div className={settingsStyles.ctn__set}>
           <p className={settingsStyles.ctn__set__p}>
-            <FiSettings className={settingsStyles.fi__settings}/>
+            <FiSettings className={settingsStyles.fi__settings} />
           </p>
         </div>
       </Link>
