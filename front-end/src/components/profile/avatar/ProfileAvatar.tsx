@@ -1,12 +1,12 @@
 import dashStyles from '@/styles/dash.module.css';
 import { ReactElement } from 'react';
 
-interface AvatarProps {
+interface ProfileAvatarProps {
   src: string;
   canEdit: boolean;
 }
 
-function Avatar({ src, canEdit }: AvatarProps): ReactElement {
+function ProfileAvatar({ src, canEdit }: ProfileAvatarProps): ReactElement {
   // const [selectedFile, setSelectedFile] = useState<File>();
   // const [errorMsg, setErrorMsg] = useState('');
   // const notificationCtx = useContext(NotificationContext);
@@ -62,7 +62,7 @@ function Avatar({ src, canEdit }: AvatarProps): ReactElement {
 
   return (
     <div className={dashStyles.pict__prof}>
-      <img className={dashStyles.img__prof} src={src} alt="avatar" />
+      <img className={dashStyles.img__prof} src={src} alt="ProfileAvatar" />
       {/* {canEdit && (
         <div className="absolute bottom-0 left-0 right-0 top-0 h-full w-full overflow-hidden bg-[hsl(0,0%,98.4%,0.2)] bg-fixed opacity-0 transition duration-300 ease-in-out hover:opacity-100 hover:cursor-pointer rounded-full">
           <BasicInput
@@ -77,4 +77,4 @@ function Avatar({ src, canEdit }: AvatarProps): ReactElement {
   );
 }
 
-export default Avatar;
+export default ProfileAvatar;

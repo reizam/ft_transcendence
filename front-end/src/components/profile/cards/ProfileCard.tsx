@@ -1,23 +1,25 @@
+import React from 'react';
 import Button from '@/components/app/button/Button';
-import Avatar from '@/components/app/profile/Avatar';
-import UserInfo from '@/components/app/profile/UserInfo';
-import { ProfileData } from '@/components/app/profile/types/profile.type';
-import { ReactElement } from 'react';
+import ProfileAvatar from '@/components/profile/avatar/ProfileAvatar';
+import UserInfo from '@/components/profile/sections/UserInfoSection';
+import { ProfileData } from '@/components/profile/types/profile.type';
 
 interface ProfileDataProps {
   profileData: ProfileData;
   canEdit: boolean;
 }
 
-function ProfileCard({ profileData, canEdit }: ProfileDataProps): ReactElement {
+function ProfileCard({
+  profileData,
+  canEdit,
+}: ProfileDataProps): React.ReactElement {
   return (
     <>
-      <Avatar src={profileData.profilePicture} canEdit={canEdit} />
+      <ProfileAvatar src={profileData.profilePicture} canEdit={canEdit} />
       <UserInfo
         firstName={profileData.firstName}
         lastName={profileData.lastName}
         username={profileData.username}
-        canEdit={canEdit}
       />
       {/* {canEdit && <TwoFASwitch checked={profileData.has2FA} />} */}
       <Button />

@@ -3,10 +3,8 @@ import { useAuth } from '@/providers/auth/auth.context';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
-export function withProtected<
-  T extends JSX.IntrinsicAttributes = JSX.IntrinsicAttributes
->(Component: React.ComponentType<T>) {
-  return function WithProtected(props: T) {
+export function withProtected(Component: React.ComponentType<any>) {
+  return function WithProtected(props: any) {
     const router = useRouter();
     const { status } = useAuth();
 
@@ -27,10 +25,8 @@ export function withProtected<
   };
 }
 
-export function withPublic<
-  T extends JSX.IntrinsicAttributes = JSX.IntrinsicAttributes
->(Component: React.ComponentType<T>) {
-  return function WithPublic(props: T) {
+export function withPublic(Component: React.ComponentType<any>) {
+  return function WithPublic(props: any) {
     const router = useRouter();
     const { status } = useAuth();
 

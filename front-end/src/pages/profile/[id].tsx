@@ -1,19 +1,27 @@
 import { useGetUser } from '@/api/user/user.api';
-import Profile from '@/components/app/profile/Profile';
 import LoadingScreen from '@/components/app/screen/LoadingScreen';
 import { withProtected } from '@/providers/auth/auth.routes';
 import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
+import Layout from '@/components/app/layouts/Layout';
+import ProfileContent from '@/components/profile/ProfileContent';
 
-function UserProfile(): ReactElement {
+function ViewProfile(): ReactElement {
   const router = useRouter();
+
   const { id } = router.query;
-  const userQuery = useGetUser(id as string);
 
-  if (userQuery.isLoading) return <LoadingScreen />;
-  if (!userQuery.data) return <p>No profile data</p>;
+  const { data, isLoading } = useGetUser(id as string | undefined);
 
-  return <Profile userData={userQuery.data} canEdit={false} />;
+  if (isLoading) return <LoadingScreen />;
+
+  if (!data) return <p>No profile data</p>;
+
+  return (
+    <Layout title="View Profile">
+      <ProfileContent userData={data} canEdit={false} />;
+    </Layout>
+  );
 }
 
-export default withProtected(UserProfile);
+export default withProtected(ViewProfile);

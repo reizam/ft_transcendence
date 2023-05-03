@@ -1,16 +1,22 @@
 import { useGetMe } from '@/api/user/user.api';
-import Profile from '@/components/app/profile/Profile';
 import LoadingScreen from '@/components/app/screen/LoadingScreen';
 import { withProtected } from '@/providers/auth/auth.routes';
 import { ReactElement } from 'react';
+import Layout from '@/components/app/layouts/Layout';
+import ProfileContent from '@/components/profile/ProfileContent';
 
-function MyProfile(): ReactElement {
-  const userQuery = useGetMe();
+function Profile(): ReactElement {
+  const { data, isLoading, isError } = useGetMe();
 
-  if (userQuery.isLoading) return <LoadingScreen />;
-  if (userQuery.isError) return <p>No profile data</p>;
+  if (isLoading) return <LoadingScreen />;
 
-  return <Profile userData={userQuery.data} canEdit={true} />;
+  if (isError) return <p>No profile data</p>;
+
+  return (
+    <Layout title="Profile">
+      <ProfileContent canEdit userData={data} />
+    </Layout>
+  );
 }
 
-export default withProtected(MyProfile);
+export default withProtected(Profile);

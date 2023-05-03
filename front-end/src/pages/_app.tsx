@@ -1,6 +1,7 @@
 import NotificationBar from '@/components/app/notification';
 import AuthProvider from '@/providers/auth/auth.provider';
 import { NotificationProvider } from '@/providers/notification/notification.provider';
+import SocketProvider from '@/providers/socket/socket.provider';
 import '@/styles/globals.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -11,17 +12,17 @@ const queryClient = new QueryClient();
 
 function ft_transcendence({ Component, pageProps }: AppProps): ReactElement {
   return (
-    <NotificationProvider>
-      <NotificationBar />
-      <AuthProvider>
+    <AuthProvider>
+      <NotificationProvider>
+        <NotificationBar />
         <QueryClientProvider client={queryClient}>
-          {/* <SocketProvider> */}
-          <Component {...pageProps} />
-          <ReactQueryDevtools />
-          {/* </SocketProvider> */}
+          <SocketProvider>
+            <Component {...pageProps} />
+            <ReactQueryDevtools />
+          </SocketProvider>
         </QueryClientProvider>
-      </AuthProvider>
-    </NotificationProvider>
+      </NotificationProvider>
+    </AuthProvider>
   );
 }
 

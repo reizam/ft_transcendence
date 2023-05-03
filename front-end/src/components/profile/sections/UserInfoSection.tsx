@@ -1,19 +1,17 @@
 import dashStyles from '@/styles/dash.module.css';
 import { ReactElement } from 'react';
 
-interface UserInfoProps {
+interface UserInfoSectionProps {
   firstName: string;
   lastName: string;
   username: string;
-  canEdit: boolean;
 }
 
-function UserInfo({
+function UserInfoSection({
   firstName,
   lastName,
   username,
-  canEdit,
-}: UserInfoProps): ReactElement {
+}: UserInfoSectionProps): ReactElement {
   // const [username, setUsername] = useState(value);
 
   // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -58,4 +56,4 @@ function UserInfo({
   );
 }
 
-export default UserInfo;
+export default UserInfoSection;
