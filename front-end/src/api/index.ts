@@ -2,7 +2,10 @@ import { BACKEND_URL } from '@/constants/env';
 import axios, { AxiosRequestConfig } from 'axios';
 import { getCookie } from 'cookies-next';
 
-export const getWithToken = async (path: string, init?: AxiosRequestConfig) => {
+export async function getWithToken<Type = unknown>(
+  path: string,
+  init?: AxiosRequestConfig
+): Promise<Type> {
   const jwtToken = getCookie('jwt');
 
   if (!jwtToken) throw new Error('No JWT token found. Please log in again.');
@@ -19,4 +22,4 @@ export const getWithToken = async (path: string, init?: AxiosRequestConfig) => {
   const response = await axios.get(`${BACKEND_URL}${path}`, config);
 
   return response.data;
-};
+}
