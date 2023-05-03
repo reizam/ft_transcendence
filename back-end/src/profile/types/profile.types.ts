@@ -15,7 +15,6 @@ export class IUpdateProfile {
   @IsOptional()
   @IsNotEmpty()
   @IsString()
-  @IsUrl()
   profilePicture: string;
 
   @IsOptional()

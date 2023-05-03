@@ -4,6 +4,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import type { User } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import axios from 'axios';
 
 @Injectable()
 export class AuthService {
@@ -24,9 +25,15 @@ export class AuthService {
       },
     });
     if (!user) {
+      const image = await axios.get(profile.profilePicture, {
+        responseType: 'arraybuffer',
+      });
       user = await this.prisma.user.create({
         data: {
           ...profile,
+          profilePicture:
+            'data:image/jpg;base64,' +
+            Buffer.from(image.data).toString('base64'),
           has2FA: false,
         },
       });
