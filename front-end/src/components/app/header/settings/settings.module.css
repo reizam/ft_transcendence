@@ -1,0 +1,31 @@
+.settings {
+    width: 6rem;
+    display: flex;
+}
+
+.ctn__set {
+    background-color: var(--button-background-color);
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    display: table;
+    margin-left: 20px;
+    margin-top: 5px;
+}
+
+.ctn__set__p {
+    vertical-align: middle;
+    display: table-cell;
+    margin-left: 5px;
+}
+
+.ctn__set:hover {
+    background-color: var(--button-background-color-hover);
+    cursor: pointer;
+}
+
+.fi__settings {
+    height: 25px;
+    width: 25px;
+    margin-left: 15px;
+}

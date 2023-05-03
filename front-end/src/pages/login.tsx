@@ -4,6 +4,7 @@ import { withPublic } from '@/providers/auth/auth.routes';
 import { NextPage } from 'next';
 
 const Login: NextPage = () => {
+  
   return (
     <Layout
       className="flex items-center justify-center h-screen bg-dark-purple"

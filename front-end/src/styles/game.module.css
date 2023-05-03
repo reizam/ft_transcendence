@@ -1,0 +1,95 @@
+@import url('https://fonts.cdnfonts.com/css/games');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+.ctn__main__game {
+	margin-top: 8vw;
+	margin-left: 7rem;
+	position:absolute;
+	color: var(--container-color);
+}
+
+.ctn__game {
+	display: inline-flex;
+}
+
+.ctn__canvas {
+	margin-left: 5vw;
+	width: 60vw;
+	height: 75vh;
+	background-color: var(--container-background-color);
+	border-radius: var(--radius-container);
+}
+
+.ctn__select__theme {
+	width: 15vw;
+	height: 75vh;
+	margin-left: 5vw;
+	background-color: var(--container-background-color);
+	border-radius: var(--radius-container);
+}
+
+.cnt__theme__h3 {
+	font-size: 1.2em;
+}
+
+.ctn__game__canvas {
+	margin-top: 5%;
+	margin-left: auto;
+	margin-right: auto;
+	width: 75%;
+	height: 70%;
+	border: 2px solid var(--main-theme-color);
+	border-radius: var(--radius-container);
+    box-shadow: 0 0 1px var(--main-theme-color), 
+                0 0 2px var(--main-theme-color),
+                0 0 4px var(--main-theme-color),
+                0 0 8px var(--main-theme-color),
+                0 0 12px var(--main-theme-color);
+    animation: animate 3s infinite alternate;
+}
+
+@keyframes animate{
+    35%{
+        opacity: 1;
+    }
+    48%{
+        opacity: 0.8;
+    }
+    51%{
+        opacity: 0.9;
+    }
+    54%{
+        opacity: 0.7;
+    }
+    60%{
+        opacity: 1;
+    }
+}
+
+.ctn__game__rslt {
+	width: 80%;
+	height: 15%;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 2.5%;
+	border: 1px solid green;
+}
+
+.ctn__select__theme h3 {
+	text-align: center;
+	margin-top: 4vh;
+	font-family: var(--title-font);
+}
+
+.box__theme {
+	margin-top: 2.5em;
+	display: flex;
+}
+
+.name__theme {
+	width: 55%;
+	margin-right: 7%;
+	text-align: right	;
+}
+
+
