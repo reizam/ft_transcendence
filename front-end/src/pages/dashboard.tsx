@@ -6,6 +6,7 @@ import { GiRank1 } from "react-icons/gi";
 import { AiFillTrophy } from "react-icons/ai";
 import { BsFillHandThumbsUpFill, BsFillHandThumbsDownFill } from "react-icons/bs";
 import { FaHandshake } from "react-icons/fa";
+import Button from '@/components/app/button/Button';
 
 const Dashboard: NextPage = () => {
 
@@ -21,10 +22,11 @@ const Dashboard: NextPage = () => {
 						</div>
 						<h2 className={dashStyles.dash__h2}>Matthieu</h2>
 						<h3 className={dashStyles.dash__h3}>LARBOULLET</h3>
-						<p className={dashStyles.dash__p}>alias</p>
+						<p className={dashStyles.dash__p}>as</p>
 						<h4 className={dashStyles.dash__username} >UncleScr00ge</h4>
 						<p className={dashStyles.dash__2FA}>2FAuth: Enabled</p>
-						<button className={dashStyles.dash__button}>EDIT</button>
+						<Button />
+						{/* <button className={dashStyles.dash__button}>EDIT</button> */}
 					</div>
 					<div className={dashStyles.dash__data}>
 						<h1 className={dashStyles.dash__title} >Match History</h1>
