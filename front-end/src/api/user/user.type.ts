@@ -1,9 +1,8 @@
 export interface IUserData {
   fortytwoId: number;
   username: string;
-  firstname: string;
-  lastname: string;
+  firstName: string;
+  lastName: string;
   has2FA: boolean;
   profilePicture: string;
-  createdAt: string;
 }

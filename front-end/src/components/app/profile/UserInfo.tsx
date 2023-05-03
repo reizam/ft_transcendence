@@ -2,15 +2,17 @@ import dashStyles from '@/styles/dash.module.css';
 import { ReactElement } from 'react';
 
 interface UserInfoProps {
-  firstname: string;
-  lastname: string;
+  firstName: string;
+  lastName: string;
   username: string;
+  canEdit: boolean;
 }
 
 function UserInfo({
-  firstname,
-  lastname,
+  firstName,
+  lastName,
   username,
+  canEdit,
 }: UserInfoProps): ReactElement {
   // const [username, setUsername] = useState(value);
 
@@ -33,10 +35,10 @@ function UserInfo({
 
   return (
     <>
-      <h2 className={dashStyles.dash__h2}>{firstname}</h2>
-      <h3 className={dashStyles.dash__h3}>{lastname}</h3>
+      <h2 className={dashStyles.dash__h2}>{firstName || 'First name'}</h2>
+      <h3 className={dashStyles.dash__h3}>{lastName || 'Last name'}</h3>
       <p className={dashStyles.dash__p}>as</p>
-      <h4 className={dashStyles.dash__username}>{username}</h4>
+      <h4 className={dashStyles.dash__username}>{username || 'Username'}</h4>
     </>
     // <div className="relative m-3" data-te-input-wrapper-init>
     //   {canEdit ? (

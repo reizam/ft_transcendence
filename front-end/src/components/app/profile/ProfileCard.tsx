@@ -1,13 +1,8 @@
-import { IUserData } from '@/api/profile/profile.type';
 import Button from '@/components/app/button/Button';
 import Avatar from '@/components/app/profile/Avatar';
 import UserInfo from '@/components/app/profile/UserInfo';
+import { ProfileData } from '@/components/app/profile/types/profile.type';
 import { ReactElement } from 'react';
-
-type ProfileData = Pick<
-  IUserData,
-  'firstname' | 'lastname' | 'username' | 'profilePicture' | 'has2FA'
->;
 
 interface ProfileDataProps {
   profileData: ProfileData;
@@ -19,8 +14,8 @@ function ProfileCard({ profileData, canEdit }: ProfileDataProps): ReactElement {
     <>
       <Avatar src={profileData.profilePicture} canEdit={canEdit} />
       <UserInfo
-        firstname={profileData.username}
-        lastname={profileData.lastname}
+        firstName={profileData.firstName}
+        lastName={profileData.lastName}
         username={profileData.username}
         canEdit={canEdit}
       />

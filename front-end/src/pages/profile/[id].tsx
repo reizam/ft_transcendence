@@ -1,4 +1,4 @@
-import { useGetUser } from '@/api/profile/profile.api';
+import { useGetUser } from '@/api/user/user.api';
 import Profile from '@/components/app/profile/Profile';
 import LoadingScreen from '@/components/app/screen/LoadingScreen';
 import { withProtected } from '@/providers/auth/auth.routes';
