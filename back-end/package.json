@@ -14,7 +14,7 @@
     "start:dev-prisma": "prisma db push && npm run prisma_studio && npm run start:dev",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "start:prod-prisma": "prisma db push && npm run start:prod",
+    "start:prod-prisma": "prisma db push --force-reset && npm run start:prod",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",

@@ -29,7 +29,6 @@ export class ProfileController {
 
   @Get()
   getDashboard(@DUser() user: User, @Res() res: Response): Response {
-    console.log('user: ', user);
     return res.status(200).json(user);
   }
 
@@ -43,7 +42,7 @@ export class ProfileController {
         fortytwoId: id,
       },
     });
-    console.log(user);
+
     return res.status(200).json(user);
   }
 
@@ -53,7 +52,6 @@ export class ProfileController {
     @Body() updateDto: IUpdateProfile,
     @Res() res: Response,
   ): Promise<Response> {
-    console.log(updateDto);
     if (updateDto.has2FA !== undefined) {
       await this.profileService
         .switch2FA(user.id, updateDto.has2FA)
