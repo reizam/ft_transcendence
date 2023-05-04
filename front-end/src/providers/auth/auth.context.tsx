@@ -28,7 +28,7 @@ export const useProvideAuth = (): IAuthContext => {
     return null;
   };
 
-  const logout = async () => {
+  const logout = () => {
     setStatus('unauthenticated');
     deleteCookie('jwt', {
       sameSite: 'strict',
