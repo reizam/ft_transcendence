@@ -12,7 +12,16 @@ export class JwtSocket extends IoAdapter {
   }
 
   createIOServer(port: number, options?: any): any {
-    const server = super.createIOServer(port, options);
+    const corsOptions = {
+      origin: process.env.FRONTEND_URL || 'http://localhost:4000',
+      methods: ['GET', 'POST'],
+      credentials: true,
+      allowedHeaders: ['Content-Type', 'Authorization'],
+    };
+    const server = super.createIOServer(port, {
+      ...options,
+      cors: corsOptions,
+    });
 
     server.use(async (socket: Socket, next: (err?: Error) => void) => {
       const token = socket.handshake.query.token;

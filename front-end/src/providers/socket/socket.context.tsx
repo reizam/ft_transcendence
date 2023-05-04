@@ -19,6 +19,7 @@ export const useProvideSocket = (): ISocketContext => {
   const connect = (token: string) => {
     if (!connected) {
       const newSocket = io(BACKEND_URL, {
+        withCredentials: true,
         query: {
           token,
         },
