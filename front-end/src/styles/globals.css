@@ -4,55 +4,80 @@
 
 @import url('https://fonts.cdnfonts.com/css/games');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+@import url('react-toastify/dist/ReactToastify.css');
 
 :root {
-	--background: rgba(3, 0, 30, 0.9);
-	--navbar-width: 5rem;
-	--navbar-height: 100vh;
-    --header-height: 4rem;
-	--container-background-color: #03001E;
-	--container-color: aliceblue;
-	--radius-container: 15px;
+  --background: rgba(3, 0, 30, 0.9);
+  --navbar-width: 5rem;
+  --navbar-height: 100vh;
+  --header-height: 4rem;
+  --container-background-color: #03001e;
+  --container-color: aliceblue;
+  --radius-container: 15px;
 
-	--title-font : 'Games', sans-serif;
+  --title-font: 'Games', sans-serif;
 
-	/* Button Setup */
-	--button-background-color: #1B1935;
-	--button-background-color-hover: #2c285f;
-	--button-border-radius: 20%;
-	--button-navbar-size: 3.5rem;
-	--toggle-color: #f2f2f2;
+  /* Button Setup */
+  --button-background-color: #1b1935;
+  --button-background-color-hover: #2c285f;
+  --button-border-radius: 20%;
+  --button-navbar-size: 3.5rem;
+  --toggle-color: #f2f2f2;
 
-	/* RG-THEME */
-	--rg-ball-color: #EBD93D;
-	--rg-field-color: #BF5C00;
+  /* RG-THEME */
+  --rg-ball-color: #ebd93d;
+  --rg-field-color: #bf5c00;
 
-	/* WB-THEME */
-	--wb-ball-color: #EBD93D;
-	--wb-field-color: #067C20;
+  /* WB-THEME */
+  --wb-ball-color: #ebd93d;
+  --wb-field-color: #067c20;
 
-	/* RE-THEME */
-	--re-ball-color: #D2D2D2;
-	--re-field-color: #1C1834;
+  /* RE-THEME */
+  --re-ball-color: #d2d2d2;
+  --re-field-color: #1c1834;
 
-	/* MA-THEME */
-	--ma-ball-color: #55C100;
-	--ma-field-color: #1C1834;
+  /* MA-THEME */
+  --ma-ball-color: #55c100;
+  --ma-field-color: #1c1834;
 
+  /*---- Colors Theme ----*/
+  --main-theme-color: #df00fe;
 
-	/*---- Colors Theme ----*/
-	--main-theme-color: #DF00FE;
+  /*---- Font Weight ----*/
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semi-bold: 600;
 
+  /*---- Toastify ----*/
+  --toastify-color-light: #fff;
+  --toastify-color-dark: var(--container-background-color);
+  --toastify-color-info: #3498db;
+  --toastify-color-success: #07bc0c;
+  --toastify-color-warning: #f1c40f;
+  --toastify-color-error: #e74c3c;
+  --toastify-color-transparent: rgba(255, 255, 255, 0.7);
 
-    	/*---- Font Weight ----*/
-		--font-normal: 400;
-		--font-medium: 500;
-		--font-semi-bold: 600;
+  --toastify-icon-color-info: var(--main-theme-color);
+  --toastify-icon-color-success: var(--main-theme-color);
+  --toastify-icon-color-warning: var(--main-theme-color);
+  --toastify-icon-color-error: var(--main-theme-color);
+
+  --toastify-toast-width: 320px;
+  --toastify-toast-background: #fff;
+  --toastify-toast-min-height: 64px;
+  --toastify-toast-max-height: 800px;
+  --toastify-font-family: 'Poppins', 'sans-serif';
+  --toastify-z-index: 9999;
+
+  --toastify-color-progress-dark: var(--main-theme-color);
+  --toastify-color-progress-info: var(--main-theme-color);
+  --toastify-color-progress-success: var(--main-theme-color);
+  --toastify-color-progress-warning: var(--main-theme-color);
+  --toastify-color-progress-error: var(--main-theme-color);
 }
 
 body {
-	background-color: var(--background);
-	color: var(--container-color);
-	font-family: 'Poppins', sans-serif;
+  background-color: var(--background);
+  color: var(--container-color);
+  font-family: 'Poppins', sans-serif;
 }
-
