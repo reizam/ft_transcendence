@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
 import Button from '@/components/app/button/Button';
 import ToggleSwitch from '@/components/app/toggle/ToggleSwitch';
 import ProfileAvatar from '@/components/profile/avatar/ProfileAvatar';
 import UserInfo from '@/components/profile/sections/UserInfoSection';
 import { ProfileData } from '@/components/profile/types/profile.type';
 import dashStyles from '@/styles/dash.module.css';
+import React, { useState } from 'react';
 
 interface ProfileDataProps {
   profileData: ProfileData;
@@ -15,6 +15,7 @@ function ProfileCard({
   profileData,
   canEdit,
 }: ProfileDataProps): React.ReactElement {
+  const [checked, setChecked] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const onClick = () => setIsEditing(!isEditing);
 
@@ -32,9 +33,15 @@ function ProfileCard({
         username={profileData.username}
         // isEditing={isEditing}
       />
-      {canEdit} &&{' '}
-      <ToggleSwitch checked={profileData.has2FA} /* isEditing={isEditing}*/ />
-      <Button initialName="Edit" onClickName="Save" onClick={onClick} />
+      {isEditing && (
+        <ToggleSwitch
+          checked={checked}
+          onToggle={setChecked} /* isEditing={isEditing}*/
+        />
+      )}
+      {canEdit && (
+        <Button initialName="Edit" onClickName="Save" onClick={onClick} />
+      )}
     </div>
   );
 }
