@@ -1,5 +1,8 @@
 import { IUserData } from '@/api/user/user.type';
 import ProfileCard from '@/components/profile/cards/ProfileCard';
+import Achievements from '@/components/profile/sections/Achievements';
+import History from '@/components/profile/sections/History';
+import Stats from '@/components/profile/sections/Stats';
 import { ProfileData } from '@/components/profile/types/profile.type';
 import dashStyles from '@/styles/dash.module.css';
 import { ReactElement } from 'react';
@@ -22,12 +25,10 @@ function ProfileContent({
   };
   return (
     <div className={dashStyles.ctn__dash}>
-      <div className={dashStyles.dash__profile}>
-        <ProfileCard profileData={profileData} canEdit={canEdit} />
-        {/* <Achievements /> */}
-        {/* <MatchHistory /> */}
-        {/* <Stats /> */}
-      </div>
+      <ProfileCard profileData={profileData} canEdit={canEdit} />
+      <History />
+      <Stats />
+      <Achievements />
     </div>
   );
 }

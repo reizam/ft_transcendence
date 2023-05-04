@@ -1,11 +1,13 @@
-import React from 'react';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-empty-function */
+import { createContext } from 'react';
 import { INotificationContext } from './notification.interface';
 
-const NotificationContext = React.createContext<INotificationContext>({
+const NotificationContext = createContext<INotificationContext>({
   notification: '',
   notificationText: '',
   success: (text: string) => {},
-  error: (test: string) => {},
+  error: (text: string) => {},
   clear: () => {},
 });
 

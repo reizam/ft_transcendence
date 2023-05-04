@@ -1,21 +1,33 @@
-import { useQuery } from '@tanstack/react-query';
-import { getWithToken } from '..';
-import { IUserData } from './user.type';
+import { getWithToken } from '@/api';
+import { IUserData } from '@/api/user/user.type';
+import { UseQueryResult, useQuery } from '@tanstack/react-query';
 
-export const useGetMe = () =>
-  useQuery<IUserData, any>(['PROFILE', 'GET'], async () => {
-    const data = await getWithToken('/profile');
+const onError = (err: Error): void => {
+  console.error(err);
+};
 
-    return data;
-  });
+const onSuccess = (data: IUserData): void => {
+  console.log(data);
+};
 
-export const useGetUser = (id?: string) =>
-  useQuery<IUserData, any>(
+export const useGetMe = (): UseQueryResult<IUserData, Error> =>
+  useQuery(
+    ['PROFILE', 'GET'],
+    async () => {
+      const data = await getWithToken('/profile');
+
+      return data;
+    },
+    { onError, onSuccess }
+  );
+
+export const useGetUser = (id?: string): UseQueryResult<IUserData, Error> =>
+  useQuery(
     ['PROFILE', 'GET', id],
     async () => {
       const data = await getWithToken(`/profile/${id}`);
 
       return data;
     },
-    { enabled: !!id }
+    { enabled: !!id, onError, onSuccess }
   );

@@ -1,7 +1,7 @@
-import React from 'react';
-import Head from 'next/head';
 import Header from '@/components/app/layouts/header/Header';
 import Navbar from '@/components/app/layouts/navbar/Navbar';
+import Head from 'next/head';
+import React from 'react';
 
 export enum Mode {
   WITH_LAYOUT = 'withLayout',
