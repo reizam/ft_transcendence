@@ -8,26 +8,6 @@ import {
 import { HttpAdapterHost } from '@nestjs/core';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 
-// const isPrismaError = (
-//   exception: unknown,
-// ): exception is
-//   | PrismaClientKnownRequestError
-//   | PrismaClientUnknownRequestError
-//   | PrismaClientRustPanicError
-//   | PrismaClientInitializationError
-//   | PrismaClientValidationError => {
-//   return (
-//     exception instanceof Error &&
-//     'message' in
-//       (exception as
-//         | PrismaClientKnownRequestError
-//         | PrismaClientUnknownRequestError
-//         | PrismaClientRustPanicError
-//         | PrismaClientInitializationError
-//         | PrismaClientValidationError)
-//   );
-// };
-
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
