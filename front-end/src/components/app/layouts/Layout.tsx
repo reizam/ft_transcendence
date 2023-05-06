@@ -43,8 +43,8 @@ function Layout({
       ) : null}
       <main className={className}>{children}</main>
       <ToastContainer
-        position="bottom-right"
-        autoClose={5000}
+        position="top-center"
+        autoClose={4000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick

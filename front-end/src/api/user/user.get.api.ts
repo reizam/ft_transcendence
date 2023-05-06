@@ -3,19 +3,19 @@ import { IUserData } from '@/api/user/user.type';
 import { UseQueryResult, useQuery } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 
-const onError = (err: Error): void => {
+const onFetchError = (err: Error): void => {
   console.error(err);
   toast.error('Failed to fetch');
 };
 
-const onSuccess = (data: IUserData): void => {
+const onFetchSuccess = (data: IUserData): void => {
   console.log(data);
 };
 
 const defaultUserFetchConfig = {
   refetchOnWindowFocus: false,
-  onError,
-  onSuccess,
+  onError: onFetchError,
+  onSuccess: onFetchSuccess,
 };
 
 export const useGetMe = (): UseQueryResult<IUserData, Error> =>

@@ -1,3 +1,4 @@
+import { useUpdateMe } from '@/api/user/user.patch.api';
 import Button from '@/components/app/button/Button';
 import ToggleSwitch from '@/components/app/toggle/ToggleSwitch';
 import ProfileAvatar from '@/components/profile/avatar/ProfileAvatar';
@@ -15,15 +16,20 @@ function ProfileCard({
   profileData,
   canEdit,
 }: ProfileDataProps): React.ReactElement {
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useState(profileData.has2FA);
   const [isEditing, setIsEditing] = useState(false);
+  const { mutate, isLoading, isSuccess, isError, error, context } =
+    useUpdateMe();
   const onToggle = (isChecked: boolean) => {
-    // ...;
+    mutate(
+      { has2FA: isChecked },
+      // or rather with context to use it in the same way with others
+      { onError: () => setChecked(!isChecked) }
+    );
     setChecked(isChecked);
   };
   const onClick = () => setIsEditing(!isEditing);
 
-  console.log('isEditing =', isEditing);
   return (
     <div className={dashStyles.dash__profile}>
       <ProfileAvatar
@@ -42,7 +48,7 @@ function ProfileCard({
           checked={checked}
           onToggle={!!isEditing ? onToggle : undefined}
         />
-        <div>Two-Factor Authentication</div>
+        Two-Factor Authentication
       </div>
       {!!canEdit && (
         <Button initialName="Edit" onClickName="Save" onClick={onClick} />

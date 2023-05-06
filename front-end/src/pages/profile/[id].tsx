@@ -1,4 +1,4 @@
-import { useGetUser } from '@/api/user/user.api';
+import { useGetUser } from '@/api/user/user.get.api';
 import Layout from '@/components/app/layouts/Layout';
 import LoadingScreen from '@/components/app/screen/LoadingScreen';
 import ProfileContent from '@/components/profile/ProfileContent';

@@ -20,7 +20,6 @@ interface ButtonProps<T = (...args: never[]) => void> {
 function Button({ initialName, onClickName, onClick }: ButtonProps) {
   const [name, setName] = useState(initialName);
 
-  console.log('name =', name);
   return (
     <>
       <button

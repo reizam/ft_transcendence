@@ -15,7 +15,7 @@ async function bootstrap(): Promise<void> {
   app.use(json({ limit: '5mb' }));
   app.enableCors({
     origin: process.env.FRONTEND_URL || 'http://localhost:4000',
-    methods: 'GET, POST',
+    methods: 'GET, POST, PATCH',
     credentials: true,
   });
   app.useGlobalPipes(
@@ -27,5 +27,5 @@ async function bootstrap(): Promise<void> {
 }
 
 bootstrap().catch((error) => {
-  console.log('Error while launching the app:', error);
+  console.error('Error while launching the app:', error);
 });

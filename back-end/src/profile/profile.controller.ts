@@ -9,7 +9,7 @@ import {
   InternalServerErrorException,
   Param,
   ParseIntPipe,
-  Post,
+  Patch,
   Res,
   UnprocessableEntityException,
   UseGuards,
@@ -46,7 +46,7 @@ export class ProfileController {
     return res.status(200).json(user);
   }
 
-  @Post()
+  @Patch()
   async postDashboard(
     @DUser() user: User,
     @Body() updateDto: IUpdateProfile,

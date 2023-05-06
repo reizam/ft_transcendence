@@ -6,3 +6,9 @@ export interface IUserData {
   has2FA: boolean;
   profilePicture: string;
 }
+
+export interface IUpdateProfile {
+  has2FA?: boolean;
+  profilePicture?: string;
+  username?: string;
+}
