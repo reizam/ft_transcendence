@@ -1,4 +1,4 @@
-import { useGetMe } from '@/api/user/user.api';
+import { useGetMe } from '@/api/user/user.get.api';
 import Layout from '@/components/app/layouts/Layout';
 import LoadingScreen from '@/components/app/screen/LoadingScreen';
 import ProfileContent from '@/components/profile/ProfileContent';
@@ -13,7 +13,7 @@ function Profile(): ReactElement {
       {isLoading ? (
         <LoadingScreen />
       ) : data ? (
-        <ProfileContent canEdit userData={data} />
+        <ProfileContent canEdit={true} userData={data} />
       ) : (
         <p>No data</p>
       )}

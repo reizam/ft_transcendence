@@ -1,26 +1,5 @@
 import React, { ReactElement } from 'react';
 import toggleStyles from './ToggleSwitch.module.css';
-// import { BACKEND_URL } from '@/constants/env';
-// import { getCookie } from 'cookies-next';
-
-// function TwoFASwitch({ checked }: TwoFASwitchProps): ReactElement {
-//   const [has2FA, switch2FA] = useState(checked);
-
-//   const handleSubmit = async (e: React.ChangeEvent<HTMLInputElement>) => {
-//     fetch(`${BACKEND_URL}/profile`, {
-//       method: 'POST',
-//       credentials: 'include',
-//       headers: {
-//         Authorization: `Bearer ${getCookie('jwt')}`,
-//         'Content-Type': 'application/json',
-//       },
-//       body: JSON.stringify({ has2FA }),
-//     })
-//       .then((res) => res.json())
-//       .then((data) => console.log(data))
-//       .catch((err) => console.error(err));
-//   };
-// }
 
 interface ToggleSwitchProps {
   initialChecked?: boolean;
@@ -56,7 +35,6 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
         checked={checked}
         onChange={handleChange}
       />
-      {/* Two-Factor Authentication */}
     </label>
   );
 };

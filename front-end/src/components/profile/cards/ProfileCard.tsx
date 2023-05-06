@@ -17,6 +17,10 @@ function ProfileCard({
 }: ProfileDataProps): React.ReactElement {
   const [checked, setChecked] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const onToggle = (isChecked: boolean) => {
+    // ...;
+    setChecked(isChecked);
+  };
   const onClick = () => setIsEditing(!isEditing);
 
   console.log('isEditing =', isEditing);
@@ -33,13 +37,14 @@ function ProfileCard({
         username={profileData.username}
         // isEditing={isEditing}
       />
-      {isEditing && (
+      <div className={dashStyles.dash__2FA}>
         <ToggleSwitch
           checked={checked}
-          onToggle={setChecked} /* isEditing={isEditing}*/
+          onToggle={!!isEditing ? onToggle : undefined}
         />
-      )}
-      {canEdit && (
+        <div>Two-Factor Authentication</div>
+      </div>
+      {!!canEdit && (
         <Button initialName="Edit" onClickName="Save" onClick={onClick} />
       )}
     </div>
