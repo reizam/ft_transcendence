@@ -7,8 +7,6 @@ export interface IUserData {
   profilePicture: string;
 }
 
-export interface IUpdateProfile {
-  has2FA?: boolean;
-  profilePicture?: string;
-  username?: string;
-}
+export type IUpdateProfile = Partial<
+  Pick<IUserData, 'username' | 'has2FA' | 'profilePicture'>
+>;

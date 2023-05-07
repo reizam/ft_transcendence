@@ -16,19 +16,8 @@ function ProfileCard({
   profileData,
   canEdit,
 }: ProfileDataProps): React.ReactElement {
-  const [checked, setChecked] = useState(profileData.has2FA);
   const [isEditing, setIsEditing] = useState(false);
-  const { mutate, isLoading, isSuccess, isError, error, context } =
-    useUpdateMe();
-  const onToggle = (isChecked: boolean) => {
-    mutate(
-      { has2FA: isChecked },
-      // or rather with context to use it in the same way with others
-      { onError: () => setChecked(!isChecked) }
-    );
-    setChecked(isChecked);
-  };
-  const onClick = () => setIsEditing(!isEditing);
+  const { mutate } = useUpdateMe();
 
   return (
     <div className={dashStyles.dash__profile}>
@@ -43,15 +32,24 @@ function ProfileCard({
         username={profileData.username}
         // isEditing={isEditing}
       />
-      <div className={dashStyles.dash__2FA}>
-        <ToggleSwitch
-          checked={checked}
-          onToggle={!!isEditing ? onToggle : undefined}
+      {isEditing && (
+        <div className={dashStyles.dash__2FA}>
+          <ToggleSwitch
+            checked={profileData.has2FA}
+            onToggle={
+              isEditing
+                ? (): void => mutate({ has2FA: !profileData.has2FA })
+                : undefined
+            }
+          />
+          Two-Factor Authentication
+        </div>
+      )}
+      {canEdit && (
+        <Button
+          name={isEditing ? 'Save' : 'Edit'}
+          onClick={(): void => setIsEditing((prevState) => !prevState)}
         />
-        Two-Factor Authentication
-      </div>
-      {!!canEdit && (
-        <Button initialName="Edit" onClickName="Save" onClick={onClick} />
       )}
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { MouseEventHandler, ReactElement } from 'react';
 import styleButton from './Button.module.css';
 
 // How to give ButtonProps a defined type in the Parent component
@@ -11,26 +11,15 @@ import styleButton from './Button.module.css';
 //   },
 // };
 
-interface ButtonProps<T = (...args: never[]) => void> {
-  initialName: string;
-  onClickName?: string;
+interface ButtonProps<T = MouseEventHandler<HTMLButtonElement>> {
+  name?: string;
   onClick?: T;
 }
 
-function Button({ initialName, onClickName, onClick }: ButtonProps) {
-  const [name, setName] = useState(initialName);
-
+function Button({ name, onClick }: ButtonProps): ReactElement {
   return (
     <>
-      <button
-        className={styleButton.style__button}
-        onClick={() => {
-          setName(
-            !!onClickName && name === initialName ? onClickName : initialName
-          );
-          !!onClick && onClick();
-        }}
-      >
+      <button className={styleButton.style__button} onClick={onClick}>
         {name}
       </button>
     </>

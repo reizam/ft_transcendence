@@ -20,7 +20,7 @@ const defaultUserFetchConfig = {
 
 export const useGetMe = (): UseQueryResult<IUserData, Error> =>
   useQuery(
-    ['PROFILE', 'GET'],
+    ['PROFILE', 'GET', 'ME'],
     async () => {
       const data = await getWithToken('/profile');
 
