@@ -3,30 +3,39 @@ import { IUpdateProfile } from '@/api/user/user.type';
 import { UseMutationResult, useMutation } from '@tanstack/react-query';
 import { Id, toast } from 'react-toastify';
 
-const onUpdate = () => {
+const onUpdate = (variables: IUpdateProfile): Id => {
   const id = toast.loading('Updating');
   return id;
 };
 
-const onUpdateError = (err: Error): void => {
-  console.error(err);
-  toast.error('Failed to update');
+const onUpdateError = (
+  err: unknown,
+  _variables: IUpdateProfile,
+  context?: Id
+): void => {
+  context
+    ? toast.update(context, {
+        render: 'Failed to update',
+        type: 'error',
+        autoClose: 2000,
+        isLoading: false,
+      })
+    : toast.dismiss();
 };
 
 const onUpdateSuccess = (
-  data: unknown,
-  variables: unknown,
-  context: unknown
+  _data: unknown,
+  _variables: IUpdateProfile,
+  context?: Id
 ): void => {
-  console.log('Data: ', data);
-  console.log('Variables: ', variables);
-  console.log('context: ', context);
-  toast.update(context as Id, {
-    render: 'Updated',
-    type: 'success',
-    autoClose: 1000,
-    isLoading: false,
-  });
+  context
+    ? toast.update(context, {
+        render: 'Updated',
+        type: 'success',
+        autoClose: 1000,
+        isLoading: false,
+      })
+    : toast.dismiss();
 };
 
 const defaultUserUpdateConfig = {
@@ -39,7 +48,7 @@ export const useUpdateMe = (): UseMutationResult<
   unknown,
   unknown,
   IUpdateProfile,
-  unknown
+  Id
 > =>
   useMutation({
     mutationFn: async (body: IUpdateProfile) => {

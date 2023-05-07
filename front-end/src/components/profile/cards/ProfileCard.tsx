@@ -5,7 +5,7 @@ import ProfileAvatar from '@/components/profile/avatar/ProfileAvatar';
 import UserInfo from '@/components/profile/sections/UserInfoSection';
 import { ProfileData } from '@/components/profile/types/profile.type';
 import dashStyles from '@/styles/dash.module.css';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 interface ProfileDataProps {
   profileData: ProfileData;
@@ -17,14 +17,13 @@ function ProfileCard({
   canEdit,
 }: ProfileDataProps): React.ReactElement {
   const [checked, setChecked] = useState(profileData.has2FA);
+  const prevChecked = useRef(checked);
   const [isEditing, setIsEditing] = useState(false);
-  const { mutate, isLoading, isSuccess, isError, error, context } =
-    useUpdateMe();
+  const { mutate } = useUpdateMe();
   const onToggle = (isChecked: boolean) => {
     mutate(
       { has2FA: isChecked },
-      // or rather with context to use it in the same way with others
-      { onError: () => setChecked(!isChecked) }
+      { onError: () => setChecked(prevChecked.current) }
     );
     setChecked(isChecked);
   };
