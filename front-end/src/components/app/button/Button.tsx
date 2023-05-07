@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styleButton from './Button.module.css';
+import styleButton from '@/components/app/button/Button.module.css';
 
 // How to give ButtonProps a defined type in the Parent component
 // type MyFunctionType = (arg1: number, arg2: string) => void;

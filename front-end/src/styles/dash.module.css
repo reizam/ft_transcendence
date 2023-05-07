@@ -95,6 +95,12 @@
   animation: animate 3s infinite alternate;
 }
 
+.dash__text__input {
+  text-align: center;
+  width: 90%;
+  background-color: darkslateblue;
+}
+
 @keyframes animate {
   40% {
     opacity: 1;
