@@ -4,7 +4,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  IsUrl,
+  MaxLength,
 } from 'class-validator';
 
 export class IUpdateProfile {
@@ -21,5 +21,6 @@ export class IUpdateProfile {
   @IsNotEmpty()
   @IsString()
   @IsAscii()
+  @MaxLength(15, { message: 'Username cannot exceed 15 characters' })
   username: string;
 }

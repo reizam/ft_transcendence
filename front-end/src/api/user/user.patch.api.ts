@@ -5,6 +5,7 @@ import {
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 import { Id, toast } from 'react-toastify';
 
 interface IContext {
@@ -27,19 +28,19 @@ export const useUpdateMe = (): UseMutationResult<
       return data;
     },
     onMutate: async (newData: UpdateProfile) => {
-      const id = toast.loading('Updating');
       await queryClient.cancelQueries(['PROFILE', 'GET', 'ME']);
       const previousData = queryClient.getQueryData<IUserData>([
         'PROFILE',
         'GET',
         'ME',
       ]);
-      // if (previousData) {
-      //   queryClient.setQueryData<IUserData>(['PROFILE', 'GET', 'ME'], {
-      //     ...previousData,
-      //     ...newData,
-      //   });
-      // }
+      if (previousData) {
+        queryClient.setQueryData<IUserData>(['PROFILE', 'GET', 'ME'], {
+          ...previousData,
+          ...newData,
+        });
+      }
+      const id = toast.loading('Updating');
       return { previousData, id };
     },
     onSuccess: (
@@ -61,10 +62,13 @@ export const useUpdateMe = (): UseMutationResult<
         toast.dismiss();
       }
     },
-    onError: (_err: unknown, _data: UpdateProfile, context?: IContext) => {
+    onError: (err: unknown, _data: UpdateProfile, context?: IContext) => {
       if (context !== undefined) {
         toast.update(context.id, {
-          render: 'Failed to update',
+          render: `${
+            ((err as AxiosError)?.response?.data as any)?.message ??
+            'Failed to update'
+          }`,
           type: 'error',
           autoClose: 2000,
           isLoading: false,

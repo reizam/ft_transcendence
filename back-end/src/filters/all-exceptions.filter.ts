@@ -21,12 +21,15 @@ export class AllExceptionsFilter implements ExceptionFilter {
         : HttpStatus.INTERNAL_SERVER_ERROR;
     const responseBody = {
       statusCode: httpStatus,
-      message: (exception as Error).message,
       ...(exception instanceof Error
         ? {
+            message: (exception as Error)?.message,
             errorCode: (exception as PrismaClientKnownRequestError).code,
             errorDetails: (exception as PrismaClientKnownRequestError).meta,
           }
+        : {}),
+      ...(exception instanceof HttpException
+        ? { message: (exception as any)?.response?.message }
         : {}),
       path: httpAdapter.getRequestUrl(ctx.getRequest()),
     };

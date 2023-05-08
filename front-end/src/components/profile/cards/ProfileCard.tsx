@@ -32,7 +32,7 @@ function ProfileCard({
     <div className={dashStyles.dash__profile}>
       <ProfileAvatar src={profileData.profilePicture} isEditing={isEditing} />
       <UserInfo
-        // TODO: Add constraints to the username update & specific error msg if already taken
+        // TODO: Show the username update constraints in the input field
         firstName={profileData.firstName}
         lastName={profileData.lastName}
         username={username}
@@ -49,7 +49,9 @@ function ProfileCard({
             checked={profileData.has2FA}
             onToggle={
               isEditing
-                ? () => mutate({ has2FA: !profileData.has2FA })
+                ? () => {
+                    mutate({ has2FA: !profileData.has2FA });
+                  }
                 : undefined
             }
             isEditing={isEditing}
