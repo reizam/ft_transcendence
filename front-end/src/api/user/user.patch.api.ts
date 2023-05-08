@@ -53,11 +53,22 @@ export const useUpdateMe = (): UseMutationResult<
           autoClose: 1000,
           isLoading: false,
         });
+      } else {
+        toast.dismiss();
       }
     },
     onError: (err, _data, context) => {
       console.error(err);
-      toast.error('Failed to update');
+      if (context !== undefined) {
+        toast.update(context.id, {
+          render: 'Failed to update',
+          type: 'error',
+          autoClose: 2000,
+          isLoading: false,
+        });
+      } else {
+        toast.dismiss();
+      }
       if (context?.previousData) {
         queryClient.setQueryData<IUserData>(
           ['PROFILE', 'GET', 'ME'],

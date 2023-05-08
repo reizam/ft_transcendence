@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import toggleStyles from './ToggleSwitch.module.css';
+import toggleStyles from '@components/app/toggle/ToggleSwitch.module.css';
 
 interface ToggleSwitchProps {
   initialChecked?: boolean;
@@ -8,6 +8,7 @@ interface ToggleSwitchProps {
   sliderColor?: string;
   checkedBackgroundColor?: string;
   checked?: boolean;
+  isEditing?: boolean;
 }
 
 const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
@@ -16,6 +17,7 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
   sliderColor = 'var(--button-background-color-hover)',
   checkedBackgroundColor = '#DF00FE',
   checked = false,
+  isEditing = false, // TO DO: Add a different style if editing
 }): ReactElement => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     if (onToggle) {
