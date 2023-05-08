@@ -55,17 +55,19 @@ function ProfileCard({
                 ? () => mutate({ has2FA: !profileData.has2FA })
                 : undefined
             }
+            isEditing={isEditing}
           />
           Two-Factor Authentication
         </div>
       )}
       {canEdit && (
-        <Button // add additionnal className property if isEditing to highlight the button
+        <Button
           name={isEditing ? 'Save' : 'Edit'}
           onClick={(): void => {
             setIsEditing((prevState) => !prevState);
             updateUsername();
           }}
+          isEditing={isEditing}
         />
       )}
     </div>

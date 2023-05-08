@@ -4,12 +4,22 @@ import styleButton from '@/components/app/button/Button.module.css';
 interface ButtonProps<T = MouseEventHandler<HTMLButtonElement>> {
   name?: string;
   onClick?: T;
+  isEditing?: boolean;
 }
 
-function Button({ name, onClick }: ButtonProps): ReactElement {
+function Button({
+  name,
+  onClick,
+  isEditing = false,
+}: ButtonProps): ReactElement {
   return (
     <>
-      <button className={styleButton.style__button} onClick={onClick}>
+      <button
+        className={`${styleButton.style__button} ${
+          isEditing ? styleButton.style__button__editing : ''
+        }`}
+        onClick={onClick}
+      >
         {name}
       </button>
     </>

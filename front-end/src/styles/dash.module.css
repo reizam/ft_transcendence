@@ -99,6 +99,7 @@
   text-align: center;
   width: 90%;
   background-color: darkslateblue;
+  border-radius: 10px;
 }
 
 @keyframes animate {

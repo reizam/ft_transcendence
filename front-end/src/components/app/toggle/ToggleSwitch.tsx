@@ -17,7 +17,7 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
   sliderColor = 'var(--button-background-color-hover)',
   checkedBackgroundColor = '#DF00FE',
   checked = false,
-  isEditing = false, // TO DO: Add a different style if editing
+  isEditing = false,
 }): ReactElement => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     if (onToggle) {
@@ -32,7 +32,13 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
         className={toggleStyles.apple__switch}
         style={{
           backgroundColor: checked ? checkedBackgroundColor : backgroundColor,
-          boxShadow: checked ? `inset 20px 0 0 0 ${sliderColor}` : undefined,
+          boxShadow: checked
+            ? `inset 20px 0 0 0 ${sliderColor} ${
+                isEditing ? ', 0 0 40px 10px var(--main-theme-color)' : ''
+              }`
+            : `inset -20px 0 0 0 ${sliderColor} ${
+                isEditing ? ', 0 0 40px 10px var(--main-theme-color)' : ''
+              }`,
         }}
         checked={checked}
         onChange={handleChange}

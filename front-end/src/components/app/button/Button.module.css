@@ -10,3 +10,8 @@
   opacity: calc(95%);
   border: 1px solid var(--container-color);
 }
+
+.style__button__editing {
+  opacity: calc(95%);
+  border: 1px solid var(--container-color);
+}
