@@ -1,4 +1,5 @@
 import { useUpdateMe } from '@/api/user/user.patch.api';
+import Button from '@/components/app/button/Button';
 import ToggleSwitch from '@/components/app/toggle/ToggleSwitch';
 import ProfileAvatar from '@/components/profile/avatar/ProfileAvatar';
 import UserInfo from '@/components/profile/sections/UserInfoSection';
@@ -17,29 +18,15 @@ function ProfileCard({
 }: ProfileDataProps): React.ReactElement {
   const [isEditing, setIsEditing] = useState(false);
   const { mutate } = useUpdateMe();
-  // const [username, setUsername] = useState(profileData.username);
-  // const prevUsername = useRef(username);
-  // const [checked, setChecked] = useState(profileData.has2FA);
-  // const prevChecked = useRef(checked);
-  // const [isEditing, setIsEditing] = useState(false);
-  // const { mutate } = useUpdateMe();
-  // const onChangeUsername = (e: FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   mutate(
-  //     { username: e.currentTarget.value },
-  //     { onError: () => setUsername(prevUsername.current) }
-  //   );
-  //   setUsername(e.currentTarget.value);
-  //   setIsEditing(false);
-  // };
-  // const onToggle = (isChecked: boolean) => {
-  //   mutate(
-  //     { has2FA: isChecked },
-  //     { onError: () => setChecked(prevChecked.current) }
-  //   );
-  //   setChecked(isChecked);
-  // };
-  // const onClick = () => setIsEditing(!isEditing);
+  const [username, setUsername] = useState(profileData.username);
+  const updateUsername = (): void => {
+    if (isEditing && username != profileData.username) {
+      mutate(
+        { username: username },
+        { onError: () => setUsername(profileData.username) }
+      );
+    }
+  };
 
   return (
     <div className={dashStyles.dash__profile}>
@@ -51,34 +38,36 @@ function ProfileCard({
       <UserInfo
         firstName={profileData.firstName}
         lastName={profileData.lastName}
-        username={profileData.username}
+        username={username}
         isEditing={isEditing}
-        onSubmit={onChangeUsername}
+        onChange={(e) => setUsername(e.currentTarget.value)}
+        onSubmit={(e) => {
+          e.preventDefault();
+          updateUsername();
+        }}
       />
-      {isEditing && (
+      {canEdit && (
         <div className={dashStyles.dash__2FA}>
           <ToggleSwitch
             checked={profileData.has2FA}
             onToggle={
               isEditing
-                ? (): void => mutate({ has2FA: !profileData.has2FA })
+                ? () => mutate({ has2FA: !profileData.has2FA })
                 : undefined
             }
           />
           Two-Factor Authentication
         </div>
       )}
-      {/* {canEdit && (
-        <Button
+      {canEdit && (
+        <Button // add additionnal className property if isEditing to highlight the button
           name={isEditing ? 'Save' : 'Edit'}
-          onClick={(): void => setIsEditing((prevState) => !prevState)}
-      <div className={dashStyles.dash__2FA}>
-        <ToggleSwitch
-          checked={checked}
-          isEditing={isEditing}
-          onToggle={!!isEditing ? onToggle : undefined}
+          onClick={(): void => {
+            setIsEditing((prevState) => !prevState);
+            updateUsername();
+          }}
         />
-      )} */}
+      )}
     </div>
   );
 }
