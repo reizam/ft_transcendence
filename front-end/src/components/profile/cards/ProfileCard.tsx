@@ -30,12 +30,9 @@ function ProfileCard({
 
   return (
     <div className={dashStyles.dash__profile}>
-      <ProfileAvatar
-        src={profileData.profilePicture}
-        canEdit={canEdit}
-        // isEditing={isEditing}
-      />
+      <ProfileAvatar src={profileData.profilePicture} isEditing={isEditing} />
       <UserInfo
+        // TODO: Add constraints to the username update & specific error msg if already taken
         firstName={profileData.firstName}
         lastName={profileData.lastName}
         username={username}

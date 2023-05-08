@@ -59,6 +59,10 @@
   border: 1px solid aliceblue;
 }
 
+.img__prof:hover {
+  cursor: pointer;
+}
+
 .dash__title {
   margin-top: 3vh;
   margin-bottom: 3vh;

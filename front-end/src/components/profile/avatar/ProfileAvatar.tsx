@@ -3,10 +3,13 @@ import { ReactElement } from 'react';
 
 interface ProfileAvatarProps {
   src: string;
-  canEdit: boolean;
+  isEditing?: boolean;
 }
 
-function ProfileAvatar({ src, canEdit }: ProfileAvatarProps): ReactElement {
+function ProfileAvatar({
+  src,
+  isEditing = false,
+}: ProfileAvatarProps): ReactElement {
   // const [selectedFile, setSelectedFile] = useState<File>();
   // const [errorMsg, setErrorMsg] = useState('');
   // const notificationCtx = useContext(NotificationContext);
@@ -62,7 +65,26 @@ function ProfileAvatar({ src, canEdit }: ProfileAvatarProps): ReactElement {
 
   return (
     <div className={dashStyles.pict__prof}>
-      <img className={dashStyles.img__prof} src={src} alt="ProfileAvatar" />
+      {isEditing && (
+        <input
+          accept="image/*"
+          type="file"
+          id="select-image"
+          style={{ display: 'none' }}
+          // onChange={handleFileUpload}
+        />
+      )}
+      <label htmlFor="select-image">
+        <img
+          className={dashStyles.img__prof}
+          src={src}
+          alt="ProfileAvatar"
+          style={{
+            boxShadow: isEditing ? '0 0 40px 7px var(--main-theme-color)' : '',
+            pointerEvents: isEditing ? undefined : 'none',
+          }}
+        />
+      </label>
       {/* {canEdit && (
         <div className="absolute bottom-0 left-0 right-0 top-0 h-full w-full overflow-hidden bg-[hsl(0,0%,98.4%,0.2)] bg-fixed opacity-0 transition duration-300 ease-in-out hover:opacity-100 hover:cursor-pointer rounded-full">
           <BasicInput
