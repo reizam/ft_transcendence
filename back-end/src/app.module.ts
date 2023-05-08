@@ -3,6 +3,7 @@ import { AppService } from '@/app.service';
 import { AuthModule } from '@/auth/auth.module';
 import { AuthService } from '@/auth/auth.service';
 import { PrismaModule } from '@/prisma/prisma.module';
+import { GameGateway } from './game/game.gateway';
 import { Module } from '@nestjs/common';
 import { UserService } from './user/user.service';
 import { UserModule } from './user/user.module';
@@ -20,6 +21,6 @@ import { ProfileModule } from './profile/profile.module';
     ProfileModule,
   ],
   controllers: [AppController],
-  providers: [AppService, AuthService, UserService, JwtService, SocketsGateway],
+  providers: [AppService, AuthService, UserService, JwtService, SocketsGateway, GameGateway],
 })
 export class AppModule {}

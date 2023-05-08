@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import logoStyles from './logo.module.css';
 import Link from 'next/link';
+import { ThemeContext } from '@/pages/ThemeContext';
 
 function Logo(): React.ReactElement {
-  const borderColor = 'var(--main-theme-color)';
+  const { borderColor } = useContext(ThemeContext);
 
   return (
-    <div className={logoStyles.ctn__logo}>
+    <div
+      className={logoStyles.ctn__logo}
+    >
       <Link href="/">
         <h2
           className={logoStyles.h2__logo}
