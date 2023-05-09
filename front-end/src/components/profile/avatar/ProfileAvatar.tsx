@@ -1,77 +1,75 @@
+import { UpdateProfile } from '@/api/user/user.type';
 import dashStyles from '@/styles/dash.module.css';
+import { UseMutateFunction } from '@tanstack/react-query';
 import { ReactElement } from 'react';
+import { toast } from 'react-toastify';
 
 interface ProfileAvatarProps {
   src: string;
+  mutate: UseMutateFunction<unknown, unknown, UpdateProfile, unknown>;
   isEditing?: boolean;
 }
 
 function ProfileAvatar({
   src,
+  mutate,
   isEditing = false,
 }: ProfileAvatarProps): ReactElement {
-  // const [selectedFile, setSelectedFile] = useState<File>();
-  // const [errorMsg, setErrorMsg] = useState('');
-  // const notificationCtx = useContext(NotificationContext);
+  const handleFileUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ): Promise<void> => {
+    e.preventDefault();
 
-  // const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   e.preventDefault();
+    const MAX_FILE_SIZE = 1024;
+    const ALLOWED_TYPE = ['image/jpg', 'image/jpeg'];
 
-  //   const MAX_FILE_SIZE = 1024;
-  //   const ALLOWED_TYPE = ['image/jpg', 'image/jpeg'];
+    if (!e.target.files || e.target.files.length == 0) {
+      toast.error('Please choose a file');
+      return;
+    }
 
-  //   if (!e.target.files) {
-  //     notificationCtx.error('Please choose a file1');
-  //     return;
-  //   }
+    if (e.target.files.length > 1) {
+      toast.error('Too much files selected');
+      return;
+    }
 
-  //   if (e.target.files.length > 1) {
-  //     notificationCtx.error('Too much files selected');
-  //     return;
-  //   }
+    const selectedFile: File = e.target.files[0];
 
-  //   setSelectedFile(e.target.files[0]);
+    if (!ALLOWED_TYPE.includes(selectedFile.type)) {
+      toast.error(`File type not allowed (${selectedFile.type})`);
+      return;
+    }
 
-  //   if (!selectedFile) {
-  //     notificationCtx.error('Please choose a file2');
-  //     return;
-  //   }
+    const fileSizeKiloBytes = selectedFile.size / 1024;
 
-  //   if (!ALLOWED_TYPE.includes(selectedFile.type)) {
-  //     notificationCtx.error(`File type not allowed (${selectedFile.type})`);
-  //     return;
-  //   }
+    if (fileSizeKiloBytes > MAX_FILE_SIZE) {
+      toast.error('File size is greater than maximum limit (1MB)');
+      return;
+    }
 
-  //   const fileSizeKiloBytes = selectedFile.size / 1024;
+    const fileReader = new FileReader();
 
-  //   if (fileSizeKiloBytes > MAX_FILE_SIZE) {
-  //     notificationCtx.error('File size is greater than maximum limit (1MB)');
-  //     return;
-  //   }
+    fileReader.onloadend = (): void => {
+      const fileAsDataURL = fileReader.result as string;
+      mutate({ profilePicture: fileAsDataURL });
+    };
 
-  //   fetch(`${BACKEND_URL}/profile`, {
-  //     method: 'POST',
-  //     credentials: 'include',
-  //     headers: {
-  //       Authorization: `Bearer ${getCookie('jwt')}`,
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify({ profilePicture: await selectedFile.text() }),
-  //   })
-  //     .then((res) => res.json())
-  //     .then((data) => console.log(data))
-  //     .catch((err) => console.error(err));
-  // };
+    fileReader.onerror = (): void => {
+      toast.error('Error reading the file!');
+    };
+
+    fileReader.readAsDataURL(selectedFile);
+  };
 
   return (
     <div className={dashStyles.pict__prof}>
       {isEditing && (
         <input
-          accept="image/*"
+          accept=".jpg, .jpeg"
           type="file"
           id="select-image"
           style={{ display: 'none' }}
-          // onChange={handleFileUpload}
+          onChange={(e) => handleFileUpload(e)}
         />
       )}
       <label htmlFor="select-image">

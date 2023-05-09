@@ -21,7 +21,11 @@ function ProfileCard({
 
   return (
     <div className={dashStyles.dash__profile}>
-      <ProfileAvatar src={profileData.profilePicture} isEditing={isEditing} />
+      <ProfileAvatar
+        src={profileData.profilePicture}
+        isEditing={isEditing}
+        mutate={mutate}
+      />
       <UserInfo
         // TODO: Show the username update constraints in the input field
         firstName={profileData.firstName}
