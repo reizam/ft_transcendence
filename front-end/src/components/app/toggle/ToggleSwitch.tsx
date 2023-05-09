@@ -29,7 +29,9 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
     <label className={toggleStyles.switch}>
       <input
         type="checkbox"
-        className={toggleStyles.apple__switch}
+        className={`${toggleStyles.apple__switch} ${
+          isEditing ? toggleStyles.editing__pointer : ''
+        }`}
         style={{
           backgroundColor: checked ? checkedBackgroundColor : backgroundColor,
           boxShadow: checked

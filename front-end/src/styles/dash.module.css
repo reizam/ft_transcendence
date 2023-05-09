@@ -59,7 +59,11 @@
   border: 1px solid aliceblue;
 }
 
-.img__prof:hover {
+.editing__pointer {
+  cursor: none;
+}
+
+.editing__pointer:hover {
   cursor: pointer;
 }
 

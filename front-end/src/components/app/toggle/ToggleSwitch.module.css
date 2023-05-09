@@ -36,3 +36,11 @@
 .apple__switch:checked:after {
   left: 20px;
 }
+
+.editing__pointer {
+  cursor: none;
+}
+
+.editing__pointer:hover {
+  cursor: pointer;
+}

@@ -76,12 +76,13 @@ function ProfileAvatar({
       )}
       <label htmlFor="select-image">
         <img
-          className={dashStyles.img__prof}
+          className={`${dashStyles.img__prof} ${
+            isEditing ? dashStyles.editing__pointer : ''
+          }`}
           src={src}
           alt="ProfileAvatar"
           style={{
             boxShadow: isEditing ? '0 0 40px 7px var(--main-theme-color)' : '',
-            pointerEvents: isEditing ? undefined : 'none',
           }}
         />
       </label>
