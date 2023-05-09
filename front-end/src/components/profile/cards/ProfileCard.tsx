@@ -18,30 +18,17 @@ function ProfileCard({
 }: ProfileDataProps): React.ReactElement {
   const [isEditing, setIsEditing] = useState(false);
   const { mutate } = useUpdateMe();
-  const [username, setUsername] = useState(profileData.username);
-  const updateUsername = (): void => {
-    if (isEditing && username != profileData.username) {
-      mutate(
-        { username: username },
-        { onError: () => setUsername(profileData.username) }
-      );
-    }
-  };
 
   return (
     <div className={dashStyles.dash__profile}>
       <ProfileAvatar src={profileData.profilePicture} isEditing={isEditing} />
       <UserInfo
-        // TODO: Show the username update constraints in the input field
+        // TODO: Add constraints to the username update & specific error msg if already taken
         firstName={profileData.firstName}
         lastName={profileData.lastName}
-        username={username}
+        username_={profileData.username}
         isEditing={isEditing}
-        onChange={(e) => setUsername(e.currentTarget.value)}
-        onSubmit={(e) => {
-          e.preventDefault();
-          updateUsername();
-        }}
+        mutate={mutate}
       />
       {canEdit && (
         <div className={dashStyles.dash__2FA}>
@@ -49,9 +36,7 @@ function ProfileCard({
             checked={profileData.has2FA}
             onToggle={
               isEditing
-                ? () => {
-                    mutate({ has2FA: !profileData.has2FA });
-                  }
+                ? (): void => mutate({ has2FA: !profileData.has2FA })
                 : undefined
             }
             isEditing={isEditing}
@@ -64,7 +49,6 @@ function ProfileCard({
           name={isEditing ? 'Save' : 'Edit'}
           onClick={(): void => {
             setIsEditing((prevState) => !prevState);
-            updateUsername();
           }}
           isEditing={isEditing}
         />
