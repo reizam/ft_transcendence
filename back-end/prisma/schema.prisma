@@ -25,11 +25,27 @@ model User {
   blockedUsers      String[]
 
   createdAt         DateTime @default(now())
+
+  statistics        Statistic?
+  matchHistory      Game[] // only keep the last 10
+  achievements      String[]
+}
+
+model Statistic {
+  user              User    @relation(fields: [userId], references: [id])
+  userId            Int     @unique
+
+  rank              Int
+  win               Int
+  draw              Int
+  loss              Int
+  points            Int
 }
 
 model Game {
   id               Int     @id @default(autoincrement())
 
+  players          User[]
   playerOne        String
   playerTwo        String
   playerOneScore   Int
