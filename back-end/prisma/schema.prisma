@@ -27,7 +27,7 @@ model User {
   createdAt         DateTime @default(now())
 
   statistics        Statistic?
-  matchHistory      Game[] // only keep the last 10
+  matchHistory      Game[]
   achievements      String[]
 }
 
@@ -56,6 +56,14 @@ model Game {
   createdAt        DateTime @default(now())
 }
 
+// model PlayersOnGames {
+//   user          User @relation(fields: [userId], references: [id])
+//   userId        Int
+//   game          Game @relation(fields: [gameId], references: [id])
+//   gameId        Int
+
+//   @@id([userId, gameId])
+// }
 
 model Channel {
   id              Int     @id @default(autoincrement())

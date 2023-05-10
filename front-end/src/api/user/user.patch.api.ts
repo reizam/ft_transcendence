@@ -44,13 +44,10 @@ export const useUpdateMe = (): UseMutationResult<
       return { previousData, id };
     },
     onSuccess: (
-      data: unknown,
-      variables: unknown,
+      _data: unknown,
+      _variables: unknown,
       context?: IContext
     ): void => {
-      console.log('Data: ', data);
-      console.log('Variables: ', variables);
-      console.log('context: ', context);
       if (context !== undefined) {
         toast.update(context.id, {
           render: 'Updated',

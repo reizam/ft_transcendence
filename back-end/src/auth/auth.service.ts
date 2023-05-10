@@ -15,6 +15,9 @@ export class AuthService {
       where: {
         id: profile.sub,
       },
+      include: {
+        matchHistory: true,
+      },
     });
   }
 
@@ -22,6 +25,9 @@ export class AuthService {
     let user = await this.prisma.user.findFirst({
       where: {
         fortytwoId: profile.fortytwoId,
+      },
+      include: {
+        matchHistory: true,
       },
     });
     if (!user) {
@@ -35,6 +41,9 @@ export class AuthService {
             'data:image/jpg;base64,' +
             Buffer.from(image.data).toString('base64'),
           has2FA: false,
+        },
+        include: {
+          matchHistory: true,
         },
       });
     }
