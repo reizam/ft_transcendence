@@ -71,7 +71,7 @@
   margin-top: 3vh;
   margin-bottom: 3vh;
   font-family: var(--title-font);
-  font-size: large;
+  font-size: x-large;
 }
 
 .dash__h2 {
@@ -165,6 +165,7 @@
   height: 15%;
   justify-content: center;
   display: flex;
+  align-items: center;
 }
 
 .pict__player {
@@ -186,7 +187,6 @@
 
 .rst__match {
   width: 20%;
-  transform: translateY(10%);
   font-size: 1.2rem;
 }
 

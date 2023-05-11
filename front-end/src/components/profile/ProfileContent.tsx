@@ -26,7 +26,7 @@ function ProfileContent({
   return (
     <div className={dashStyles.ctn__dash}>
       <ProfileCard profileData={profileData} canEdit={canEdit} />
-      <History />
+      <History matchHistory={userData.matchHistory} />
       <Stats />
       <Achievements />
     </div>

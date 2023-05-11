@@ -46,8 +46,8 @@ model Game {
   id               Int     @id @default(autoincrement())
 
   players          User[]
-  playerOne        String
-  playerTwo        String
+  playerOneId      Int
+  playerTwoId      Int
   playerOneScore   Int
   playerTwoScore   Int
 

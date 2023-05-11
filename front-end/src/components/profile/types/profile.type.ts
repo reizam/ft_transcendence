@@ -6,3 +6,12 @@ export type ProfileData = Pick<
 >;
 
 export type UserInfo = Pick<ProfileData, 'firstName' | 'lastName' | 'username'>;
+
+export type Game = {
+  players: IUserData[];
+  playerOneId: number;
+  playerTwoId: number;
+  playerOneScore: number;
+  playerTwoScore: number;
+  status: string;
+};
