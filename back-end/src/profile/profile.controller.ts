@@ -41,6 +41,10 @@ export class ProfileController {
       where: {
         fortytwoId: id,
       },
+      include: {
+        statistics: true,
+        matchHistory: true,
+      },
     });
 
     return res.status(200).json(user);

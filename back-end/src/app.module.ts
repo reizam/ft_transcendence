@@ -2,14 +2,18 @@ import { AppController } from '@/app.controller';
 import { AppService } from '@/app.service';
 import { AuthModule } from '@/auth/auth.module';
 import { AuthService } from '@/auth/auth.service';
+import { GameService } from '@/game/game.service';
 import { PrismaModule } from '@/prisma/prisma.module';
-import { Module } from '@nestjs/common';
-import { UserService } from './user/user.service';
-import { UserModule } from './user/user.module';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigModule } from '@nestjs/config';
 import { SocketsGateway } from '@/sockets/sockets.gateway';
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { GameController } from './game/game.controller';
+import { GameModule } from './game/game.module';
+import { PlayerService } from './game/player/player.service';
 import { ProfileModule } from './profile/profile.module';
+import { UserModule } from './user/user.module';
+import { UserService } from './user/user.service';
 
 @Module({
   imports: [
@@ -18,8 +22,17 @@ import { ProfileModule } from './profile/profile.module';
     UserModule,
     ConfigModule.forRoot(),
     ProfileModule,
+    GameModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, AuthService, UserService, JwtService, SocketsGateway],
+  controllers: [AppController, GameController],
+  providers: [
+    AppService,
+    AuthService,
+    UserService,
+    JwtService,
+    SocketsGateway,
+    PlayerService,
+    GameService,
+  ],
 })
 export class AppModule {}

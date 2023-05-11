@@ -1,9 +1,9 @@
 import { IUser } from '@/auth/types/auth.types';
 import { IJWTPayload } from '@/auth/types/jwt.types';
 import { PrismaService } from '@/prisma/prisma.service';
-import type { User } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import type { User } from '@prisma/client';
 import axios from 'axios';
 
 @Injectable()
@@ -17,6 +17,7 @@ export class AuthService {
       },
       include: {
         matchHistory: true,
+        statistics: true,
       },
     });
   }
@@ -25,9 +26,6 @@ export class AuthService {
     let user = await this.prisma.user.findFirst({
       where: {
         fortytwoId: profile.fortytwoId,
-      },
-      include: {
-        matchHistory: true,
       },
     });
     if (!user) {
@@ -41,9 +39,13 @@ export class AuthService {
             'data:image/jpg;base64,' +
             Buffer.from(image.data).toString('base64'),
           has2FA: false,
+          statistics: {
+            create: {},
+          },
         },
         include: {
           matchHistory: true,
+          statistics: true,
         },
       });
     }

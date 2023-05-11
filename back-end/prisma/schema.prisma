@@ -35,11 +35,11 @@ model Statistic {
   user              User    @relation(fields: [userId], references: [id])
   userId            Int     @unique
 
-  rank              Int
-  win               Int
-  draw              Int
-  loss              Int
-  points            Int
+  rating            Int     @default(1000)
+
+  win               Int     @default(0)
+  draw              Int     @default(0)
+  loss              Int     @default(0)
 }
 
 model Game {
