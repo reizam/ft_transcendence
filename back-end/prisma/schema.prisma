@@ -98,7 +98,7 @@ model Message {
 
   gameId          String?
 
-  createdAt       DateTime @default(now())
+  createdAt       DateTime @default(now())  // Or rather "updatedAt" to sort by finished time
 }
 
 model VerificationToken {

@@ -12,26 +12,44 @@ function isWinner(player: 1 | 2, game: Game): boolean {
   return false;
 }
 
-function showScore() {}
+function showScore(game: Game): ReactElement {
+  return (
+    <p className={dashStyles.rst__match}>
+      {(isWinner(1, game) && <b>{game.playerOneScore}</b>) ||
+        (isWinner(2, game) && <small>{game.playerOneScore}</small>) ||
+        game.playerOneScore}
+      {' - '}
+      {(isWinner(2, game) && <b>{game.playerTwoScore}</b>) ||
+        (isWinner(1, game) && <small>{game.playerTwoScore}</small>) ||
+        game.playerTwoScore}
+    </p>
+  );
+}
 
 function Match({ game }: GameProps): ReactElement {
   if (game.status !== 'finished' || game.players.length != 2) return <></>;
 
   return (
     <div className={dashStyles.hist__party}>
-      <div className={dashStyles.pict__player}>
+      <div
+        className={dashStyles.pict__player}
+        data-title={game.players[0]?.username}
+      >
         <img
           className={dashStyles.img__player}
           src={game.players[0]?.profilePicture}
-          alt="PlayerOneAvatar"
+          alt={game.players[0]?.username}
         />
       </div>
-      <p className={dashStyles.rst__match}>16 - 17</p>
-      <div className={dashStyles.pict__player}>
+      {showScore(game)}
+      <div
+        className={dashStyles.pict__player}
+        data-title={game.players[1]?.username}
+      >
         <img
           className={dashStyles.img__player}
-          src="https://cdn.intra.42.fr/users/a2cb081e3eab21713f87e1a938325f68/piboidin.jpg"
-          alt=""
+          src={game.players[1]?.profilePicture}
+          alt={game.players[1]?.username}
         />
       </div>
     </div>

@@ -81,3 +81,54 @@ body {
   color: var(--container-color);
   font-family: 'Poppins', sans-serif;
 }
+
+/* Style the scrollbar */
+/* Firefox */
+html {
+  scrollbar-color: var(--button-background-color) var(--background);
+  scrollbar-width: thin;
+}
+/* WebKit and Chromiums */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+  background-color: var(--button-background-color);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--background);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-corner {
+  background: var(--background);
+}
+
+/* Optional title attribute (tooltip alternative to "img[title]")*/
+[data-title]:hover:after {
+  opacity: 1;
+  transition: all 0s ease 0.2s;
+  visibility: visible;
+}
+[data-title]:after {
+  font-size: small;
+  content: attr(data-title);
+  width: 120px;
+  top: 100%;
+  left: 50%;
+  margin-left: -60px;
+  position: absolute;
+  white-space: nowrap;
+  color: aliceblue;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 8px;
+  -moz-box-shadow: 0px 0px 4px var(--main-theme-color);
+  -webkit-box-shadow: 0px 0px 4px var(--main-theme-color);
+  box-shadow: 0px 0px 4px var(--main-theme-color);
+  z-index: 1;
+  visibility: hidden;
+  overflow-x: auto;
+}
+[data-title] {
+  position: relative;
+}
