@@ -16,7 +16,11 @@ export class AuthService {
         id: profile.sub,
       },
       include: {
-        matchHistory: true,
+        matchHistory: {
+          include: {
+            players: true,
+          },
+        },
         statistics: true,
       },
     });

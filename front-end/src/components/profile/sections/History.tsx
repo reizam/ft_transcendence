@@ -9,9 +9,10 @@ interface HistoryProps {
 
 function History({ matchHistory }: HistoryProps): ReactElement {
   return (
-    <>{matchHistory.length > 0 && <Match game={matchHistory[0]} />}</>
-    // <div className={dashStyles.dash__data}>
-    //   <h1 className={dashStyles.dash__title}>Match History</h1>
+    <div className={dashStyles.dash__data}>
+      <h1 className={dashStyles.dash__title}>Match History</h1>
+      {matchHistory?.length > 0 && <Match game={matchHistory[0]} />}
+    </div>
     //   <div className={dashStyles.hist__party}>
     //     <div className={dashStyles.pict__player}>
     //       <img
