@@ -15,3 +15,11 @@ export type Game = {
   playerTwoScore: number;
   status: string;
 };
+
+export type GameStats = {
+  wins: number;
+  losses: number;
+  draws: number;
+  elo: number;
+  rank?: number;
+};

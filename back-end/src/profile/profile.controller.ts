@@ -1,6 +1,6 @@
 import { DUser } from '@/decorators/user.decorator';
 import { PrismaService } from '@/prisma/prisma.service';
-import { IUpdateProfile } from '@/profile/types/profile.types';
+import { IUpdateProfile, WithRank } from '@/profile/types/profile.types';
 import {
   Body,
   ConflictException,
@@ -28,7 +28,10 @@ export class ProfileController {
   ) {}
 
   @Get()
-  getDashboard(@DUser() user: User, @Res() res: Response): Response {
+  async getDashboard(
+    @DUser() user: WithRank<User>,
+    @Res() res: Response,
+  ): Promise<Response> {
     return res.status(200).json(user);
   }
 

@@ -24,3 +24,7 @@ export class IUpdateProfile {
   @MaxLength(15, { message: 'Username cannot exceed 15 characters' })
   username: string;
 }
+
+export type WithRank<T> = T & {
+  rank?: number;
+};

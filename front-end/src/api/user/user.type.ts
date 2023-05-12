@@ -1,4 +1,4 @@
-import { Game } from '@/components/profile/types/profile.type';
+import { Game, GameStats } from '@/components/profile/types/profile.type';
 
 export interface IUserData {
   id: number;
@@ -9,6 +9,8 @@ export interface IUserData {
   has2FA: boolean;
   profilePicture: string;
   matchHistory: Game[];
+  statistics: GameStats;
+  rank: number;
 }
 
 export type UpdateProfile = Partial<

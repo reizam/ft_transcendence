@@ -31,15 +31,16 @@ model User {
   achievements      String[]
 }
 
+
 model Statistic {
   user              User    @relation(fields: [userId], references: [id])
   userId            Int     @unique
 
-  rating            Int     @default(1000)
+  elo               Int     @default(1000)
 
-  win               Int     @default(0)
-  draw              Int     @default(0)
-  loss              Int     @default(0)
+  wins              Int     @default(0)
+  draws             Int     @default(0)
+  losses            Int     @default(0)
 }
 
 model Game {
