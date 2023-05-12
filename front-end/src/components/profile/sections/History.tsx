@@ -17,7 +17,7 @@ function History({ matchHistory }: HistoryProps): ReactElement {
     <div className={dashStyles.dash__data}>
       <h1 className={dashStyles.dash__title}>Match History</h1>
       {games.map((game) => (
-        <Match game={game} />
+        <Match game={game} key={game.id} />
       ))}
     </div>
   );

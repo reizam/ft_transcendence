@@ -8,6 +8,7 @@ export type ProfileData = Pick<
 export type UserInfo = Pick<ProfileData, 'firstName' | 'lastName' | 'username'>;
 
 export type Game = {
+  id: number;
   players: IUserData[];
   playerOneId: number;
   playerTwoId: number;
