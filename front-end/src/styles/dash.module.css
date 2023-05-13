@@ -32,6 +32,7 @@
   background-color: var(--container-background-color);
   border-radius: var(--radius-container);
   text-align: center;
+  overflow-y: auto;
 }
 
 .dash__achievements {
@@ -193,8 +194,12 @@
   font-size: 1.2rem;
 }
 
+.ctn__stats {
+  margin-top: 15%;
+}
+
 .ctn__stats__info {
-  margin-top: 5%;
+  margin-top: 10%;
   width: 100%;
   display: flex;
   justify-content: center;

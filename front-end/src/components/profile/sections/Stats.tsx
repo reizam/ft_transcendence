@@ -18,7 +18,7 @@ function Stats({ stats, rank }: StatsProps): ReactElement {
   return (
     <div className={dashStyles.dash__statistiques}>
       <h1 className={dashStyles.dash__title}>Statistics</h1>
-      <div className={dashStyles.ctn__stat}>
+      <div className={dashStyles.ctn__stats}>
         <div className={dashStyles.ctn__stats__info}>
           <div className={dashStyles.stats__info__logo}>
             <GiRank1 className={dashStyles.info__logo} />
