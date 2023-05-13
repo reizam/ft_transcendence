@@ -11,7 +11,7 @@ export class JwtSocket extends IoAdapter {
     this.authService = authService;
   }
 
-  createIOServer(port: number, options?: any): any {
+  createIOServer(port: number, options?: any): unknown {
     const server = super.createIOServer(port, {
       ...options,
       cors: {
