@@ -12,6 +12,8 @@ import { SocketGateway } from '@/socket/socket.gateway';
 import { ProfileModule } from './profile/profile.module';
 import { SocketModule } from '@/socket/socket.module';
 import { SocketUserService } from '@/socket/user/socket.service';
+import { ChannelService } from './channel/channel.service';
+import { ChannelModule } from './channel/channel.module';
 
 @Module({
   imports: [
@@ -21,6 +23,7 @@ import { SocketUserService } from '@/socket/user/socket.service';
     ConfigModule.forRoot(),
     ProfileModule,
     SocketModule,
+    ChannelModule,
   ],
   controllers: [AppController],
   providers: [
@@ -30,6 +33,7 @@ import { SocketUserService } from '@/socket/user/socket.service';
     JwtService,
     SocketGateway,
     SocketUserService,
+    ChannelService,
   ],
 })
 export class AppModule {}
