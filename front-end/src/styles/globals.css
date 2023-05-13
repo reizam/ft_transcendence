@@ -117,7 +117,7 @@ html {
   left: 50%;
   margin-left: -60px;
   position: absolute;
-  white-space: nowrap;
+  /* white-space: nowrap; */
   color: aliceblue;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
