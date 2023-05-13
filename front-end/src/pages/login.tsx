@@ -8,7 +8,7 @@ const Login: NextPage = () => {
     <Layout
       className="flex items-center justify-center h-screen bg-dark-purple"
       title="Connexion"
-      mode={Mode.WITHOUT_LAYOUT}
+      mode="withoutLayout"
     >
       <LoginContent />
     </Layout>

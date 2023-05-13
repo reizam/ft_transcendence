@@ -3,10 +3,7 @@ import Head from 'next/head';
 import Header from '@/components/app/layouts/header/Header';
 import Navbar from '@/components/app/layouts/navbar/Navbar';
 
-export enum Mode {
-  WITH_LAYOUT = 'withLayout',
-  WITHOUT_LAYOUT = 'withoutLayout',
-}
+export type Mode = 'withLayout' | 'withoutLayout';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -20,7 +17,7 @@ function Layout({
   title,
   children,
   className,
-  mode = Mode.WITH_LAYOUT,
+  mode = 'withLayout',
 }: LayoutProps): React.ReactElement {
   return (
     <>
@@ -34,7 +31,7 @@ function Layout({
           {title ? `${title} - ft_transcendence` : 'ft_transcendence'}
         </title>
       </Head>
-      {mode === Mode.WITH_LAYOUT ? (
+      {mode === 'withLayout' ? (
         <>
           <Navbar />
           <Header {...{ title }} />
