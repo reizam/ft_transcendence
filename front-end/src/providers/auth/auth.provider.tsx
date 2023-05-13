@@ -5,7 +5,7 @@ interface AuthProviderProps {
   children: React.ReactNode;
 }
 
-function AuthProvider({ children }: AuthProviderProps) {
+function AuthProvider({ children }: AuthProviderProps): React.ReactElement {
   const value = useProvideAuth();
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
