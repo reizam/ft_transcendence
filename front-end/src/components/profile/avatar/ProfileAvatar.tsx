@@ -16,8 +16,6 @@ function ProfileAvatar({
   isEditing = false,
 }: ProfileAvatarProps): ReactElement {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    e.preventDefault();
-
     const MAX_FILE_SIZE = 1024;
     const ALLOWED_TYPE = ['image/jpg', 'image/jpeg'];
 

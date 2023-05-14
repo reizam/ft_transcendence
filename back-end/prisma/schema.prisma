@@ -55,6 +55,7 @@ model Game {
   status           String // waiting, pending, finished
 
   createdAt        DateTime @default(now())
+  finishedAt       DateTime?
 }
 
 // model PlayersOnGames {

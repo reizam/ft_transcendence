@@ -26,6 +26,7 @@ function loadAchievements(
   achievementsMap: Map<string, achievementPair>
 ): ReactElement[] {
   const achievementsArray: ReactElement[] = [];
+  let uniqueKey: number = 0;
 
   achievementsMap.forEach((value, key) => {
     if (achievements.find((elem) => elem.toLowerCase() === key.toLowerCase())) {
@@ -40,7 +41,7 @@ function loadAchievements(
       );
     } else {
       achievementsArray.push(
-        <div className={dashStyles.achievements__locked}>
+        <div className={dashStyles.achievements__locked} key={uniqueKey++}>
           <FaQuestion />
         </div>
       );

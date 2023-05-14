@@ -30,9 +30,19 @@ export class AuthService {
       },
       include: {
         matchHistory: {
+          where: {
+            status: {
+              equals: 'finished',
+              mode: 'insensitive',
+            },
+          },
+          orderBy: {
+            finishedAt: 'desc',
+          },
           include: {
             players: true,
           },
+          take: 20,
         },
         statistics: true,
       },

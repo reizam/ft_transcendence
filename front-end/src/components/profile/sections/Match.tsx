@@ -1,6 +1,6 @@
 import dashStyles from '@/styles/dash.module.css';
 import { ReactElement } from 'react';
-import { Game } from '../types/profile.type';
+import { Game } from '@components/profile/types/profile.type';
 
 interface GameProps {
   game: Game;
@@ -27,7 +27,8 @@ function showScore(game: Game): ReactElement {
 }
 
 function Match({ game }: GameProps): ReactElement {
-  if (game.status !== 'finished' || game.players.length != 2) return <></>;
+  if (game.status.toLowerCase() !== 'finished' || game.players.length != 2)
+    return <></>;
 
   return (
     <div className={dashStyles.hist__party}>

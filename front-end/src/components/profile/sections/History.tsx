@@ -1,7 +1,7 @@
 import dashStyles from '@/styles/dash.module.css';
 import { ReactElement } from 'react';
-import { Game } from '../types/profile.type';
-import Match from './Match';
+import { Game } from '@components/profile/types/profile.type';
+import Match from '@components/profile/sections/Match';
 
 interface HistoryProps {
   matchHistory: Game[];
@@ -9,9 +9,8 @@ interface HistoryProps {
 
 function History({ matchHistory }: HistoryProps): ReactElement {
   const games = matchHistory
-    .filter((game) => game.status === 'finished')
-    .slice(-5)
-    .reverse();
+    .filter((game) => game.status.toLowerCase() === 'finished')
+    .slice(0, 5);
 
   return (
     <div className={dashStyles.dash__data}>
