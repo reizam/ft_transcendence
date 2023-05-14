@@ -1,6 +1,6 @@
 import { DUser } from '@/decorators/user.decorator';
 import { PrismaService } from '@/prisma/prisma.service';
-import { IUpdateProfile, WithRank } from '@/profile/types/profile.types';
+import { UpdateProfile, WithRank } from '@/profile/types/profile.types';
 import {
   Body,
   ConflictException,
@@ -54,9 +54,9 @@ export class ProfileController {
   }
 
   @Patch()
-  async postDashboard(
+  async patchDashboard(
     @DUser() user: User,
-    @Body() updateDto: IUpdateProfile,
+    @Body() updateDto: UpdateProfile,
     @Res() res: Response,
   ): Promise<Response> {
     if (updateDto.has2FA !== undefined) {
@@ -66,7 +66,7 @@ export class ProfileController {
           console.error({ error });
           throw new InternalServerErrorException();
         });
-      return res.status(200).send();
+      return res.status(204).send();
     }
     if (updateDto.profilePicture !== undefined) {
       await this.profileService
@@ -75,7 +75,7 @@ export class ProfileController {
           console.error({ error });
           throw new InternalServerErrorException();
         });
-      return res.status(200).send();
+      return res.status(204).send();
     }
     if (updateDto.username !== undefined) {
       if (
@@ -86,7 +86,7 @@ export class ProfileController {
             throw new InternalServerErrorException();
           })
       )
-        return res.status(200).send();
+        return res.status(204).send();
       else {
         throw new ConflictException(
           `The username ${updateDto.username} already exists`,

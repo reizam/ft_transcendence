@@ -1,6 +1,17 @@
 import { GameService } from '@/game/game.service';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Body, Controller, Patch } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  InternalServerErrorException,
+  Patch,
+  Post,
+  Res,
+} from '@nestjs/common';
+import { User } from '@prisma/client';
+import { DUser } from '@/decorators/user.decorator';
+import { Response } from 'express';
+import { LaunchGame } from './types/game.type';
 
 // Type for testing purpose
 type ResultDto = {
@@ -18,7 +29,7 @@ export class GameController {
   ) {}
 
   // Route for testing purposes
-  @Patch()
+  @Patch('finish')
   async updateStats(@Body() resultDto: ResultDto): Promise<void> {
     const winner = await this.prisma.statistic.findUnique({
       where: {
@@ -37,5 +48,28 @@ export class GameController {
         loser: { id: loser.userId, rating: loser.elo },
       });
     }
+  }
+
+  @Post('create')
+  async createGame(
+    @DUser() user: User,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const gameId = await this.gameService
+      .createGame(user.id)
+      .catch((error: any) => {
+        console.error({ error });
+        throw new InternalServerErrorException();
+      });
+    return res.status(200).json({ gameId: gameId });
+  }
+
+  @Patch('launch')
+  async launchGame(
+    @Body() launchGameDto: LaunchGame,
+    @Res() res: Response,
+  ): Promise<Response> {
+    await this.gameService.launchGame(launchGameDto);
+    return res.status(204).send();
   }
 }

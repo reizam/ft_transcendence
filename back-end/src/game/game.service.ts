@@ -1,4 +1,4 @@
-import { MatchResult } from '@/game/types/game.type';
+import { LaunchGame, MatchResult } from '@/game/types/game.type';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 
@@ -54,5 +54,33 @@ export class GameService {
       });
       throw e;
     }
+  }
+
+  async createGame(userId: number): Promise<number> {
+    const game = await this.prisma.game.create({
+      data: {
+        status: 'waiting',
+        playerOneId: userId,
+        players: {
+          connect: [{ id: userId }],
+        },
+      },
+    });
+    return game.id;
+  }
+
+  async launchGame({ gameId, playerTwoId }: LaunchGame): Promise<void> {
+    await this.prisma.game.update({
+      where: {
+        id: gameId,
+      },
+      data: {
+        playerTwoId: playerTwoId,
+        launchedAt: new Date().toISOString(),
+        players: {
+          connect: [{ id: playerTwoId }],
+        },
+      },
+    });
   }
 }

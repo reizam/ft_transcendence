@@ -7,7 +7,7 @@ import {
   MaxLength,
 } from 'class-validator';
 
-export class IUpdateProfile {
+export class UpdateProfile {
   @IsOptional()
   @IsBoolean()
   has2FA: boolean;
