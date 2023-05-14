@@ -2,6 +2,24 @@ import React from 'react';
 import Head from 'next/head';
 import Header from '@/components/app/layouts/header/Header';
 import Navbar from '@/components/app/layouts/navbar/Navbar';
+import { NavbarItemProps } from '@/components/app/layouts/navbar/NavbarItem';
+import { FaGamepad } from 'react-icons/fa';
+import { BsChatTextFill } from 'react-icons/bs';
+
+const navbarItems: NavbarItemProps[] = [
+  {
+    href: '/game',
+    icon: <FaGamepad size={24} />,
+  },
+  {
+    href: '/chat',
+    icon: <BsChatTextFill size={24} />,
+  },
+  {
+    href: '/profile',
+    icon: <FaGamepad size={24} />,
+  },
+];
 
 export type Mode = 'withLayout' | 'withoutLayout';
 
@@ -32,12 +50,24 @@ function Layout({
         </title>
       </Head>
       {mode === 'withLayout' ? (
-        <>
-          <Navbar />
-          <Header {...{ title }} />
-        </>
-      ) : null}
-      <main className={className}>{children}</main>
+        <div className="flex flex-row w-full">
+          <Navbar items={navbarItems} />
+          <div className="flex flex-col w-full">
+            <Header title={title} />
+            <main
+              style={{
+                height: 'calc(100vh - 4rem)',
+                maxHeight: 'calc(100vh - 4rem)',
+              }}
+              className={className}
+            >
+              {children}
+            </main>
+          </div>
+        </div>
+      ) : (
+        <main className={className}>{children}</main>
+      )}
     </>
   );
 }

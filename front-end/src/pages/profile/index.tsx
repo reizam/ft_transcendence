@@ -10,7 +10,7 @@ function Profile(): ReactElement {
 
   if (isLoading) return <LoadingScreen />;
 
-  if (isError) return <p>No profile data</p>;
+  if (isError || !data) return <p>No profile data</p>;
 
   return (
     <Layout title="Profile">

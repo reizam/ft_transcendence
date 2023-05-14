@@ -1,11 +1,12 @@
 import React from 'react';
 import { NextPage } from 'next';
 import Layout from '@/components/app/layouts/Layout';
+import ChatContent from '@/components/chat/ChatContent';
 
 const Chat: NextPage = () => {
   return (
     <Layout title="Chat">
-      <div>hey</div>
+      <ChatContent />
     </Layout>
   );
 };

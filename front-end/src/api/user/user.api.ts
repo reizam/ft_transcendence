@@ -3,19 +3,19 @@ import { getWithToken } from '..';
 import { IUserData } from './user.type';
 
 export const useGetMe = () =>
-  useQuery<IUserData, any>(['PROFILE', 'GET'], async () => {
+  useQuery<IUserData, any>(['PROFILE', 'GET'], async (): Promise<IUserData> => {
     const data = await getWithToken('/profile');
 
-    return data;
+    return data as IUserData;
   });
 
 export const useGetUser = (id?: string) =>
   useQuery<IUserData, any>(
     ['PROFILE', 'GET', id],
-    async () => {
+    async (): Promise<IUserData> => {
       const data = await getWithToken(`/profile/${id}`);
 
-      return data;
+      return data as IUserData;
     },
     { enabled: !!id }
   );

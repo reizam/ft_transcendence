@@ -1,6 +1,4 @@
 import React from 'react';
-import headerStyles from '@components/app/layouts/header/header.module.css';
-import Logo from '@/components/app/layouts/header/logo/Logo';
 import Title from '@/components/app/layouts/header/title/Title';
 import Settings from '@/components/app/layouts/header/settings/Settings';
 
@@ -10,9 +8,9 @@ interface HeaderProps {
 
 function Header({ title }: HeaderProps): React.ReactElement {
   return (
-    <header className={headerStyles.ctn__header}>
-      <Logo />
-      <Title {...{ title }} />
+    <header className="flex flex-row justify-between items-center h-16 px-8 w-full bg-dark-purple">
+      <div />
+      {title ? <Title title={title} /> : <div />}
       <Settings />
     </header>
   );
