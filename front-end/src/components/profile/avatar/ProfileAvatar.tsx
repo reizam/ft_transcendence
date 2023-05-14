@@ -15,9 +15,9 @@ function ProfileAvatar({
   mutate,
   isEditing = false,
 }: ProfileAvatarProps): ReactElement {
-  const handleFileUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ): Promise<void> => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    e.preventDefault();
+
     const MAX_FILE_SIZE = 1024;
     const ALLOWED_TYPE = ['image/jpg', 'image/jpeg'];
 
@@ -65,7 +65,7 @@ function ProfileAvatar({
           type="file"
           id="select-image"
           style={{ display: 'none' }}
-          onChange={(e) => handleFileUpload(e)}
+          onChange={(e): void => handleFileUpload(e)}
         />
       )}
       <label htmlFor="select-image">

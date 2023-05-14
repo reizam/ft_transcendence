@@ -10,7 +10,6 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { GameController } from './game/game.controller';
 import { GameModule } from './game/game.module';
-import { PlayerService } from './game/player/player.service';
 import { ProfileModule } from './profile/profile.module';
 import { UserModule } from './user/user.module';
 import { UserService } from './user/user.service';
@@ -31,7 +30,6 @@ import { UserService } from './user/user.service';
     UserService,
     JwtService,
     SocketsGateway,
-    PlayerService,
     GameService,
   ],
 })
