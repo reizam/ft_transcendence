@@ -14,7 +14,7 @@ function ProfileCard({
   canEdit,
 }: ProfileDataProps): React.ReactElement {
   return (
-    <>
+    <div className="flex flex-col items-center w-1/4 h-full bg-dark-purple rounded-xl">
       <ProfileAvatar src={profileData.profilePicture} canEdit={canEdit} />
       <UserInfo
         firstName={profileData.firstName}
@@ -23,7 +23,7 @@ function ProfileCard({
       />
       {/* {canEdit && <TwoFASwitch checked={profileData.has2FA} />} */}
       <Button />
-    </>
+    </div>
   );
 }
 

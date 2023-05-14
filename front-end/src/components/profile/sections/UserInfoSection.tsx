@@ -32,12 +32,12 @@ function UserInfoSection({
   // };
 
   return (
-    <>
+    <div>
       <h2 className={dashStyles.dash__h2}>{firstName || 'First name'}</h2>
       <h3 className={dashStyles.dash__h3}>{lastName || 'Last name'}</h3>
       <p className={dashStyles.dash__p}>as</p>
       <h4 className={dashStyles.dash__username}>{username || 'Username'}</h4>
-    </>
+    </div>
     // <div className="relative m-3" data-te-input-wrapper-init>
     //   {canEdit ? (
     //     <form onSubmit={handleSubmit}>

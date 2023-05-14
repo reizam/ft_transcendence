@@ -18,7 +18,7 @@ function Navbar({ items }: NavbarProps): React.ReactElement {
       <div className="flex justify-center items-center h-16 w-full">
         <Logo />
       </div>
-      <div className="flex flex-col justify-between h-full py-8">
+      <div className="flex flex-col items-center justify-between h-full py-8">
         <div className="flex flex-col space-y-8">
           {items.map((item, index) => (
             <NavbarItem key={index} {...item} />

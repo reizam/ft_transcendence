@@ -3,8 +3,8 @@ import ChatLayout from '@/components/chat/layouts/ChatLayout';
 
 function ChatContent(): React.ReactElement {
   return (
-    <ChatLayout>
-      <p>Hello World!</p>
+    <ChatLayout screen="chat">
+      <></>
     </ChatLayout>
   );
 }

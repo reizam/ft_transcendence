@@ -1,7 +1,6 @@
 import { IUserData } from '@/api/user/user.type';
 import ProfileCard from '@/components/profile/cards/ProfileCard';
 import { ProfileData } from '@/components/profile/types/profile.type';
-import dashStyles from '@/styles/dash.module.css';
 import { ReactElement } from 'react';
 
 interface ProfileContentProps {
@@ -21,13 +20,8 @@ function ProfileContent({
     has2FA: userData.has2FA,
   };
   return (
-    <div className={dashStyles.ctn__dash}>
-      <div className={dashStyles.dash__profile}>
-        <ProfileCard profileData={profileData} canEdit={canEdit} />
-        {/* <Achievements /> */}
-        {/* <MatchHistory /> */}
-        {/* <Stats /> */}
-      </div>
+    <div className="flex flex-row w-full h-full p-16">
+      <ProfileCard profileData={profileData} canEdit={canEdit} />
     </div>
   );
 }

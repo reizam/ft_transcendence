@@ -15,7 +15,7 @@ export class ChannelService {
       data: {
         private: _private,
         owner: onwerUserId,
-        password,
+        password: password,
         admins: [],
         users: [],
       },
