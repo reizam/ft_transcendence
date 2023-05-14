@@ -29,7 +29,7 @@ function ProfileContent({
       />
       <History matchHistory={userData.matchHistory} />
       <Stats stats={userData.statistics} rank={userData.rank} />
-      <Achievements />
+      <Achievements achievements={userData.achievements} />
     </div>
   );
 }

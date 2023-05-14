@@ -32,6 +32,7 @@
   background-color: var(--container-background-color);
   border-radius: var(--radius-container);
   text-align: center;
+  overflow-y: auto;
 }
 
 .dash__achievements {
@@ -42,6 +43,7 @@
   background-color: var(--container-background-color);
   border-radius: var(--radius-container);
   text-align: center;
+  overflow: auto;
 }
 
 .pict__prof {
@@ -192,8 +194,12 @@
   font-size: 1.2rem;
 }
 
+.ctn__stats {
+  margin-top: 15%;
+}
+
 .ctn__stats__info {
-  margin-top: 5%;
+  margin-top: 10%;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -219,4 +225,27 @@
   width: 20%;
   text-align: right;
   font-size: 1.2rem;
+}
+
+.ctn__achievements {
+  width: 100%;
+  height: 50%;
+}
+
+.achievements__list {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  height: 60%;
+}
+
+.achievements__locked {
+  margin: 1%;
+  color: var(--re-field-color);
+}
+
+.achievements__unlocked {
+  margin: 1%;
+  color: aliceblue;
 }

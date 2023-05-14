@@ -11,6 +11,7 @@ export interface IUserData {
   matchHistory: Game[];
   statistics: GameStats;
   rank: number;
+  achievements: string[];
 }
 
 export type UpdateProfile = Partial<
