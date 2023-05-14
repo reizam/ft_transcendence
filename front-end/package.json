@@ -18,13 +18,15 @@
     "eslint-config-next": "13.2.4",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
+    "formik": "^2.2.9",
     "next": "13.2.4",
     "prettier": "^2.8.8",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-icons": "^4.8.0",
     "socket.io-client": "^4.6.1",
     "typescript-eslint": "^0.0.1-alpha.0",
-    "react-icons": "^4.8.0"
+    "yup": "^1.1.1"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "^4.29.6",
