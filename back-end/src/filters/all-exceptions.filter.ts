@@ -8,26 +8,6 @@ import {
 import { HttpAdapterHost } from '@nestjs/core';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 
-// const isPrismaError = (
-//   exception: unknown,
-// ): exception is
-//   | PrismaClientKnownRequestError
-//   | PrismaClientUnknownRequestError
-//   | PrismaClientRustPanicError
-//   | PrismaClientInitializationError
-//   | PrismaClientValidationError => {
-//   return (
-//     exception instanceof Error &&
-//     'message' in
-//       (exception as
-//         | PrismaClientKnownRequestError
-//         | PrismaClientUnknownRequestError
-//         | PrismaClientRustPanicError
-//         | PrismaClientInitializationError
-//         | PrismaClientValidationError)
-//   );
-// };
-
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
@@ -41,12 +21,15 @@ export class AllExceptionsFilter implements ExceptionFilter {
         : HttpStatus.INTERNAL_SERVER_ERROR;
     const responseBody = {
       statusCode: httpStatus,
-      message: (exception as Error).message,
       ...(exception instanceof Error
         ? {
+            message: (exception as Error)?.message,
             errorCode: (exception as PrismaClientKnownRequestError).code,
             errorDetails: (exception as PrismaClientKnownRequestError).meta,
           }
+        : {}),
+      ...(exception instanceof HttpException
+        ? { message: (exception as any)?.response?.message }
         : {}),
       path: httpAdapter.getRequestUrl(ctx.getRequest()),
     };

@@ -1,7 +1,8 @@
-import React from 'react';
-import Head from 'next/head';
 import Header from '@/components/app/layouts/header/Header';
 import Navbar from '@/components/app/layouts/navbar/Navbar';
+import Head from 'next/head';
+import React from 'react';
+import { ToastContainer } from 'react-toastify';
 
 export enum Mode {
   WITH_LAYOUT = 'withLayout',
@@ -41,6 +42,18 @@ function Layout({
         </>
       ) : null}
       <main className={className}>{children}</main>
+      <ToastContainer
+        position="top-center"
+        autoClose={4000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </>
   );
 }

@@ -1,6 +1,4 @@
-import NotificationBar from '@/components/app/notification';
 import AuthProvider from '@/providers/auth/auth.provider';
-import { NotificationProvider } from '@/providers/notification/notification.provider';
 import SocketProvider from '@/providers/socket/socket.provider';
 import '@/styles/globals.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -13,15 +11,12 @@ const queryClient = new QueryClient();
 function ft_transcendence({ Component, pageProps }: AppProps): ReactElement {
   return (
     <AuthProvider>
-      <NotificationProvider>
-        <NotificationBar />
-        <QueryClientProvider client={queryClient}>
-          <SocketProvider>
-            <Component {...pageProps} />
-            <ReactQueryDevtools />
-          </SocketProvider>
-        </QueryClientProvider>
-      </NotificationProvider>
+      <QueryClientProvider client={queryClient}>
+        <SocketProvider>
+          <Component {...pageProps} />
+          <ReactQueryDevtools />
+        </SocketProvider>
+      </QueryClientProvider>
     </AuthProvider>
   );
 }

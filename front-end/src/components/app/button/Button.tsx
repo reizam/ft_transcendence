@@ -1,18 +1,29 @@
-import React from 'react';
-import styleButton from './Button.module.css';
+import { MouseEventHandler, ReactElement } from 'react';
+import styleButton from '@/components/app/button/Button.module.css';
 
-interface Props {}
-
-function Button(props: Props) {
-    const {} = props
-
-    return (
-		<>
-			<button className={styleButton.style__button}>
-				Button
-			</button>
-		</>
-    )
+interface ButtonProps<T = MouseEventHandler<HTMLButtonElement>> {
+  name?: string;
+  onClick?: T;
+  isEditing?: boolean;
 }
 
-export default Button
+function Button({
+  name,
+  onClick,
+  isEditing = false,
+}: ButtonProps): ReactElement {
+  return (
+    <>
+      <button
+        className={`${styleButton.style__button} ${
+          isEditing ? styleButton.style__button__editing : ''
+        }`}
+        onClick={onClick}
+      >
+        {name}
+      </button>
+    </>
+  );
+}
+
+export default Button;

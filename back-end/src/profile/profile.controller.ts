@@ -1,6 +1,6 @@
 import { DUser } from '@/decorators/user.decorator';
 import { PrismaService } from '@/prisma/prisma.service';
-import { IUpdateProfile } from '@/profile/types/profile.types';
+import { UpdateProfile, WithRank } from '@/profile/types/profile.types';
 import {
   Body,
   ConflictException,
@@ -9,7 +9,7 @@ import {
   InternalServerErrorException,
   Param,
   ParseIntPipe,
-  Post,
+  Patch,
   Res,
   UnprocessableEntityException,
   UseGuards,
@@ -28,7 +28,10 @@ export class ProfileController {
   ) {}
 
   @Get()
-  getDashboard(@DUser() user: User, @Res() res: Response): Response {
+  async getDashboard(
+    @DUser() user: WithRank<User>,
+    @Res() res: Response,
+  ): Promise<Response> {
     return res.status(200).json(user);
   }
 
@@ -41,15 +44,19 @@ export class ProfileController {
       where: {
         fortytwoId: id,
       },
+      include: {
+        statistics: true,
+        matchHistory: true,
+      },
     });
 
     return res.status(200).json(user);
   }
 
-  @Post()
-  async postDashboard(
+  @Patch()
+  async patchDashboard(
     @DUser() user: User,
-    @Body() updateDto: IUpdateProfile,
+    @Body() updateDto: UpdateProfile,
     @Res() res: Response,
   ): Promise<Response> {
     if (updateDto.has2FA !== undefined) {
@@ -59,7 +66,7 @@ export class ProfileController {
           console.error({ error });
           throw new InternalServerErrorException();
         });
-      return res.status(200).send();
+      return res.status(204).send();
     }
     if (updateDto.profilePicture !== undefined) {
       await this.profileService
@@ -68,7 +75,7 @@ export class ProfileController {
           console.error({ error });
           throw new InternalServerErrorException();
         });
-      return res.status(200).send();
+      return res.status(204).send();
     }
     if (updateDto.username !== undefined) {
       if (
@@ -79,7 +86,7 @@ export class ProfileController {
             throw new InternalServerErrorException();
           })
       )
-        return res.status(200).send();
+        return res.status(204).send();
       else {
         throw new ConflictException(
           `The username ${updateDto.username} already exists`,

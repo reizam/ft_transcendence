@@ -1,6 +1,8 @@
 import { IUserData } from '@/api/user/user.type';
 import ProfileCard from '@/components/profile/cards/ProfileCard';
-import { ProfileData } from '@/components/profile/types/profile.type';
+import Achievements from '@/components/profile/sections/Achievements';
+import History from '@/components/profile/sections/History';
+import Stats from '@/components/profile/sections/Stats';
 import dashStyles from '@/styles/dash.module.css';
 import { ReactElement } from 'react';
 
@@ -13,21 +15,21 @@ function ProfileContent({
   userData,
   canEdit,
 }: ProfileContentProps): ReactElement {
-  const profileData: ProfileData = {
-    username: userData.username,
-    firstName: userData.firstName,
-    lastName: userData.lastName,
-    profilePicture: userData.profilePicture,
-    has2FA: userData.has2FA,
-  };
   return (
     <div className={dashStyles.ctn__dash}>
-      <div className={dashStyles.dash__profile}>
-        <ProfileCard profileData={profileData} canEdit={canEdit} />
-        {/* <Achievements /> */}
-        {/* <MatchHistory /> */}
-        {/* <Stats /> */}
-      </div>
+      <ProfileCard
+        profileData={{
+          username: userData.username,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          profilePicture: userData.profilePicture,
+          has2FA: userData.has2FA,
+        }}
+        canEdit={canEdit}
+      />
+      <History matchHistory={userData.matchHistory} />
+      <Stats stats={userData.statistics} rank={userData.rank} />
+      <Achievements achievements={userData.achievements} />
     </div>
   );
 }

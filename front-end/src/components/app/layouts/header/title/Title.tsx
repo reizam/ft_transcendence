@@ -1,11 +1,11 @@
 import React from 'react';
 import titleStyles from './title.module.css';
 
-interface titleProps {
+interface TitleProps {
   title?: string;
 }
 
-function Title({ title }: titleProps): React.ReactElement {
+function Title({ title }: TitleProps): React.ReactElement {
   return (
     <div className={titleStyles.title}>
       <h1 className={titleStyles.h1__title}>{title}</h1>

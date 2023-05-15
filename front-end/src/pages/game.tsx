@@ -1,5 +1,5 @@
 import Layout from '@/components/app/layouts/Layout';
-import ToggleSwitch from '@/components/app/toggle/toggle';
+import ToggleSwitch from '@/components/app/toggle/ToggleSwitch';
 import { withProtected } from '@/providers/auth/auth.routes';
 import { NextPage } from 'next';
 import { useState } from 'react';

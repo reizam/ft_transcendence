@@ -25,21 +25,47 @@ model User {
   blockedUsers      String[]
 
   createdAt         DateTime @default(now())
+
+  statistics        Statistic?
+  matchHistory      Game[]
+  achievements      String[]
+}
+
+model Statistic {
+  user              User    @relation(fields: [userId], references: [id])
+  userId            Int     @unique
+
+  elo               Int     @default(1000)
+
+  wins              Int     @default(0)
+  draws             Int     @default(0)
+  losses            Int     @default(0)
 }
 
 model Game {
   id               Int     @id @default(autoincrement())
 
-  playerOne        String
-  playerTwo        String
-  playerOneScore   Int
-  playerTwoScore   Int
+  players          User[]
+  playerOneId      Int
+  playerTwoId      Int?
+  playerOneScore   Int?
+  playerTwoScore   Int?
 
   status           String // waiting, pending, finished
 
   createdAt        DateTime @default(now())
+  launchedAt       DateTime?
+  finishedAt       DateTime?
 }
 
+// model PlayersOnGames {
+//   user          User @relation(fields: [userId], references: [id])
+//   userId        Int
+//   game          Game @relation(fields: [gameId], references: [id])
+//   gameId        Int
+
+//   @@id([userId, gameId])
+// }
 
 model Channel {
   id              Int     @id @default(autoincrement())
@@ -74,7 +100,7 @@ model Message {
 
   gameId          String?
 
-  createdAt       DateTime @default(now())
+  createdAt       DateTime @default(now())  // Or rather "updatedAt" to sort by finished time
 }
 
 model VerificationToken {

@@ -23,22 +23,31 @@ export class JwtSocket extends IoAdapter {
       cors: corsOptions,
     });
 
+    server.on('connection_error', (error: unknown) => {
+      console.error('Socket connection error:', error);
+    });
+    server.on('connect_error', (error: unknown) => {
+      console.error('Socket connect error:', error);
+    });
     server.use(async (socket: Socket, next: (err?: Error) => void) => {
-      const token = socket.handshake.query.token;
+      try {
+        const token = socket.handshake.query.token;
 
-      if (!token) {
-        return next(new Error('Authentication error'));
+        if (!token) {
+          return next(new Error('Authentication error'));
+        }
+
+        const user = await this.authService.validateToken(token as string);
+
+        if (!user) {
+          return next(new Error('Authentication error'));
+        }
+        socket.data.user = user;
+        return next();
+      } catch (error) {
+        console.error('Error in Socket.IO middleware:', error);
+        return next(error);
       }
-
-      const user = await this.authService.validateToken(token as string);
-
-      if (!user) {
-        return next(new Error('Authentication error'));
-      }
-
-      socket.data.user = user;
-
-      return next();
     });
     return server;
   }
