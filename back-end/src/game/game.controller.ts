@@ -4,6 +4,8 @@ import {
   Body,
   Controller,
   InternalServerErrorException,
+  Param,
+  ParseIntPipe,
   Patch,
   Post,
   Res,
@@ -11,7 +13,6 @@ import {
 import { User } from '@prisma/client';
 import { DUser } from '@/decorators/user.decorator';
 import { Response } from 'express';
-import { LaunchGame } from './types/game.type';
 
 // Type for testing purpose
 type ResultDto = {
@@ -64,12 +65,22 @@ export class GameController {
     return res.status(200).json({ gameId: gameId });
   }
 
-  @Patch('launch')
+  @Patch(':id')
   async launchGame(
-    @Body() launchGameDto: LaunchGame,
+    @DUser() user: User,
+    @Param('id', ParseIntPipe) id: number,
     @Res() res: Response,
   ): Promise<Response> {
-    await this.gameService.launchGame(launchGameDto);
+    await this.gameService.joinGame(id, user.id);
     return res.status(204).send();
   }
+
+  // @Patch('launch')
+  // async launchGame(
+  //   @Body() launchGameDto: LaunchGame,
+  //   @Res() res: Response,
+  // ): Promise<Response> {
+  //   await this.gameService.launchGame(launchGameDto);
+  //   return res.status(204).send();
+  // }
 }
