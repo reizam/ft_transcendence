@@ -1,21 +1,55 @@
 import { IUser } from '@/auth/types/auth.types';
 import { IJWTPayload } from '@/auth/types/jwt.types';
 import { PrismaService } from '@/prisma/prisma.service';
-import type { User } from '@prisma/client';
+import { WithRank } from '@/profile/types/profile.types';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import type { Statistic, User } from '@prisma/client';
 import axios from 'axios';
 
 @Injectable()
 export class AuthService {
   constructor(private jwtService: JwtService, private prisma: PrismaService) {}
 
-  async validateUser(profile: IJWTPayload): Promise<User | null> {
-    return await this.prisma.user.findFirst({
+  //TODO: put the player stats/rank logic somewhere else
+  async getRank(stats?: Statistic | null): Promise<number> {
+    if (!stats) {
+      console.error('Cannot find statistics');
+      return 0;
+    }
+    const higherEloCount = await this.prisma.statistic.count({
+      where: { elo: { gt: stats.elo } },
+    });
+    return higherEloCount + 1;
+  }
+
+  async validateUser(profile: IJWTPayload): Promise<WithRank<User> | null> {
+    const user = await this.prisma.user.findFirst({
       where: {
         id: profile.sub,
       },
+      include: {
+        matchHistory: {
+          where: {
+            status: {
+              equals: 'finished',
+              mode: 'insensitive',
+            },
+          },
+          orderBy: {
+            finishedAt: 'desc',
+          },
+          include: {
+            players: true,
+          },
+          take: 20,
+        },
+        statistics: true,
+      },
     });
+    const rank = await this.getRank(user?.statistics);
+    const userWithRank = { ...(user as WithRank<User>), rank: rank };
+    return userWithRank;
   }
 
   async validateOrCreateUser(profile: IUser): Promise<User> {
@@ -35,6 +69,13 @@ export class AuthService {
             'data:image/jpg;base64,' +
             Buffer.from(image.data).toString('base64'),
           has2FA: false,
+          statistics: {
+            create: {},
+          },
+        },
+        include: {
+          matchHistory: true,
+          statistics: true,
         },
       });
     }

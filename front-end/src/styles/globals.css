@@ -4,6 +4,7 @@
 
 @import url('https://fonts.cdnfonts.com/css/games');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+@import url('react-toastify/dist/ReactToastify.css');
 
 :root {
   --background: rgba(3, 0, 30, 0.9);
@@ -46,6 +47,33 @@
   --font-normal: 400;
   --font-medium: 500;
   --font-semi-bold: 600;
+
+  /*---- Toastify ----*/
+  --toastify-color-light: #fff;
+  --toastify-color-dark: var(--container-background-color);
+  --toastify-color-info: #3498db;
+  --toastify-color-success: #07bc0c;
+  --toastify-color-warning: #f1c40f;
+  --toastify-color-error: #e74c3c;
+  --toastify-color-transparent: rgba(255, 255, 255, 0.7);
+
+  --toastify-icon-color-info: var(--main-theme-color);
+  --toastify-icon-color-success: var(--main-theme-color);
+  --toastify-icon-color-warning: var(--main-theme-color);
+  --toastify-icon-color-error: var(--main-theme-color);
+
+  --toastify-toast-width: 320px;
+  --toastify-toast-background: #fff;
+  --toastify-toast-min-height: 64px;
+  --toastify-toast-max-height: 800px;
+  --toastify-font-family: 'Poppins', 'sans-serif';
+  --toastify-z-index: 9999;
+
+  --toastify-color-progress-dark: var(--main-theme-color);
+  --toastify-color-progress-info: var(--main-theme-color);
+  --toastify-color-progress-success: var(--main-theme-color);
+  --toastify-color-progress-warning: var(--main-theme-color);
+  --toastify-color-progress-error: var(--main-theme-color);
 }
 
 body {
@@ -56,4 +84,55 @@ body {
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/* Style the scrollbar */
+/* Firefox */
+html {
+  scrollbar-color: var(--button-background-color) var(--background);
+  scrollbar-width: thin;
+}
+/* WebKit and Chromiums */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+  background-color: var(--button-background-color);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--background);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-corner {
+  background: var(--background);
+}
+
+/* Optional title attribute (tooltip alternative to "img[title]")*/
+[data-title]:hover:after {
+  opacity: 1;
+  transition: all 0s ease 0.2s;
+  visibility: visible;
+}
+[data-title]:after {
+  font-size: small;
+  content: attr(data-title);
+  width: 120px;
+  top: 100%;
+  left: 50%;
+  margin-left: -60px;
+  position: absolute;
+  /* white-space: nowrap; */
+  color: aliceblue;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 8px;
+  -moz-box-shadow: 0px 0px 4px var(--main-theme-color);
+  -webkit-box-shadow: 0px 0px 4px var(--main-theme-color);
+  box-shadow: 0px 0px 4px var(--main-theme-color);
+  z-index: 1;
+  visibility: hidden;
+  overflow-x: auto;
+}
+[data-title] {
+  position: relative;
 }

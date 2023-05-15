@@ -47,3 +47,26 @@ export async function postWithToken<Type = unknown>(
 
   return response.data;
 }
+
+export async function updateWithToken<Type = unknown>(
+  path: string,
+  data: object,
+  init?: AxiosRequestConfig
+): Promise<Type> {
+  const jwtToken = getCookie('jwt');
+
+  if (!jwtToken) throw new Error('No JWT token found. Please log in again.');
+
+  const config = {
+    ...init,
+    headers: {
+      ...init?.headers,
+      Authorization: `Bearer ${jwtToken}`,
+      'Cache-Control': 'private',
+    },
+  };
+
+  const response = await axios.patch(`${BACKEND_URL}${path}`, data, config);
+
+  return response.data;
+}

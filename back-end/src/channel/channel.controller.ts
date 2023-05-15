@@ -29,9 +29,10 @@ export class ChannelController {
   @UseGuards(AuthGuard('jwt'))
   async getChannels(
     @Query() getChannelsDto: GetChannelsDto,
+    @DUser() user: User,
   ): Promise<IChannelPage> {
     const channelPage = await this.channelService.getChannelPage(
-      1,
+      user.id,
       getChannelsDto.page,
       getChannelsDto.limit,
     );

@@ -4,10 +4,10 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  IsUrl,
+  MaxLength,
 } from 'class-validator';
 
-export class IUpdateProfile {
+export class UpdateProfile {
   @IsOptional()
   @IsBoolean()
   has2FA: boolean;
@@ -21,5 +21,10 @@ export class IUpdateProfile {
   @IsNotEmpty()
   @IsString()
   @IsAscii()
+  @MaxLength(15, { message: 'Username cannot exceed 15 characters' })
   username: string;
 }
+
+export type WithRank<T> = T & {
+  rank?: number;
+};

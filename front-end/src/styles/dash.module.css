@@ -2,14 +2,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
 
 .ctn__dash {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  padding-top: 6rem;
+  padding-left: 6rem;
   display: grid;
   grid-template-columns: 26vw 26vw 26vw;
   grid-template-rows: 24vh 24vh 24vh;
   column-gap: 2vw;
-  row-gap: 2vw;
+  row-gap: 2vh;
   font-family: 'Poppins', sans-serif;
 }
 
@@ -18,10 +17,10 @@
   grid-column-end: 2;
   grid-row-start: 1;
   grid-row-end: 4;
-  height: 85%;
   background-color: var(--container-background-color);
   border-radius: var(--radius-container);
   text-align: center;
+  overflow-y: auto;
 }
 
 .dash__statistiques {
@@ -32,6 +31,7 @@
   background-color: var(--container-background-color);
   border-radius: var(--radius-container);
   text-align: center;
+  overflow-y: auto;
 }
 
 .dash__achievements {
@@ -42,6 +42,7 @@
   background-color: var(--container-background-color);
   border-radius: var(--radius-container);
   text-align: center;
+  overflow: auto;
 }
 
 .pict__prof {
@@ -60,11 +61,19 @@
   border: 1px solid aliceblue;
 }
 
+.editing__pointer {
+  cursor: none;
+}
+
+.editing__pointer:hover {
+  cursor: pointer;
+}
+
 .dash__title {
   margin-top: 3vh;
   margin-bottom: 3vh;
   font-family: var(--title-font);
-  font-size: large;
+  font-size: x-large;
 }
 
 .dash__h2 {
@@ -96,6 +105,13 @@
   animation: animate 3s infinite alternate;
 }
 
+.dash__text__input {
+  text-align: center;
+  width: 90%;
+  background-color: darkslateblue;
+  border-radius: 10px;
+}
+
 @keyframes animate {
   40% {
     opacity: 1;
@@ -116,6 +132,11 @@
 
 .dash__2FA {
   margin-top: 10%;
+  margin-bottom: 20%;
+  font-style: italic;
+  color: grey;
+  font-size: 10px;
+  line-height: 4.5;
 }
 
 .dash__button {
@@ -139,6 +160,7 @@
   border-radius: var(--radius-container);
   text-align: center;
   display: inline-block;
+  overflow-y: auto;
 }
 
 .hist__party {
@@ -146,6 +168,7 @@
   height: 15%;
   justify-content: center;
   display: flex;
+  align-items: center;
 }
 
 .pict__player {
@@ -167,12 +190,15 @@
 
 .rst__match {
   width: 20%;
-  transform: translateY(10%);
   font-size: 1.2rem;
 }
 
+.ctn__stats {
+  margin-top: 15%;
+}
+
 .ctn__stats__info {
-  margin-top: 5%;
+  margin-top: 10%;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -198,4 +224,27 @@
   width: 20%;
   text-align: right;
   font-size: 1.2rem;
+}
+
+.ctn__achievements {
+  width: 100%;
+  height: 50%;
+}
+
+.achievements__list {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  height: 60%;
+}
+
+.achievements__locked {
+  margin: 1%;
+  color: var(--re-field-color);
+}
+
+.achievements__unlocked {
+  margin: 1%;
+  color: aliceblue;
 }

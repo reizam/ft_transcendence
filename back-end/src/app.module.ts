@@ -2,6 +2,7 @@ import { AppController } from '@/app.controller';
 import { AppService } from '@/app.service';
 import { AuthModule } from '@/auth/auth.module';
 import { AuthService } from '@/auth/auth.service';
+import { GameService } from '@/game/game.service';
 import { PrismaModule } from '@/prisma/prisma.module';
 import { Module } from '@nestjs/common';
 import { UserService } from './user/user.service';
@@ -34,6 +35,7 @@ import { ChannelModule } from './channel/channel.module';
     SocketGateway,
     SocketUserService,
     ChannelService,
+    GameService,
   ],
 })
 export class AppModule {}

@@ -14,8 +14,8 @@ async function bootstrap(): Promise<void> {
   app.useWebSocketAdapter(new JwtSocket(app, app.get(AuthService)));
   app.use(json({ limit: '5mb' }));
   app.enableCors({
-    origin: 'http://localhost:4000',
-    methods: 'GET, POST',
+    origin: process.env.FRONTEND_URL || 'http://localhost:4000',
+    methods: 'GET, POST, PATCH',
     credentials: true,
   });
   app.useGlobalPipes(
@@ -27,5 +27,5 @@ async function bootstrap(): Promise<void> {
 }
 
 bootstrap().catch((error) => {
-  console.log('Error while launching the app:', error);
+  console.error('Error while launching the app:', error);
 });
