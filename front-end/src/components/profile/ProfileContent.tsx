@@ -1,4 +1,4 @@
-import { IUserData } from '@/api/user/user.type';
+import { IUserData } from '@/api/user/user.types';
 import ProfileCard from '@/components/profile/cards/ProfileCard';
 import { ProfileData } from '@/components/profile/types/profile.type';
 import { ReactElement } from 'react';

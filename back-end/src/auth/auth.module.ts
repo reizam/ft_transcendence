@@ -9,7 +9,6 @@ import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from '@/prisma/prisma.module';
 import { HttpModule } from '@nestjs/axios';
-import { SocketGateway } from '@/socket/socket.gateway';
 import { SocketModule } from '@/socket/socket.module';
 
 @Module({

@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
 import Layout from '@/components/app/layouts/Layout';
 import ProfileContent from '@/components/profile/ProfileContent';
-import { IUserData } from '@/api/user/user.type';
+import { IUserData } from '@/api/user/user.types';
 
 function ViewProfile(): ReactElement {
   const router = useRouter();

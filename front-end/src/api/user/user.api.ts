@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { getWithToken } from '..';
-import { IUserData } from './user.type';
+import { IUserData } from './user.types';
 
 export const useGetMe = () =>
   useQuery<IUserData, any>(['PROFILE', 'GET'], async (): Promise<IUserData> => {

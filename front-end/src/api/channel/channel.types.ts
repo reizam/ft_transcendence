@@ -28,3 +28,9 @@ export interface IChannelPage {
   hasNextPage: boolean;
   totalCount: number;
 }
+
+export interface IChannelPostParams {
+  users: number[];
+  password?: string;
+  private: boolean;
+}
