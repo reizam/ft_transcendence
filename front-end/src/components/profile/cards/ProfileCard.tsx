@@ -49,13 +49,16 @@ function ProfileCard({
         </div>
       )}
       {canEdit && (
-        <Button
-          name={isEditing ? 'Save' : 'Edit'}
-          onClick={(): void => {
-            setIsEditing((prevState) => !prevState);
-          }}
-          isEditing={isEditing}
-        />
+        <>
+          <Button
+            name={isEditing ? 'Save' : 'Edit'}
+            onClick={(): void => {
+              setIsEditing((prevState) => !prevState);
+            }}
+            isEditing={isEditing}
+          />{' '}
+          <div style={{ marginBottom: '15%' }}></div>
+        </>
       )}
     </div>
   );

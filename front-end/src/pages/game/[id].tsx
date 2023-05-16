@@ -5,7 +5,7 @@ import { NextPage } from 'next';
 import { useState } from 'react';
 import gameStyles from '../styles/game.module.css';
 import Canvas from '@/components/app/canvas/Canvas';
-import { ThemeContext } from './ThemeContext';
+import { ThemeContext } from '@/pages/ThemeContext';
 
 const Game: NextPage = () => {
   const [activeToggle, setActiveToggle] = useState<number | null>(0);
