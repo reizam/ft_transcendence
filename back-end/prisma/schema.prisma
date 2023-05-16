@@ -1,6 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
-  engineType = "binary"
+  provider      = "prisma-client-js"
+  engineType    = "binary"
   binaryTargets = ["native", "darwin-arm64"]
 }
 
@@ -10,21 +10,24 @@ datasource db {
 }
 
 model User {
-  id                Int     @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-  fortytwoId        Int     @unique
-  username          String  @unique
-  firstName         String
-  lastName          String
-  profilePicture    String
-  email             String
+  fortytwoId     Int    @unique
+  username       String @unique
+  firstName      String
+  lastName       String
+  profilePicture String
+  email          String
 
-  has2FA            Boolean
+  has2FA Boolean
 
-  friends           String[] @default([])
-  blockedUsers      String[]
+  friends      String[] @default([])
+  blockedUsers String[]
 
-  createdAt         DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  channelsOwned Channel[]
+  channels      ChannelUser[]
 
   statistics        Statistic?
   matchHistory      Game[]
@@ -43,7 +46,7 @@ model Statistic {
 }
 
 model Game {
-  id               Int     @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
   players          User[]
   playerOneId      Int
@@ -51,9 +54,10 @@ model Game {
   playerOneScore   Int?
   playerTwoScore   Int?
 
-  status           String // waiting, pending, finished
+  status String // waiting, pending, finished
 
   createdAt        DateTime @default(now())
+
   launchedAt       DateTime?
   finishedAt       DateTime?
 }
@@ -68,46 +72,59 @@ model Game {
 // }
 
 model Channel {
-  id              Int     @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-  private         Boolean @default(false)
+  private Boolean @default(false)
 
-  owner           String
-  admins          String[] 
-  users           String[]
+  ownerId Int
+  owner   User @relation(fields: [ownerId], references: [id])
 
-  password        String?
-  createdAt       DateTime @default(now())
+  users ChannelUser[]
+
+  password  String?
+  createdAt DateTime @default(now())
+}
+
+model ChannelUser {
+  channelId Int
+  channel   Channel @relation(fields: [channelId], references: [id])
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  admin Boolean @default(false)
+
+  @@id([channelId, userId])
 }
 
 model ChannelSanction {
-  id              Int       @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-  channelId       String
-  user            String
-  expiresAt       DateTime?
+  channelId Int
+  user      Int
+  expiresAt DateTime?
 
-  type            String
-  createdAt       DateTime  @default(now())
+  type      String
+  createdAt DateTime @default(now())
 }
 
 model Message {
-  id              Int      @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-  channelId       String
-  userId          String
-  message         String
+  channelId Int
+  userId    Int
+  message   String
 
-  gameId          String?
+  gameId Int?
 
-  createdAt       DateTime @default(now())  // Or rather "updatedAt" to sort by finished time
+  createdAt DateTime @default(now())
 }
 
 model VerificationToken {
-  id            Int        @id @default(autoincrement())
-  userId        String  
-  accessToken   String
-  refreshToken  String
+  id           Int    @id @default(autoincrement())
+  userId       String
+  accessToken  String
+  refreshToken String
 
-  createdAt     DateTime   @default(now())
+  createdAt DateTime @default(now())
 }

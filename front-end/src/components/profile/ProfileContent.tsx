@@ -1,4 +1,4 @@
-import { IUserData } from '@/api/user/user.type';
+import { IUserData } from '@/api/user/user.types';
 import ProfileCard from '@/components/profile/cards/ProfileCard';
 import Achievements from '@/components/profile/sections/Achievements';
 import History from '@/components/profile/sections/History';

@@ -1,45 +1,33 @@
-import Game from '@/pages/game';
-import Index from '@/pages/index';
+import React from 'react';
 import { useAuth } from '@/providers/auth/auth.context';
-import Link from 'next/link';
 import { AiOutlinePoweroff } from 'react-icons/ai';
-import { BsChatTextFill } from 'react-icons/bs';
-import { FaGamepad, FaUserFriends } from 'react-icons/fa';
-import navbarStyles from './navbar.module.css';
+import NavbarItem, {
+  NavbarItemProps,
+} from '@/components/app/layouts/navbar/NavbarItem';
+import Logo from '@/components/app/layouts/header/logo/Logo';
 
-function Navbar(): React.ReactElement {
+interface NavbarProps {
+  items: NavbarItemProps[];
+}
+
+function Navbar({ items }: NavbarProps): React.ReactElement {
   const { logout } = useAuth();
 
   return (
-    <nav className={navbarStyles.navbar}>
-      <div className={navbarStyles.ctn__navbar}>
-        <Link href="/game" className={navbarStyles.button__navbar}>
-          <button className={navbarStyles.button__navbar} onClick={Game}>
-            <p className={navbarStyles.button__icon__navbar}>
-              <FaGamepad size={30} />
-            </p>
-          </button>
-        </Link>
-        <Link href="/" className={navbarStyles.button__navbar}>
-          <button className={navbarStyles.button__navbar} onClick={Index}>
-            <p className={navbarStyles.button__icon__navbar}>
-              <BsChatTextFill size={30} />
-            </p>
-          </button>
-        </Link>
-        <Link href="/profile" className={navbarStyles.button__navbar}>
-          <button className={navbarStyles.button__navbar}>
-            <p className={navbarStyles.button__icon__navbar}>
-              <FaUserFriends size={30} />
-            </p>
-          </button>
-        </Link>
+    <nav className="flex flex-col items-center w-32 bg-dark-purple">
+      <div className="flex justify-center items-center h-16 w-full">
+        <Logo />
       </div>
-      <button onClick={logout} className={navbarStyles.ctn__off}>
-        <p className={navbarStyles.ctn__off__p}>
-          <AiOutlinePoweroff size={30} />
-        </p>
-      </button>
+      <div className="flex flex-col items-center justify-between h-full py-8">
+        <div className="flex flex-col space-y-8">
+          {items.map((item, index) => (
+            <NavbarItem key={index} {...item} />
+          ))}
+        </div>
+        <button onClick={logout}>
+          <AiOutlinePoweroff size={24} />
+        </button>
+      </div>
     </nav>
   );
 }

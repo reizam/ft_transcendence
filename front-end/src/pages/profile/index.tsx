@@ -6,7 +6,11 @@ import { withProtected } from '@/providers/auth/auth.routes';
 import { ReactElement } from 'react';
 
 function Profile(): ReactElement {
-  const { data, isLoading } = useGetMe();
+  const { data, isLoading, isError } = useGetMe();
+
+  if (isLoading) return <LoadingScreen />;
+
+  if (isError || !data) return <p>No profile data</p>;
 
   return (
     <Layout title="Dashboard">

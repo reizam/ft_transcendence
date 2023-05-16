@@ -82,6 +82,10 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* Style the scrollbar */
 /* Firefox */
 html {

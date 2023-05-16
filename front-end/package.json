@@ -18,17 +18,21 @@
     "eslint-config-next": "13.2.4",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
+    "formik": "^2.2.9",
+    "lodash": "^4.17.21",
     "next": "13.2.4",
     "prettier": "^2.8.8",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.8.0",
-    "react-toastify": "^9.1.2",
     "socket.io-client": "^4.6.1",
-    "typescript-eslint": "^0.0.1-alpha.0"
+    "typescript-eslint": "^0.0.1-alpha.0",
+    "react-toastify": "^9.1.2",
+    "yup": "^1.1.1"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "^4.29.6",
+    "@types/lodash": "^4.14.194",
     "@types/node": "18.15.11",
     "@types/react": "^18.0.32",
     "autoprefixer": "^10.4.14",

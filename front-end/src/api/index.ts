@@ -24,6 +24,30 @@ export async function getWithToken<Type = unknown>(
   return response.data;
 }
 
+export async function postWithToken<Type = unknown>(
+  path: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  body: any,
+  init?: AxiosRequestConfig
+): Promise<Type> {
+  const jwtToken = getCookie('jwt');
+
+  if (!jwtToken) throw new Error('No JWT token found. Please log in again.');
+
+  const config = {
+    ...init,
+    headers: {
+      ...init?.headers,
+      Authorization: `Bearer ${jwtToken}`,
+      'Cache-Control': 'private',
+    },
+  };
+
+  const response = await axios.post(`${BACKEND_URL}${path}`, body, config);
+
+  return response.data;
+}
+
 export async function updateWithToken<Type = unknown>(
   path: string,
   data: object,

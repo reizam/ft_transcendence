@@ -1,11 +1,11 @@
+import React from 'react';
 import { AuthContext, useProvideAuth } from '@/providers/auth/auth.context';
-import React, { ReactElement } from 'react';
 
 interface AuthProviderProps {
   children: React.ReactNode;
 }
 
-function AuthProvider({ children }: AuthProviderProps): ReactElement {
+function AuthProvider({ children }: AuthProviderProps): React.ReactElement {
   const value = useProvideAuth();
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

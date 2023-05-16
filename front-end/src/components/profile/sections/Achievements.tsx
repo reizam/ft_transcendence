@@ -26,7 +26,7 @@ function loadAchievements(
   achievementsMap: Map<string, achievementPair>
 ): ReactElement[] {
   const achievementsArray: ReactElement[] = [];
-  let uniqueKey: number = 0;
+  let uniqueKey = 0;
 
   achievementsMap.forEach((value, key) => {
     if (achievements.find((elem) => elem.toLowerCase() === key.toLowerCase())) {

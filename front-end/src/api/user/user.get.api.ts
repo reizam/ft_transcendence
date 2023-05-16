@@ -1,5 +1,5 @@
 import { getWithToken } from '@/api';
-import { IUserData } from '@/api/user/user.type';
+import { IUserData } from '@/api/user/user.types';
 import { UseQueryResult, useQuery } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 

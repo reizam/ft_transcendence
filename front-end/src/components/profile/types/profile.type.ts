@@ -1,4 +1,4 @@
-import { IUserData } from '@/api/user/user.type';
+import { IUserData } from '@/api/user/user.types';
 
 export type ProfileData = Pick<
   IUserData,

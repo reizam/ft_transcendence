@@ -1,11 +1,7 @@
 @import url('https://fonts.cdnfonts.com/css/games');
 
-.title {
-    text-align: center;
-}
-
 .h1__title {
-    font-family: var(--title-font);
-    margin-top: 0.7rem;
-    font-size: 2em;
+  font-family: var(--title-font);
+  font-size: 1.6em;
+  line-height: 0.9em;
 }

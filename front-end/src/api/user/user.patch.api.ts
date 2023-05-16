@@ -1,5 +1,5 @@
 import { updateWithToken } from '@/api';
-import { UpdateProfile, IUserData } from '@/api/user/user.type';
+import { UpdateProfile, IUserData } from '@/api/user/user.types';
 import {
   UseMutationResult,
   useMutation,

@@ -1,5 +1,3 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
-
 export type Player = {
   id: number;
   rating: number;
@@ -10,13 +8,3 @@ export type MatchResult = {
   winner: Player;
   loser: Player;
 };
-
-export class LaunchGame {
-  @IsNotEmpty()
-  @IsNumber()
-  gameId: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  playerTwoId: number;
-}

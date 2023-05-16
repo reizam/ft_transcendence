@@ -4,15 +4,17 @@ import { AuthModule } from '@/auth/auth.module';
 import { AuthService } from '@/auth/auth.service';
 import { GameService } from '@/game/game.service';
 import { PrismaModule } from '@/prisma/prisma.module';
-import { SocketsGateway } from '@/sockets/sockets.gateway';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { JwtService, JwtService } from '@nestjs/jwt';
-import { GameController } from './game/game.controller';
-import { GameModule } from './game/game.module';
-import { ProfileModule } from './profile/profile.module';
-import { UserModule } from './user/user.module';
 import { UserService } from './user/user.service';
+import { UserModule } from './user/user.module';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigModule } from '@nestjs/config';
+import { SocketGateway } from '@/socket/socket.gateway';
+import { ProfileModule } from './profile/profile.module';
+import { SocketModule } from '@/socket/socket.module';
+import { SocketUserService } from '@/socket/user/socket.service';
+import { ChannelService } from './channel/channel.service';
+import { ChannelModule } from './channel/channel.module';
 
 @Module({
   imports: [
@@ -21,15 +23,18 @@ import { UserService } from './user/user.service';
     UserModule,
     ConfigModule.forRoot(),
     ProfileModule,
-    GameModule,
+    SocketModule,
+    ChannelModule,
   ],
-  controllers: [AppController, GameController],
+  controllers: [AppController],
   providers: [
     AppService,
     AuthService,
     UserService,
     JwtService,
-    SocketsGateway,
+    SocketGateway,
+    SocketUserService,
+    ChannelService,
     GameService,
   ],
 })
