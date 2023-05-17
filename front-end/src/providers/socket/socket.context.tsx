@@ -1,6 +1,6 @@
-import React from 'react';
-import { ISocketContext } from '@/providers/socket/socket.interface';
 import socket from '@/lib/socket';
+import { ISocketContext } from '@/providers/socket/socket.interface';
+import React from 'react';
 
 export const SocketContext = React.createContext<ISocketContext>({
   socket: null,
@@ -10,18 +10,21 @@ export const SocketContext = React.createContext<ISocketContext>({
 export const useSocket = (): ISocketContext => React.useContext(SocketContext);
 
 export const useProvideSocket = (): ISocketContext => {
-  const [connected, setConnected] = React.useState<boolean>(false);
+  const [connected, setConnected] = React.useState(socket.connected);
 
   React.useEffect(() => {
-    socket.on('connect', () => {
+    function onConnect(): void {
       setConnected(true);
       console.log('Socket connected');
-    });
+    }
 
-    socket.on('disconnect', () => {
+    function onDisconnect(): void {
       setConnected(false);
       console.log('Socket disconnected');
-    });
+    }
+
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
 
     return () => {
       socket.off('connect');
