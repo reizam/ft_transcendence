@@ -3,7 +3,7 @@ import ToggleSwitch from '@/components/app/toggle/ToggleSwitch';
 import { withProtected } from '@/providers/auth/auth.routes';
 import { NextPage } from 'next';
 import { useState } from 'react';
-import gameStyles from '../styles/game.module.css';
+import gameStyles from '@/styles/game.module.css';
 import Canvas from '@/components/app/canvas/Canvas';
 import { ThemeContext } from '@/pages/ThemeContext';
 

@@ -2,7 +2,6 @@ import Layout from '@/components/app/layouts/Layout';
 import { withProtected } from '@/providers/auth/auth.routes';
 import { ReactElement } from 'react';
 import gameStyles from '@/styles/game.module.css';
-import EditButton from '@/components/profile/cards/EditButton';
 
 function Profile(): ReactElement {
   return (
