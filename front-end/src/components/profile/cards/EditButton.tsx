@@ -1,5 +1,5 @@
 import { MouseEventHandler, ReactElement } from 'react';
-import styleButton from '@/components/app/button/Button.module.css';
+import styleButton from '@/components/profile/cards/EditButton.module.css';
 
 interface ButtonProps<T = MouseEventHandler<HTMLButtonElement>> {
   name?: string;
