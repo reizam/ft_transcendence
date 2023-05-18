@@ -4,7 +4,7 @@ import gameStyles from '@/styles/game.module.css';
 import Link from 'next/link';
 import { ReactElement } from 'react';
 
-function Profile(): ReactElement {
+function Game(): ReactElement {
   return (
     <Layout title="Game">
       <div className={gameStyles.ctn__pre__game}>
@@ -13,10 +13,8 @@ function Profile(): ReactElement {
             <button className={gameStyles.style__button}>Local mode</button>
           </Link>
           <div style={{ height: '10%', display: 'hidden' }} />
-          <button className={gameStyles.style__button}>Find a game</button>
-          <div style={{ height: '10%', display: 'hidden' }} />
-          <Link href="/game/test2">
-            <button className={gameStyles.style__button}>Create a game</button>
+          <Link href="/game/find">
+            <button className={gameStyles.style__button}>Find a game</button>
           </Link>
         </div>
       </div>
@@ -24,4 +22,4 @@ function Profile(): ReactElement {
   );
 }
 
-export default withProtected(Profile);
+export default withProtected(Game);

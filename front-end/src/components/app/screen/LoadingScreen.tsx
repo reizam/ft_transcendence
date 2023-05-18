@@ -1,6 +1,5 @@
-import styleLoadingScreen from './LoadingScreen.module.css';
+import styleLoadingScreen from '@components/app/screen/LoadingScreen.module.css';
 
-//TODO: modify the CSS
 function LoadingScreen(): JSX.Element {
   return (
     <main className="flex items-center justify-center h-screen bg-dark-purple">

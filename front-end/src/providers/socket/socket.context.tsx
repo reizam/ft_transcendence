@@ -23,11 +23,20 @@ export const useProvideSocket = (): ISocketContext => {
       console.log('Socket disconnected');
     }
 
+    function onConnectError(error: unknown): void {
+      // TODO: Show an error toast ("Connexion error: please disconnect and retry later")
+      //       then push to "/"
+      setConnected(false);
+      console.error(error);
+    }
+
     socket.on('connect', onConnect);
+    socket.on('connect_error', onConnectError);
     socket.on('disconnect', onDisconnect);
 
     return () => {
       socket.off('connect');
+      socket.off('connect_error');
       socket.off('disconnect');
     };
   }, []);
