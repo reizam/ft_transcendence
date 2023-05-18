@@ -9,13 +9,13 @@ interface HistoryProps {
 
 function History({ matchHistory }: HistoryProps): ReactElement {
   const games = matchHistory
-    .filter((game) => game.status.toLowerCase() === 'finished')
-    .slice(0, 5);
+    ?.filter((game) => game.status.toLowerCase() === 'finished')
+    ?.slice(0, 5);
 
   return (
     <div className={dashStyles.dash__data}>
       <h1 className={dashStyles.dash__title}>Match History</h1>
-      {games.map((game) => (
+      {games?.map((game) => (
         <Match game={game} key={game.id} />
       ))}
     </div>

@@ -15,7 +15,9 @@ function Profile(): ReactElement {
           <div style={{ height: '10%', display: 'hidden' }} />
           <button className={gameStyles.style__button}>Find a game</button>
           <div style={{ height: '10%', display: 'hidden' }} />
-          <button className={gameStyles.style__button}>Create a game</button>
+          <Link href="/game/test2">
+            <button className={gameStyles.style__button}>Create a game</button>
+          </Link>
         </div>
       </div>
     </Layout>

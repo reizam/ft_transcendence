@@ -29,7 +29,9 @@ function loadAchievements(
   let uniqueKey = 0;
 
   achievementsMap.forEach((value, key) => {
-    if (achievements.find((elem) => elem.toLowerCase() === key.toLowerCase())) {
+    if (
+      achievements?.find((elem) => elem.toLowerCase() === key.toLowerCase())
+    ) {
       achievementsArray.push(
         <div
           className={dashStyles.achievements__unlocked}
@@ -83,7 +85,7 @@ function Achievements({ achievements }: AchievementsProps): ReactElement {
   return (
     <div className={dashStyles.dash__achievements}>
       <h1 className={dashStyles.dash__title}>
-        Achievements ({`${achievements.length}/${achievementsMap.size}`})
+        Achievements ({`${achievements?.length}/${achievementsMap.size}`})
       </h1>
       <div className={dashStyles.ctn__achievements}>
         <div className={dashStyles.achievements__list}>

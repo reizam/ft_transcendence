@@ -38,7 +38,7 @@ function Stats({ stats, rank }: StatsProps): ReactElement {
             <h2>Elo:</h2>
           </div>
           <div className={dashStyles.stats__info__data}>
-            <h3>{stats.elo}</h3>
+            <h3>{stats?.elo}</h3>
           </div>
         </div>
         <div className={dashStyles.ctn__stats__info}>
@@ -49,7 +49,7 @@ function Stats({ stats, rank }: StatsProps): ReactElement {
             <h2>Win:</h2>
           </div>
           <div className={dashStyles.stats__info__data}>
-            <h3>{stats.wins}</h3>
+            <h3>{stats?.wins}</h3>
           </div>
         </div>
         <div className={dashStyles.ctn__stats__info}>
@@ -60,7 +60,7 @@ function Stats({ stats, rank }: StatsProps): ReactElement {
             <h2>Draw:</h2>
           </div>
           <div className={dashStyles.stats__info__data}>
-            <h3>{stats.draws}</h3>
+            <h3>{stats?.draws}</h3>
           </div>
         </div>
         <div className={dashStyles.ctn__stats__info}>
@@ -71,7 +71,7 @@ function Stats({ stats, rank }: StatsProps): ReactElement {
             <h2>Loss:</h2>
           </div>
           <div className={dashStyles.stats__info__data}>
-            <h3>{stats.losses}</h3>
+            <h3>{stats?.losses}</h3>
           </div>
         </div>
       </div>
