@@ -30,26 +30,26 @@ export class GameController {
   ) {}
 
   // Route for testing purposes
-  @Patch('finish')
-  async updateStats(@Body() resultDto: ResultDto): Promise<void> {
-    const winner = await this.prisma.statistic.findUnique({
-      where: {
-        userId: resultDto.winnerId,
-      },
-    });
-    const loser = await this.prisma.statistic.findUnique({
-      where: {
-        userId: resultDto.loserId,
-      },
-    });
-    if (winner && loser) {
-      await this.gameService.updateEloRating({
-        isDraw: resultDto.draw,
-        winner: { id: winner.userId, rating: winner.elo },
-        loser: { id: loser.userId, rating: loser.elo },
-      });
-    }
-  }
+  // @Patch('finish')
+  // async updateStats(@Body() resultDto: ResultDto): Promise<void> {
+  //   const winner = await this.prisma.statistic.findUnique({
+  //     where: {
+  //       userId: resultDto.winnerId,
+  //     },
+  //   });
+  //   const loser = await this.prisma.statistic.findUnique({
+  //     where: {
+  //       userId: resultDto.loserId,
+  //     },
+  //   });
+  //   if (winner && loser) {
+  //     await this.gameService.updateEloRating({
+  //       isDraw: resultDto.draw,
+  //       winner: { id: winner.userId, elo: winner.elo },
+  //       loser: { id: loser.userId, elo: loser.elo },
+  //     });
+  //   }
+  // }
 
   @Post('create')
   async createGame(

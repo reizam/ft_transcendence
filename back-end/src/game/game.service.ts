@@ -6,55 +6,55 @@ import { Injectable } from '@nestjs/common';
 export class GameService {
   constructor(private prisma: PrismaService) {}
 
-  async updateEloRating(result: MatchResult): Promise<void> {
-    const kFactor = 32;
+  // async updateEloRating(result: MatchResult): Promise<void> {
+  //   const kFactor = 32;
 
-    const expectedOutcomeWinner =
-      1 / (1 + 10 ** ((result.loser.rating - result.winner.rating) / 400));
-    const expectedOutcomeLoser =
-      1 / (1 + 10 ** ((result.winner.rating - result.loser.rating) / 400));
+  //   const expectedOutcomeWinner =
+  //     1 / (1 + 10 ** ((result.loser.elo - result.winner.elo) / 400));
+  //   const expectedOutcomeLoser =
+  //     1 / (1 + 10 ** ((result.winner.elo - result.loser.elo) / 400));
 
-    const actualOutcomeWinner = result.isDraw ? 0.5 : 1;
-    const actualOutcomeLoser = result.isDraw ? 0.5 : 0;
+  //   const actualOutcomeWinner = result.isDraw ? 0.5 : 1;
+  //   const actualOutcomeLoser = result.isDraw ? 0.5 : 0;
 
-    const newRatingWinner =
-      result.winner.rating +
-      kFactor * (actualOutcomeWinner - expectedOutcomeWinner);
-    const newRatingLoser =
-      result.loser.rating +
-      kFactor * (actualOutcomeLoser - expectedOutcomeLoser);
+  //   const newRatingWinner =
+  //     result.winner.elo +
+  //     kFactor * (actualOutcomeWinner - expectedOutcomeWinner);
+  //   const newRatingLoser =
+  //     result.loser.elo +
+  //     kFactor * (actualOutcomeLoser - expectedOutcomeLoser);
 
-    await this.prisma.statistic.update({
-      where: {
-        userId: result.loser.id,
-      },
-      data: {
-        elo: Math.round(newRatingLoser),
-      },
-    });
+  //   await this.prisma.statistic.update({
+  //     where: {
+  //       userId: result.loser.id,
+  //     },
+  //     data: {
+  //       elo: Math.round(newRatingLoser),
+  //     },
+  //   });
 
-    try {
-      await this.prisma.statistic.update({
-        where: {
-          userId: result.winner.id,
-        },
-        data: {
-          elo: Math.round(newRatingWinner),
-        },
-      });
-    } catch (e) {
-      // update back to old value to avoid biased ranking
-      await this.prisma.statistic.update({
-        where: {
-          userId: result.loser.id,
-        },
-        data: {
-          elo: result.loser.rating,
-        },
-      });
-      throw e;
-    }
-  }
+  //   try {
+  //     await this.prisma.statistic.update({
+  //       where: {
+  //         userId: result.winner.id,
+  //       },
+  //       data: {
+  //         elo: Math.round(newRatingWinner),
+  //       },
+  //     });
+  //   } catch (e) {
+  //     // update back to old value to avoid biased ranking
+  //     await this.prisma.statistic.update({
+  //       where: {
+  //         userId: result.loser.id,
+  //       },
+  //       data: {
+  //         elo: result.loser.elo,
+  //       },
+  //     });
+  //     throw e;
+  //   }
+  // }
 
   async createGame(userId: number): Promise<number> {
     const game = await this.prisma.game.create({

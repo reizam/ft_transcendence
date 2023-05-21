@@ -17,7 +17,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import type { User } from '@prisma/client';
 import { Response } from 'express';
-import { ProfileService } from './profile.service';
+import { ProfileService } from '@/profile/profile.service';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('profile')
@@ -45,7 +45,6 @@ export class ProfileController {
         fortytwoId: id,
       },
       include: {
-        statistics: true,
         matchHistory: true,
       },
     });

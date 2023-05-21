@@ -18,9 +18,8 @@ export type Game = {
 };
 
 export type GameStats = {
-  wins: number;
-  losses: number;
-  draws: number;
   elo: number;
-  rank?: number;
+  wins: number;
+  draws: number;
+  losses: number;
 };
