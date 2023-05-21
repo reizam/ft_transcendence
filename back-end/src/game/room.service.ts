@@ -17,7 +17,9 @@ export class RoomService {
   async joinGame(@ConnectedSocket() client: Socket): Promise<void | string> {
     const user = this.socketUserService.getSocketUser(client);
 
+    // if no user, return error message as acknowledgement or emit error?
     if (!user) return 'Unable to load user infos';
+
     if (!this.playerQueue.find((player) => player.id === user.id)) {
       this.playerQueue.push({
         id: user.id,
@@ -39,22 +41,47 @@ export class RoomService {
       });
       this.playerQueue.sort((a, b) => a.elo - b.elo);
     }
+
     console.log(this.playerQueue);
-    return new Promise((resolve) => {
-      const interval = setInterval(() => {
-        clearInterval(interval);
+
+    return new Promise<void | string>((resolve) => {
+      const findMatchingPlayer = (): void => {
+        const userIndex = this.playerQueue.findIndex(
+          (player) => player.id === user.id,
+        );
+        const userBelow = this.playerQueue[userIndex - 1];
+        const userAbove = this.playerQueue[userIndex + 1];
+
         console.log('test');
-        resolve();
-        resolve('Error in interval');
-      }, 3000);
+        if (1) {
+          resolve();
+          resolve('Error in interval');
+        } else {
+          setTimeout(findMatchingPlayer, 3000);
+        }
+      };
+
+      findMatchingPlayer();
     });
+    // return new Promise((resolve) => {
+    //   const interval = setInterval(() => {
+    //     const userIndex = this.playerQueue.findIndex(
+    //       (player) => player.id === user.id,
+    //     );
+    //     const userBelow = this.playerQueue[userIndex - 1];
+    //     const userAbove = this.playerQueue[userIndex + 1];
+
+    //     clearInterval(interval);
+    //     console.log('test');
+    //     resolve();
+    //     resolve('Error in interval');
+    //   }, 3000);
+    // });
 
     // const arr: number[] = [0, 1];
     // console.log(arr[-1]);
     // console.log(arr[1]);
     // console.log(arr[2]);
-
-    // if no user, return error message as acknowledgement
 
     // Check in the queue every 3 seconds if there is a match:
     // players are sorted by elo rating
