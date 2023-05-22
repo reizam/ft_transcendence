@@ -30,15 +30,6 @@ const Game: NextPage = () => {
   return (
     <ThemeContext.Provider value={{ borderColor, setBorderColor }}>
       <Layout title="Game">
-        {/* <div className={gameStyles.ctn__pre__game__blurred}> */}
-        {/* <div className={gameStyles.ctn__pre__game}> */}
-        {/* <div className={gameStyles.ctn__pre__game__canvas__overlay}>
-              LOOKING FOR A PLAYER...
-              <div style={{ height: '10%', display: 'hidden' }} />
-              <button className={gameStyles.style__button}>
-                Invite a friend
-              </button>
-            </div> */}
         <div className={gameStyles.ctn__main__game}>
           <div className={gameStyles.ctn__game}>
             <div className={gameStyles.ctn__canvas}>
@@ -49,6 +40,7 @@ const Game: NextPage = () => {
                   boxShadow: `0 0 1px ${borderColor}, 0 0 2px ${borderColor}, 0 0 4px ${borderColor}, 0 0 8px ${borderColor}, 0 0 12px ${borderColor}`,
                 }}
               >
+                {/* <Pong \> */}
                 <Canvas />
               </div>
               <div className={gameStyles.ctn__game__rslt}></div>
@@ -128,8 +120,6 @@ const Game: NextPage = () => {
             </div>
           </div>
         </div>
-        {/* </div> */}
-        {/* </div> */}
       </Layout>
     </ThemeContext.Provider>
   );

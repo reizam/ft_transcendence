@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext } from 'react';
 
 export interface ThemeContextType {
   borderColor: string;
@@ -6,6 +6,6 @@ export interface ThemeContextType {
 }
 
 export const ThemeContext = createContext<ThemeContextType>({
-  borderColor: "var(--main-theme-color",
+  borderColor: 'var(--main-theme-color)',
   setBorderColor: () => {},
 });

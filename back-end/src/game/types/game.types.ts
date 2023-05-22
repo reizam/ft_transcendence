@@ -10,3 +10,9 @@ export type MatchResult = {
   winner: Player;
   loser: Player;
 };
+
+export enum GameState {
+  WAITING,
+  INGAME,
+  STOPPED,
+}

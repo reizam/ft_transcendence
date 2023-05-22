@@ -1,18 +1,6 @@
 import { GameService } from '@/game/game.service';
 import { PrismaService } from '@/prisma/prisma.service';
-import {
-  Body,
-  Controller,
-  InternalServerErrorException,
-  Param,
-  ParseIntPipe,
-  Patch,
-  Post,
-  Res,
-} from '@nestjs/common';
-import { User } from '@prisma/client';
-import { DUser } from '@/decorators/user.decorator';
-import { Response } from 'express';
+import { Controller } from '@nestjs/common';
 
 // Type for testing purpose
 type ResultDto = {
@@ -51,29 +39,29 @@ export class GameController {
   //   }
   // }
 
-  @Post('create')
-  async createGame(
-    @DUser() user: User,
-    @Res() res: Response,
-  ): Promise<Response> {
-    const gameId = await this.gameService
-      .createGame(user.id)
-      .catch((error: any) => {
-        console.error({ error });
-        throw new InternalServerErrorException();
-      });
-    return res.status(200).json({ gameId: gameId });
-  }
+  // @Post('create')
+  // async createGame(
+  //   @DUser() user: User,
+  //   @Res() res: Response,
+  // ): Promise<Response> {
+  //   const gameId = await this.gameService
+  //     .createGame(user.id)
+  //     .catch((error: any) => {
+  //       console.error({ error });
+  //       throw new InternalServerErrorException();
+  //     });
+  //   return res.status(200).json({ gameId: gameId });
+  // }
 
-  @Patch(':id')
-  async launchGame(
-    @DUser() user: User,
-    @Param('id', ParseIntPipe) id: number,
-    @Res() res: Response,
-  ): Promise<Response> {
-    await this.gameService.joinGame(id, user.id);
-    return res.status(204).send();
-  }
+  // @Patch(':id')
+  // async launchGame(
+  //   @DUser() user: User,
+  //   @Param('id', ParseIntPipe) id: number,
+  //   @Res() res: Response,
+  // ): Promise<Response> {
+  //   await this.gameService.joinGame(id, user.id);
+  //   return res.status(204).send();
+  // }
 
   // @Patch('launch')
   // async launchGame(
