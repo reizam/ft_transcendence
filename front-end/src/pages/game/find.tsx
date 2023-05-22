@@ -16,10 +16,13 @@ function LoadingScreen(): JSX.Element {
   // TODO: leave the room when change router.pathname?
 
   // TODO: add socket.on('error') instead of relying on ack?
-  socket?.emit('findGame', (err: string) => {
+  socket?.emit('findGame');
+  socket?.on('findError', (err: string) => {
     setTimeout(() => toast.error(err ?? 'Unknown error'), 500);
     setTimeout(() => router.push('/game'), 2000);
+    socket.off('findError');
   });
+
   socket?.on('foundGame', (id: number) => router.push('/game/id'));
 
   return (
