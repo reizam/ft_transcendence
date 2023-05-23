@@ -1,17 +1,12 @@
 import {
   ConnectedSocket,
-  MessageBody,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
+  WsResponse,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { RoomService } from '@/game/room.service';
-
-interface IFindGame {
-  event: string;
-  msg: string;
-}
 
 @WebSocketGateway()
 export class RoomGateway {
@@ -23,15 +18,15 @@ export class RoomGateway {
   @SubscribeMessage('findGame')
   async onFindGame(
     @ConnectedSocket() client: Socket,
-  ): Promise<void | IFindGame> {
-    // return this.gameService.joinGame(client).then((err) => {
-    //   if (err) return err;
-    //   else return;
-    // });
+  ): Promise<void | WsResponse<string>> {
     return this.gameService.joinGame(client).then((err) => {
-      console.log(err);
-      if (err) return { event: 'findError', msg: err };
+      if (err) return { event: 'findError', data: err };
       else return;
     });
+  }
+
+  @SubscribeMessage('stopFindGame')
+  async onStopFindGame(@ConnectedSocket() client: Socket): Promise<void> {
+    this.gameService.stopFindGame(client);
   }
 }

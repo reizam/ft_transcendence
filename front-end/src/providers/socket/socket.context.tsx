@@ -35,9 +35,9 @@ export const useProvideSocket = (): ISocketContext => {
     socket.on('disconnect', onDisconnect);
 
     return () => {
-      socket.off('connect');
-      socket.off('connect_error');
-      socket.off('disconnect');
+      socket.off('connect', onConnect);
+      socket.off('connect_error', onConnectError);
+      socket.off('disconnect', onDisconnect);
     };
   }, []);
 

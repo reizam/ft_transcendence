@@ -1,9 +1,10 @@
-import { Player } from '@/game/types/game.type';
+import { Player } from '@/game/types/game.types';
 import { PrismaService } from '@/prisma/prisma.service';
 import { SocketUserService } from '@/socket/user/socket.service';
 import { Injectable } from '@nestjs/common';
 import { ConnectedSocket } from '@nestjs/websockets';
 import { Mutex } from 'async-mutex';
+import cluster from 'cluster';
 import { Socket } from 'socket.io';
 
 @Injectable()
@@ -16,11 +17,25 @@ export class RoomService {
   private playerQueue: Player[] = [];
   private mutex = new Mutex();
 
+  async stopFindGame(@ConnectedSocket() client: Socket): Promise<void> {
+    const release = await this.mutex.acquire();
+    const clientIndex = this.playerQueue.findIndex(
+      (player) => player.socketId === client.id,
+    );
+
+    // console.log('index: ', clientIndex);
+    // console.log(this.playerQueue);
+    if (clientIndex != -1) {
+      this.playerQueue.splice(clientIndex, 1);
+    }
+    // console.log(this.playerQueue);
+    release();
+  }
+
   async joinGame(@ConnectedSocket() client: Socket): Promise<void | string> {
     const user = this.socketUserService.getSocketUser(client);
 
-    // if no user, return error message as acknowledgement or emit error?
-    if (1) return 'Error in interval';
+    // if (1) return 'Error in interval';
     if (!user) return 'Unable to load user infos';
 
     if (!this.playerQueue.find((player) => player.id === user.id)) {
@@ -32,23 +47,25 @@ export class RoomService {
         elo: user.elo,
         searchGameSince: Date.now(),
       });
-      this.playerQueue.push({
-        id: user.id + 1,
-        socketId: client.id + '_2',
-        elo: user.elo - 50,
-        searchGameSince: Date.now() - 5000,
-      });
-      this.playerQueue.push({
-        id: user.id + 2,
-        socketId: client.id + '_3',
-        elo: user.elo + 80,
-        searchGameSince: Date.now() + 1000,
-      });
+      if (this.playerQueue.length < 3) {
+        this.playerQueue.push({
+          id: user.id + 1,
+          socketId: client.id + '_2',
+          elo: user.elo - 50,
+          searchGameSince: Date.now() - 5000,
+        });
+        this.playerQueue.push({
+          id: user.id + 2,
+          socketId: client.id + '_3',
+          elo: user.elo + 80,
+          searchGameSince: Date.now() + 1000,
+        });
+      }
       this.playerQueue.sort((a, b) => a.elo - b.elo);
       release();
     }
 
-    console.log(this.playerQueue);
+    // console.log(this.playerQueue);
 
     return new Promise<void | string>((resolve) => {
       const findMatchingPlayer = async (): Promise<void> => {
@@ -57,9 +74,10 @@ export class RoomService {
           playerOneSocketId: string,
           playerTwoSocketId: string,
         ) => {
-          //
-          console.log(playerOneSocketId);
-          console.log(playerTwoSocketId);
+          // implement actual matching
+
+          // console.log(playerOneSocketId);
+          // console.log(playerTwoSocketId);
           resolve();
         };
 

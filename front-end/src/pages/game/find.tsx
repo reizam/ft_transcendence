@@ -4,26 +4,42 @@ import gameStyles from '@/styles/game.module.css';
 import { useSocket } from '@/providers/socket/socket.context';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
+import { useEffect } from 'react';
 
 function showError(err: unknown, toastErr: string = 'Unknown error'): void {
   console.error(err);
   toast.error(toastErr);
 }
 
-function LoadingScreen(): JSX.Element {
+function FindGame(): JSX.Element {
   const { socket } = useSocket();
   const router = useRouter();
-  // TODO: leave the room when change router.pathname?
 
-  // TODO: add socket.on('error') instead of relying on ack?
-  socket?.emit('findGame');
-  socket?.on('findError', (err: string) => {
-    setTimeout(() => toast.error(err ?? 'Unknown error'), 500);
-    setTimeout(() => router.push('/game'), 2000);
-    socket.off('findError');
-  });
+  useEffect(() => {
+    const handleFindError = (err: string) => {
+      console.log(err);
+      setTimeout(() => toast.error(err ?? 'Unknown error'), 500);
+      setTimeout(() => router.push('/game'), 2000);
+    };
 
-  socket?.on('foundGame', (id: number) => router.push('/game/id'));
+    socket?.once('findError', handleFindError);
+    socket?.once('foundGame', (id: number) => router.push('/game/id'));
+
+    return () => {
+      console.log('First useEffect');
+      socket?.off('findError', handleFindError);
+    };
+  }, [socket, router]);
+
+  useEffect(() => {
+    socket?.emit('findGame');
+
+    return () => {
+      console.log('Second useEffect');
+      socket?.removeAllListeners('foundGame');
+      socket?.emit('stopFindGame');
+    };
+  }, [socket]);
 
   return (
     <Layout title="Game">
@@ -38,4 +54,4 @@ function LoadingScreen(): JSX.Element {
   );
 }
 
-export default LoadingScreen;
+export default FindGame;
