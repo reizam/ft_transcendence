@@ -18,100 +18,147 @@ const Canvas = (): ReactElement => {
   useEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas?.getContext('2d');
-    socket?.on('stop', () => {
+    const div = canvas?.parentElement;
+    const ratio = { width: 0, height: 0 };
+    let height = 0;
+    let width = 0;
+
+    if (div) {
+      height = div?.clientHeight;
+      width = div?.clientWidth;
+    }
+
+    if (canvas) {
+      canvas.width = width;
+      canvas.height = height;
+    }
+
+    socket?.once('stop', () => {
       router.push('/game');
     });
-    socket?.on('ready', () => {
+
+    socket?.once('ready', () => {
+      return;
+    });
+
+    socket?.on(
+      'gameState',
+      (state: {
+        canvasDimensions: { width: number; height: number };
+        paddlePositions: { left: number; right: number };
+        ball: {
+          x: number;
+          y: number;
+          radius: number;
+          speedX: number;
+          speedY: number;
+        };
+      }) => {
+        if (context) {
+          ratio.width = state.canvasDimensions.width / context.canvas.width;
+          ratio.height = state.canvasDimensions.height / context.canvas.height;
+
+          // Clean the canvas
+          context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+          drawPaddle(
+            context,
+            { width: context.canvas.width, height: context.canvas.height },
+            state.paddlePositions
+          );
+          drawBall(context, state.ball);
+        }
+      }
+    );
+
+    // Draw the paddle for the player
+    const drawPaddle = (
+      context: CanvasRenderingContext2D,
+      dimensions: { width: number; height: number },
+      positions: { left: number; right: number }
+    ): void => {
+      const paddleHeight = dimensions.height * 0.2;
+      const paddleWidth = 10;
+
+      // Draw the paddle on the left
+      context.fillStyle = borderColor;
+      context.fillRect(
+        0,
+        positions.left / ratio.height,
+        paddleWidth,
+        paddleHeight
+      );
+
+      // Draw the paddle on the right
+      context.fillStyle = borderColor;
+      context.fillRect(
+        dimensions.width - 10,
+        positions.right / ratio.height,
+        paddleWidth,
+        paddleHeight
+      );
+    };
+
+    // Draw the ball
+    const drawBall = (
+      context: CanvasRenderingContext2D,
+      ball: { x: number; y: number; radius: number }
+    ): void => {
+      context.beginPath();
+      context.arc(
+        ball.x / ratio.width,
+        ball.y / ratio.height,
+        ball.radius,
+        0,
+        Math.PI * 2
+      );
+      context.fillStyle = 'white';
+      context.fill();
+      context.closePath();
+    };
+
+    const handleKeyDown = (e: KeyboardEvent): void => {
+      if (['w', 's', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+        socket?.emit('keyDown', e.key);
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent): void => {
+      if (['w', 's', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+        socket?.emit('keyUp', e.key);
+      }
+    };
+
+    const handleResize = (): void => {
+      const canvas = canvasRef.current;
       const div = canvas?.parentElement;
+      const context = canvas?.getContext('2d');
+
       if (div) {
         const dimensions = {
           width: div?.clientWidth,
           height: div?.clientHeight,
         };
-        socket.emit('dimensions', dimensions);
 
         if (canvasRef.current) {
           canvas.width = dimensions.width;
           canvas.height = dimensions.height;
         }
       }
-    });
-    socket?.on('gameState', (state: { paddlePositions: any; ball: any }) => {
-      if (context) {
-        // Clean the canvas
-        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-        drawPaddle(
-          context,
-          { width: context.canvas.width, height: context.canvas.height },
-          state.paddlePositions
-        );
-        drawBall(context, state.ball);
-      }
-    });
-  }, []);
+    };
 
-  // Draw the paddle for the player
-  const drawPaddle = (
-    context: CanvasRenderingContext2D,
-    dimensions: { width: number; height: number },
-    positions: { left: number; right: number }
-  ): void => {
-    const paddleHeight = dimensions.height * 0.2;
-    const paddleWidth = 10;
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener('resize', handleResize);
 
-    // Draw the paddle on the left
-    context.fillStyle = borderColor;
-    context.fillRect(10, positions.left, paddleWidth, paddleHeight);
-
-    // Draw the paddle on the right
-    context.fillStyle = borderColor;
-    context.fillRect(
-      dimensions.width - 10,
-      positions.right,
-      paddleWidth,
-      paddleHeight
-    );
-  };
-
-  // Draw the ball
-  const drawBall = (
-    context: CanvasRenderingContext2D,
-    ball: { x: number; y: number; radius: number }
-  ): void => {
-    context.beginPath();
-    context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-    context.fillStyle = 'white';
-    context.fill();
-    context.closePath();
-  };
-
-  const handleKeyDown = (e: KeyboardEvent): void => {
-    if (['w', 's', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
-      socket?.emit('keyDown', e.key);
-    }
-  };
-
-  const handleKeyUp = (e: KeyboardEvent): void => {
-    if (['w', 's', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
-      socket?.emit('keyUp', e.key);
-    }
-  };
-
-  window.addEventListener('keydown', handleKeyDown);
-  window.addEventListener('keyup', handleKeyUp);
-
-  const ball = {
-    x: 50,
-    y: 50,
-    radius: 10,
-    speedX: 2,
-    speedY: 2,
-  };
-
-  const paddlePositions = {
-    left: 0,
-    right: 0,
-  };
+    return () => {
+      socket?.removeAllListeners('stop');
+      socket?.removeAllListeners('ready');
+      socket?.removeAllListeners('gamestate');
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [socket, router]);
 
   return <canvas ref={canvasRef} />;
 };

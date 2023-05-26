@@ -8,8 +8,6 @@ export class GameService {
   @WebSocketServer()
   server: Server;
 
-  state: GameState = GameState.WAITING;
-
   keyStates: { [key: string]: boolean } = {
     w: false,
     s: false,
@@ -17,20 +15,22 @@ export class GameService {
     ArrowDown: false,
   };
 
+  canvasDimensions = { width: 1750, height: 1000 };
+
   paddlePositions = {
-    left: 0,
-    right: 0,
+    left: this.canvasDimensions.height / 2 - this.canvasDimensions.height * 0.1,
+    right:
+      this.canvasDimensions.height / 2 - this.canvasDimensions.height * 0.1,
   };
 
-  canvasDimensions = { width: 0, height: 0 };
-  paddleHeight = 0.2;
+  paddleHeight = this.canvasDimensions.height * 0.2;
 
   ball = {
-    x: 0,
-    y: 0,
+    x: this.canvasDimensions.width / 2,
+    y: this.canvasDimensions.height / 2,
     radius: 10,
-    speedX: 2,
-    speedY: 2,
+    speedX: 5,
+    speedY: this.getRandomNumber(-5, 5),
   };
 
   scores = {
@@ -38,15 +38,16 @@ export class GameService {
     right: 0,
   };
 
+  getRandomNumber(min: number, max: number): number {
+    return Math.random() * (max - min) + min;
+  }
+
   resetScores(): void {
     this.scores.left = 0;
     this.scores.right = 0;
   }
 
   updatePaddlePosition(): void {
-    if (this.state !== GameState.INGAME) {
-      return;
-    }
     const speed = 10;
 
     if (this.keyStates.w && this.paddlePositions.left > 0) {
@@ -55,7 +56,7 @@ export class GameService {
     if (
       this.keyStates.s &&
       this.paddlePositions.left <
-        this.canvasDimensions.height * (1 - this.paddleHeight)
+        this.canvasDimensions.height - this.paddleHeight
     ) {
       this.paddlePositions.left += speed;
     }
@@ -65,22 +66,14 @@ export class GameService {
     if (
       this.keyStates.ArrowDown &&
       this.paddlePositions.right <
-        this.canvasDimensions.height * (1 - this.paddleHeight)
+        this.canvasDimensions.height - this.paddleHeight
     ) {
       this.paddlePositions.right += speed;
     }
   }
 
-  getRandomNumber(min: number, max: number): number {
-    return Math.random() * (max - min) + min;
-  }
-
   updateBallPosition(): void {
-    if (this.state !== GameState.INGAME) {
-      return;
-    }
     const paddleWidth = 10;
-    const actualPaddleHeight = this.canvasDimensions.height * this.paddleHeight;
 
     // Mettre à jour la position de la Balle
     this.ball.x += this.ball.speedX;
@@ -99,14 +92,14 @@ export class GameService {
       this.ball.x - this.ball.radius < 10 + paddleWidth &&
       this.ball.y + this.ball.radius > this.paddlePositions.left &&
       this.ball.y - this.ball.radius <
-        this.paddlePositions.left + actualPaddleHeight;
+        this.paddlePositions.left + this.paddleHeight;
 
     const rightPaddleCollision =
       this.ball.x + this.ball.radius >
         this.canvasDimensions.width - 10 - paddleWidth &&
       this.ball.y + this.ball.radius > this.paddlePositions.right &&
       this.ball.y - this.ball.radius <
-        this.paddlePositions.right + actualPaddleHeight;
+        this.paddlePositions.right + this.paddleHeight;
 
     if (leftPaddleCollision || rightPaddleCollision) {
       this.ball.speedX *= -1.1;
@@ -114,13 +107,12 @@ export class GameService {
       const paddle = leftPaddleCollision
         ? this.paddlePositions.left
         : this.paddlePositions.right;
-      const relativeIntersectY =
-        this.ball.y - (paddle + actualPaddleHeight / 2);
+      const relativeIntersectY = this.ball.y - (paddle + this.paddleHeight / 2);
 
       // Utiliser une interpolation linéaire pour déterminer la vitesse en Y de la balle
       const maxYSpeed = 8; // Vitesse maximale en Y pour la balle
       this.ball.speedY =
-        (relativeIntersectY / (actualPaddleHeight / 2)) * maxYSpeed;
+        (relativeIntersectY / (this.paddleHeight / 2)) * maxYSpeed;
 
       // Ajuster la position de la balle pour éviter qu'elle ne reste bloquée dans le paddle
       if (leftPaddleCollision) {
@@ -142,114 +134,21 @@ export class GameService {
 
       // Si le paddle gauche a perdu, la balle se déplace vers la droite (vitesse positive en X)
       // Sinon, elle se déplace vers la gauche (vitesse négative en X)
-      this.ball.speedX = lostLeftPaddle ? -Math.abs(5) : Math.abs(5);
+      this.ball.speedX = lostLeftPaddle ? -5 : 5;
       this.ball.speedY = this.getRandomNumber(-5, 5);
 
       lostLeftPaddle ? (this.scores.left += 1) : (this.scores.right += 1);
     }
+  }
+
+  update(): GameState {
+    this.updatePaddlePosition();
+    this.updateBallPosition();
 
     // Vérifie si l'un des joueurs a atteint 10 points
     if (this.scores.left === 10 || this.scores.right === 10) {
       this.resetScores();
-      this.state = GameState.STOPPED;
-    }
+      return GameState.STOPPED;
+    } else return GameState.INGAME;
   }
-
-  update(): void {
-    this.updatePaddlePosition();
-    this.updateBallPosition();
-  }
-
-  // async updateEloRating(result: MatchResult): Promise<void> {
-  //   const kFactor = 32;
-
-  //   const expectedOutcomeWinner =
-  //     1 / (1 + 10 ** ((result.loser.elo - result.winner.elo) / 400));
-  //   const expectedOutcomeLoser =
-  //     1 / (1 + 10 ** ((result.winner.elo - result.loser.elo) / 400));
-
-  //   const actualOutcomeWinner = result.isDraw ? 0.5 : 1;
-  //   const actualOutcomeLoser = result.isDraw ? 0.5 : 0;
-
-  //   const newRatingWinner =
-  //     result.winner.elo +
-  //     kFactor * (actualOutcomeWinner - expectedOutcomeWinner);
-  //   const newRatingLoser =
-  //     result.loser.elo +
-  //     kFactor * (actualOutcomeLoser - expectedOutcomeLoser);
-
-  //   await this.prisma.statistic.update({
-  //     where: {
-  //       userId: result.loser.id,
-  //     },
-  //     data: {
-  //       elo: Math.round(newRatingLoser),
-  //     },
-  //   });
-
-  //   try {
-  //     await this.prisma.statistic.update({
-  //       where: {
-  //         userId: result.winner.id,
-  //       },
-  //       data: {
-  //         elo: Math.round(newRatingWinner),
-  //       },
-  //     });
-  //   } catch (e) {
-  //     // update back to old value to avoid biased ranking
-  //     await this.prisma.statistic.update({
-  //       where: {
-  //         userId: result.loser.id,
-  //       },
-  //       data: {
-  //         elo: result.loser.elo,
-  //       },
-  //     });
-  //     throw e;
-  //   }
-  // }
-
-  // async createGame(userId: number): Promise<number> {
-  //   const game = await this.prisma.game.create({
-  //     data: {
-  //       status: 'waiting',
-  //       playerOneId: userId,
-  //       players: {
-  //         connect: [{ id: userId }],
-  //       },
-  //     },
-  //   });
-  //   return game.id;
-  // }
-
-  // async joinGame(gameId: number, playerTwoId: number): Promise<void> {
-  //   await this.prisma.game.update({
-  //     where: {
-  //       id: gameId,
-  //     },
-  //     data: {
-  //       playerTwoId: playerTwoId,
-  //       launchedAt: new Date().toISOString(),
-  //       players: {
-  //         connect: [{ id: playerTwoId }],
-  //       },
-  //     },
-  //   });
-  // }
-
-  // async launchGame({ gameId, playerTwoId }: LaunchGame): Promise<void> {
-  //   await this.prisma.game.update({
-  //     where: {
-  //       id: gameId,
-  //     },
-  //     data: {
-  //       playerTwoId: playerTwoId,
-  //       launchedAt: new Date().toISOString(),
-  //       players: {
-  //         connect: [{ id: playerTwoId }],
-  //       },
-  //     },
-  //   });
-  // }
 }

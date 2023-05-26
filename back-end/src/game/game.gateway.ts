@@ -12,18 +12,21 @@ import { Server, Socket } from 'socket.io';
 export class GameGateway {
   constructor(private readonly game: GameService) {}
 
+  state: GameState = GameState.WAITING;
+
   @WebSocketServer()
   server: Server;
 
   @Interval(1000 / 60)
   loop(): void {
-    if (this.game.state === GameState.STOPPED) {
-      this.game.state = GameState.WAITING;
+    console.log(this.game);
+    if (this.state === GameState.STOPPED) {
+      this.state = GameState.WAITING;
       this.server.emit('stop');
-    }
-    if (this.game.state === GameState.INGAME) {
-      this.game.update();
+    } else if (this.state === GameState.INGAME) {
+      this.state = this.game.update();
       this.server.emit('gameState', {
+        canvasDimensions: this.game.canvasDimensions,
         paddlePositions: this.game.paddlePositions,
         ball: this.game.ball,
       });
@@ -31,39 +34,21 @@ export class GameGateway {
   }
 
   @SubscribeMessage('keyDown')
-  onKeyDown(client: Socket, key: string): void {
+  onKeyDown(_client: Socket, key: string): void {
     this.game.keyStates[key] = true;
   }
 
   @SubscribeMessage('keyUp')
-  onKeyUp(client: Socket, key: string): void {
+  onKeyUp(_client: Socket, key: string): void {
     this.game.keyStates[key] = false;
   }
 
-  @SubscribeMessage('dimensions')
-  update(client: Socket, dimensions: any): void {
-    // Écoutez les messages du client pour obtenir les dimensions de la div
-    this.game.canvasDimensions.width = dimensions.width;
-    this.game.canvasDimensions.height = dimensions.height;
-
-    // Mettre à jour le positionnement de la balle
-    this.game.ball.x = this.game.canvasDimensions.width / 2;
-    this.game.ball.y = this.game.canvasDimensions.height / 2;
-
-    // Mettre à jour le posionnement des paddles
-    this.game.paddlePositions.left =
-      (this.game.canvasDimensions.height -
-        this.game.canvasDimensions.height * this.game.paddleHeight) /
-      2;
-    this.game.paddlePositions.right =
-      (this.game.canvasDimensions.height -
-        this.game.canvasDimensions.height * this.game.paddleHeight) /
-      2;
-  }
-
   @SubscribeMessage('start')
-  createLocalGame(client: Socket): void {
-    this.game.state = GameState.INGAME;
-    this.server?.emit('ready');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onStart(_client: Socket): void {
+    if (this.state === GameState.WAITING) {
+      this.state = GameState.INGAME;
+      this.server?.emit('ready');
+    }
   }
 }
