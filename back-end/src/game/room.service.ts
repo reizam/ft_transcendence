@@ -1,10 +1,9 @@
-import { Player } from '@/game/types/game.types';
+import { IFindGame, Player } from '@/game/types/game.types';
 import { PrismaService } from '@/prisma/prisma.service';
 import { SocketUserService } from '@/socket/user/socket.service';
 import { Injectable } from '@nestjs/common';
 import { ConnectedSocket } from '@nestjs/websockets';
 import { Mutex } from 'async-mutex';
-import cluster from 'cluster';
 import { Socket } from 'socket.io';
 
 @Injectable()
@@ -15,32 +14,53 @@ export class RoomService {
   ) {}
 
   private playerQueue: Player[] = [];
-  private mutex = new Mutex();
+  // private mutex = new Mutex();
 
-  async stopFindGame(@ConnectedSocket() client: Socket): Promise<void> {
-    const release = await this.mutex.acquire();
+  async createGame(
+    playerOneId: number,
+    playerTwoId: number,
+  ): Promise<number | null> {
+    try {
+      const game = await this.prisma.game.create({
+        data: {
+          status: 'waiting',
+          playerOneId: playerOneId,
+          playerTwoId: playerTwoId,
+          players: {
+            connect: [{ id: playerOneId }, { id: playerTwoId }],
+          },
+        },
+      });
+      return game.id;
+    } catch (e: any) {
+      console.error(e.message);
+      return null;
+    }
+  }
+
+  removeFromPlayerQueue(@ConnectedSocket() client: Socket): void {
+    const user = this.socketUserService.getSocketUser(client);
+
+    if (!user) return;
+
+    // const release = await RoomService.mutex.acquire();
     const clientIndex = this.playerQueue.findIndex(
-      (player) => player.socketId === client.id,
+      (player) => player.id === user.id,
     );
 
-    // console.log('index: ', clientIndex);
-    // console.log(this.playerQueue);
     if (clientIndex != -1) {
       this.playerQueue.splice(clientIndex, 1);
     }
     // console.log(this.playerQueue);
-    release();
+    // release();
   }
 
-  async joinGame(@ConnectedSocket() client: Socket): Promise<void | string> {
+  addToPlayerQueue(@ConnectedSocket() client: Socket): void {
     const user = this.socketUserService.getSocketUser(client);
 
-    // if (1) return 'Error in interval';
-    if (!user) return 'Unable to load user infos';
-
+    if (!user) return;
     if (!this.playerQueue.find((player) => player.id === user.id)) {
-      const release = await this.mutex.acquire();
-
+      // const release = await RoomService.mutex.acquire();
       this.playerQueue.push({
         id: user.id,
         socketId: client.id,
@@ -50,35 +70,53 @@ export class RoomService {
       if (this.playerQueue.length < 3) {
         this.playerQueue.push({
           id: user.id + 1,
-          socketId: client.id + '_2',
+          socketId: client.id, //+ '_2',
           elo: user.elo - 50,
           searchGameSince: Date.now() - 5000,
         });
         this.playerQueue.push({
           id: user.id + 2,
-          socketId: client.id + '_3',
+          socketId: client.id, //+ '_3',
           elo: user.elo + 80,
           searchGameSince: Date.now() + 1000,
         });
       }
       this.playerQueue.sort((a, b) => a.elo - b.elo);
-      release();
+      // release();
     }
+  }
 
-    // console.log(this.playerQueue);
+  async findGame(@ConnectedSocket() client: Socket): Promise<void | IFindGame> {
+    const user = this.socketUserService.getSocketUser(client);
 
-    return new Promise<void | string>((resolve) => {
+    if (!user) return { error: 'Unable to load user infos' };
+
+    console.log(this.playerQueue);
+
+    return new Promise<void | IFindGame>((resolve) => {
       const findMatchingPlayer = async (): Promise<void> => {
-        const release = await this.mutex.acquire();
+        // const release = await RoomService.mutex.acquire();
         const resolveMatchingPlayers = (
-          playerOneSocketId: string,
-          playerTwoSocketId: string,
+          playerOne: Player,
+          playerOneIndex: number,
+          playerTwo: Player,
+          playerTwoIndex: number,
         ) => {
-          // implement actual matching
+          this.playerQueue.splice(Math.min(playerOneIndex, playerTwoIndex), 2);
+          // const gameId = this.createGame(playerOne.id, playerTwo.id);
+          // const playerRoom: string[] = [playerOne.socketId, playerTwo.socketId];
 
-          // console.log(playerOneSocketId);
-          // console.log(playerTwoSocketId);
-          resolve();
+          // if (!gameId) {
+          //   return resolve({ error: 'Game creation error' });
+          // }
+          console.log({ playerOne });
+          console.log({ playerTwo });
+          // this.server
+          //   .to(playerOne.socketId)
+          //   .to(playerTwo.socketId)
+          //   .timeout(10000)
+          //   .emitWithAck('foundGame');
+          return resolve({ players: [playerOne, playerTwo] });
         };
 
         try {
@@ -89,94 +127,71 @@ export class RoomService {
           const userBelow: Player = this.playerQueue[userIndex - 1];
           const userAbove: Player = this.playerQueue[userIndex + 1];
           const userBelowEloDiff: number =
-            userBelow && user_ ? userBelow.elo - user_.elo : 1000000000;
+            userBelow && user_ ? user_.elo - userBelow.elo : 1000000000;
           const userAboveEloDiff: number =
-            userAbove && user_ ? user_.elo - userAbove.elo : 1000000000;
-          const userBelowMsDiff: number =
+            userAbove && user_ ? userAbove.elo - user_.elo : 1000000000;
+          const userBelowMsWait: number =
             userBelow && user_
-              ? Math.abs(userBelow.searchGameSince - user_.searchGameSince)
+              ? Math.abs(Date.now() - userBelow.searchGameSince)
               : -1;
-          const userAboveMsDiff: number =
+          const userAboveMsWait: number =
             userAbove && user_
-              ? Math.abs(userAbove.searchGameSince - user_.searchGameSince)
+              ? Math.abs(Date.now() - userAbove.searchGameSince)
               : -1;
+          const maxMsWait = 15000;
 
           if (userIndex === -1) return resolve();
           if (!userBelow && !userAbove) {
             setTimeout(findMatchingPlayer, 3000);
-            return resolve();
+            return;
           }
           if (userBelow && !userAbove) {
-            if (userBelowEloDiff <= 100 || userBelowMsDiff > 60000)
-              return resolveMatchingPlayers(user_.socketId, userBelow.socketId);
+            if (userBelowEloDiff <= 100 || userBelowMsWait > maxMsWait)
+              return resolveMatchingPlayers(
+                user_,
+                userIndex,
+                userBelow,
+                userIndex - 1,
+              );
           }
           if (!userBelow && userAbove) {
-            if (userAboveEloDiff <= 100 || userAboveMsDiff > 60000)
-              return resolveMatchingPlayers(user_.socketId, userAbove.socketId);
+            if (userAboveEloDiff <= 100 || userAboveMsWait > maxMsWait)
+              return resolveMatchingPlayers(
+                user_,
+                userIndex,
+                userAbove,
+                userIndex + 1,
+              );
           }
           if (userBelowEloDiff <= 100 || userAboveEloDiff <= 100) {
             return resolveMatchingPlayers(
-              user_.socketId,
+              user_,
+              userIndex,
+              userBelowEloDiff < userAboveEloDiff ? userBelow : userAbove,
               userBelowEloDiff < userAboveEloDiff
-                ? userBelow.socketId
-                : userAbove.socketId,
+                ? userIndex - 1
+                : userIndex + 1,
             );
           }
-          if (userBelowMsDiff > 60000 || userAboveMsDiff > 60000) {
+          if (userBelowMsWait > maxMsWait || userAboveMsWait > maxMsWait) {
             return resolveMatchingPlayers(
-              user_.socketId,
-              userBelowMsDiff > userAboveMsDiff
-                ? userBelow.socketId
-                : userAbove.socketId,
+              user_,
+              userIndex,
+              userBelowMsWait > userAboveMsWait ? userBelow : userAbove,
+              userBelowMsWait > userAboveMsWait ? userIndex - 1 : userIndex + 1,
             );
           } else {
             setTimeout(findMatchingPlayer, 3000);
+            return;
           }
         } finally {
-          release();
+          // if (RoomService.mutex.isLocked()) release();
         }
       };
 
       findMatchingPlayer();
     });
-
-    // Check in the queue every 3 seconds if there is a match:
-    // players are sorted by elo rating
-    // compare the first better with the first worst
-    // if only one ± 100 points, select it
-    // if two at ± 100 points, select the longest waiting one
-    // (or the best one if added at same time)
-    // if none in ± 100 points, select the closest once it has
-    // been waiting more than 1 minute
   }
-
-  // async createGame(userId: number): Promise<number> {
-  //   const game = await this.prisma.game.create({
-  //     data: {
-  //       status: 'waiting',
-  //       playerOneId: userId,
-  //       players: {
-  //         connect: [{ id: userId }],
-  //       },
-  //     },
-  //   });
-  //   return game.id;
-  // }
-
-  // async joinGame(gameId: number, playerTwoId: number): Promise<void> {
-  //   await this.prisma.game.update({
-  //     where: {
-  //       id: gameId,
-  //     },
-  //     data: {
-  //       playerTwoId: playerTwoId,
-  //       launchedAt: new Date().toISOString(),
-  //       players: {
-  //         connect: [{ id: playerTwoId }],
-  //       },
-  //     },
-  //   });
-  // }
 
   // async launchGame({ gameId, playerTwoId }: LaunchGame): Promise<void> {
   //   await this.prisma.game.update({

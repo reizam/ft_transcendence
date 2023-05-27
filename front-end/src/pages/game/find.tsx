@@ -18,24 +18,32 @@ function FindGame(): JSX.Element {
   useEffect(() => {
     const handleFindError = (err: string) => {
       console.log(err);
-      setTimeout(() => toast.error(err ?? 'Unknown error'), 500);
-      setTimeout(() => router.push('/game'), 2000);
+      setTimeout(() => toast.error(err ?? 'Unknown error'), 200);
+      setTimeout(() => router.push('/game'), 1500);
+    };
+    const handleFoundGame = (data: any) => {
+      console.log({ data });
+      router.push('/game');
     };
 
     socket?.once('findError', handleFindError);
-    socket?.once('foundGame', (id: number) => router.push('/game/id'));
+    // socket?.once('foundGame', (id: number) => router.push('/game/id'));
+    socket?.once('foundGame', handleFoundGame);
 
     return () => {
-      console.log('First useEffect');
       socket?.off('findError', handleFindError);
     };
   }, [socket, router]);
 
   useEffect(() => {
-    socket?.emit('findGame');
+    const sendFindGame = () => {
+      socket?.volatile.emit('findGame');
+    };
+
+    const timer = setTimeout(sendFindGame, 1000);
 
     return () => {
-      console.log('Second useEffect');
+      clearTimeout(timer);
       socket?.removeAllListeners('foundGame');
       socket?.emit('stopFindGame');
     };

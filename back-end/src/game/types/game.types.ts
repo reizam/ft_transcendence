@@ -5,6 +5,11 @@ export type Player = Pick<User, 'id' | 'elo'> & {
   searchGameSince: number;
 };
 
+export interface IFindGame {
+  error?: string;
+  players?: Player[];
+}
+
 export type MatchResult = {
   isDraw: boolean;
   winner: Player;

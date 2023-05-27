@@ -43,9 +43,9 @@ model Game {
 
   players           User[]
   playerOneId       Int
-  playerTwoId       Int?
-  playerOneScore    Int?
-  playerTwoScore    Int?
+  playerTwoId       Int
+  playerOneScore    Int           @default(0)
+  playerTwoScore    Int           @default(0)
 
   status            String        // waiting, pending, finished
 

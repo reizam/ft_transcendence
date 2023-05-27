@@ -5,6 +5,6 @@ import { Module } from '@nestjs/common';
 
 @Module({
   imports: [ChannelModule],
-  providers: [SocketGateway, SocketUserService],
+  providers: [SocketUserService],
 })
 export class SocketModule {}

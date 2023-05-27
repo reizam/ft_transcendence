@@ -11,5 +11,8 @@ const socket = io(BACKEND_URL, {
     token: cookie,
   },
 });
+socket.on('connect', () => {
+  socket.sendBuffer = [];
+});
 
 export default socket;
