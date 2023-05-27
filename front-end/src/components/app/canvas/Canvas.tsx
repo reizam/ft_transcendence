@@ -2,6 +2,7 @@ import { ThemeContext } from '@/pages/ThemeContext';
 import { useSocket } from '@/providers/socket/socket.context';
 import { useRouter } from 'next/router';
 import { ReactElement, useContext, useEffect, useRef } from 'react';
+import { toast } from 'react-toastify';
 
 // interface Props {}
 
@@ -13,25 +14,20 @@ const Canvas = (): ReactElement => {
   const { socket } = useSocket();
   const router = useRouter();
 
-  socket?.emit('start');
-
   useEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas?.getContext('2d');
     const div = canvas?.parentElement;
     const ratio = { width: 0, height: 0 };
-    let height = 0;
-    let width = 0;
 
-    if (div) {
-      height = div?.clientHeight;
-      width = div?.clientWidth;
+    if (!canvas) {
+      toast.error('Canvas failed to mount');
+      return;
     }
+    canvas.width = div?.clientWidth ?? 700;
+    canvas.height = div?.clientHeight ?? 400;
 
-    if (canvas) {
-      canvas.width = width;
-      canvas.height = height;
-    }
+    socket?.emit('start');
 
     socket?.once('stop', () => {
       router.push('/game');
@@ -77,7 +73,7 @@ const Canvas = (): ReactElement => {
       positions: { left: number; right: number }
     ): void => {
       const paddleHeight = dimensions.height * 0.2;
-      const paddleWidth = 10;
+      const paddleWidth = dimensions.width * 0.02;
 
       // Draw the paddle on the left
       context.fillStyle = borderColor;
@@ -91,7 +87,7 @@ const Canvas = (): ReactElement => {
       // Draw the paddle on the right
       context.fillStyle = borderColor;
       context.fillRect(
-        dimensions.width - 10,
+        dimensions.width,
         positions.right / ratio.height,
         paddleWidth,
         paddleHeight

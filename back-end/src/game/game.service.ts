@@ -15,7 +15,9 @@ export class GameService {
     ArrowDown: false,
   };
 
-  canvasDimensions = { width: 1750, height: 1000 };
+  canvasDimensions = { width: 1920, height: 1080 };
+
+  paddleSpeed = 20;
 
   paddlePositions = {
     left: this.canvasDimensions.height / 2 - this.canvasDimensions.height * 0.1,
@@ -24,12 +26,13 @@ export class GameService {
   };
 
   paddleHeight = this.canvasDimensions.height * 0.2;
+  paddleWidth = this.canvasDimensions.width * 0.02;
 
   ball = {
     x: this.canvasDimensions.width / 2,
     y: this.canvasDimensions.height / 2,
     radius: 10,
-    speedX: 5,
+    speedX: 10,
     speedY: this.getRandomNumber(-5, 5),
   };
 
@@ -48,33 +51,29 @@ export class GameService {
   }
 
   updatePaddlePosition(): void {
-    const speed = 10;
-
     if (this.keyStates.w && this.paddlePositions.left > 0) {
-      this.paddlePositions.left -= speed;
+      this.paddlePositions.left -= this.paddleSpeed;
     }
     if (
       this.keyStates.s &&
       this.paddlePositions.left <
         this.canvasDimensions.height - this.paddleHeight
     ) {
-      this.paddlePositions.left += speed;
+      this.paddlePositions.left += this.paddleSpeed;
     }
     if (this.keyStates.ArrowUp && this.paddlePositions.right > 0) {
-      this.paddlePositions.right -= speed;
+      this.paddlePositions.right -= this.paddleSpeed;
     }
     if (
       this.keyStates.ArrowDown &&
       this.paddlePositions.right <
         this.canvasDimensions.height - this.paddleHeight
     ) {
-      this.paddlePositions.right += speed;
+      this.paddlePositions.right += this.paddleSpeed;
     }
   }
 
   updateBallPosition(): void {
-    const paddleWidth = 10;
-
     // Mettre à jour la position de la Balle
     this.ball.x += this.ball.speedX;
     this.ball.y += this.ball.speedY;
@@ -89,14 +88,14 @@ export class GameService {
 
     // Collision avec les paddles
     const leftPaddleCollision =
-      this.ball.x - this.ball.radius < 10 + paddleWidth &&
+      this.ball.x - this.ball.radius < this.paddleWidth &&
       this.ball.y + this.ball.radius > this.paddlePositions.left &&
       this.ball.y - this.ball.radius <
         this.paddlePositions.left + this.paddleHeight;
 
     const rightPaddleCollision =
       this.ball.x + this.ball.radius >
-        this.canvasDimensions.width - 10 - paddleWidth &&
+        this.canvasDimensions.width - this.paddleWidth &&
       this.ball.y + this.ball.radius > this.paddlePositions.right &&
       this.ball.y - this.ball.radius <
         this.paddlePositions.right + this.paddleHeight;
@@ -116,10 +115,10 @@ export class GameService {
 
       // Ajuster la position de la balle pour éviter qu'elle ne reste bloquée dans le paddle
       if (leftPaddleCollision) {
-        this.ball.x = 10 + paddleWidth + this.ball.radius;
+        this.ball.x = this.paddleWidth + this.ball.radius;
       } else {
         this.ball.x =
-          this.canvasDimensions.width - 10 - paddleWidth - this.ball.radius;
+          this.canvasDimensions.width - this.paddleWidth - this.ball.radius;
       }
     }
 
@@ -134,7 +133,7 @@ export class GameService {
 
       // Si le paddle gauche a perdu, la balle se déplace vers la droite (vitesse positive en X)
       // Sinon, elle se déplace vers la gauche (vitesse négative en X)
-      this.ball.speedX = lostLeftPaddle ? -5 : 5;
+      this.ball.speedX = lostLeftPaddle ? -10 : 10;
       this.ball.speedY = this.getRandomNumber(-5, 5);
 
       lostLeftPaddle ? (this.scores.left += 1) : (this.scores.right += 1);
