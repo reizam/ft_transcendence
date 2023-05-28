@@ -6,31 +6,28 @@ import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
 import { useEffect } from 'react';
 
-function showError(err: unknown, toastErr: string = 'Unknown error'): void {
-  console.error(err);
-  toast.error(toastErr);
-}
-
 function FindGame(): JSX.Element {
   const { socket } = useSocket();
   const router = useRouter();
 
   useEffect(() => {
+    let timer1: NodeJS.Timeout;
+    let timer2: NodeJS.Timeout;
     const handleFindError = (err: string) => {
-      console.log(err);
-      setTimeout(() => toast.error(err ?? 'Unknown error'), 200);
-      setTimeout(() => router.push('/game'), 1500);
+      console.error(err);
+      timer1 = setTimeout(() => toast.error(err ?? 'Unknown error'), 200);
+      timer2 = setTimeout(() => router.push('/game'), 1500);
     };
-    const handleFoundGame = (data: any) => {
-      console.log({ data });
-      router.push('/game');
+    const handleFoundGame = (gameId: number) => {
+      router.push('/game/' + gameId);
     };
 
     socket?.once('findError', handleFindError);
-    // socket?.once('foundGame', (id: number) => router.push('/game/id'));
     socket?.once('foundGame', handleFoundGame);
 
     return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
       socket?.off('findError', handleFindError);
     };
   }, [socket, router]);
@@ -39,15 +36,36 @@ function FindGame(): JSX.Element {
     const sendFindGame = () => {
       socket?.volatile.emit('findGame');
     };
+    let timer3: NodeJS.Timeout;
+    const cancelFindGame = () => {
+      toast.error(
+        <div>
+          No matching player :(
+          <br />
+          Retry later or invite a friend!
+        </div>
+      );
+      timer3 = setTimeout(() => router.push('/game'), 1500);
+    };
 
-    const timer = setTimeout(sendFindGame, 1000);
+    const timer4 = setTimeout(sendFindGame, 1000);
+    const timer5 = setTimeout(cancelFindGame, 60000);
 
     return () => {
-      clearTimeout(timer);
+      clearTimeout(timer3);
+      clearTimeout(timer4);
+      clearTimeout(timer5);
       socket?.removeAllListeners('foundGame');
       socket?.emit('stopFindGame');
     };
   }, [socket]);
+
+  useEffect(() => {
+    if (socket?.connected === false) {
+      toast.error('Server error');
+      router.push('/game');
+    }
+  }, [socket, socket?.connected]);
 
   return (
     <Layout title="Game">

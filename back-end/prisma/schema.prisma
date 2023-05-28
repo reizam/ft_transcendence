@@ -47,7 +47,7 @@ model Game {
   playerOneScore    Int           @default(0)
   playerTwoScore    Int           @default(0)
 
-  status            String        // waiting, pending, finished
+  status            String        // waiting, playing, finished
 
   createdAt         DateTime      @default(now())
 

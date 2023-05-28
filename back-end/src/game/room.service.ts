@@ -16,11 +16,28 @@ export class RoomService {
   private playerQueue: Player[] = [];
   // private mutex = new Mutex();
 
-  async createGame(
+  async findOrCreateGame(
     playerOneId: number,
     playerTwoId: number,
   ): Promise<number | null> {
     try {
+      const existingGame = await this.prisma.game.findFirst({
+        where: {
+          OR: [
+            { playerOneId: playerOneId, playerTwoId: playerTwoId },
+            { playerOneId: playerTwoId, playerTwoId: playerOneId },
+          ],
+          status: {
+            equals: 'waiting',
+            mode: 'insensitive',
+          },
+        },
+      });
+
+      if (existingGame) {
+        return existingGame.id;
+      }
+
       const game = await this.prisma.game.create({
         data: {
           status: 'waiting',
@@ -31,9 +48,10 @@ export class RoomService {
           },
         },
       });
+
       return game.id;
-    } catch (e: any) {
-      console.error(e.message);
+    } catch (e: unknown) {
+      console.error(e);
       return null;
     }
   }
@@ -67,20 +85,20 @@ export class RoomService {
         elo: user.elo,
         searchGameSince: Date.now(),
       });
-      if (this.playerQueue.length < 3) {
-        this.playerQueue.push({
-          id: user.id + 1,
-          socketId: client.id, //+ '_2',
-          elo: user.elo - 50,
-          searchGameSince: Date.now() - 5000,
-        });
-        this.playerQueue.push({
-          id: user.id + 2,
-          socketId: client.id, //+ '_3',
-          elo: user.elo + 80,
-          searchGameSince: Date.now() + 1000,
-        });
-      }
+      // if (this.playerQueue.length < 3) {
+      //   this.playerQueue.push({
+      //     id: user.id + 1,
+      //     socketId: client.id, //+ '_2',
+      //     elo: user.elo - 50,
+      //     searchGameSince: Date.now() - 5000,
+      //   });
+      //   this.playerQueue.push({
+      //     id: user.id + 2,
+      //     socketId: client.id, //+ '_3',
+      //     elo: user.elo + 80,
+      //     searchGameSince: Date.now() + 1000,
+      //   });
+      // }
       this.playerQueue.sort((a, b) => a.elo - b.elo);
       // release();
     }
@@ -103,19 +121,8 @@ export class RoomService {
           playerTwoIndex: number,
         ) => {
           this.playerQueue.splice(Math.min(playerOneIndex, playerTwoIndex), 2);
-          // const gameId = this.createGame(playerOne.id, playerTwo.id);
-          // const playerRoom: string[] = [playerOne.socketId, playerTwo.socketId];
-
-          // if (!gameId) {
-          //   return resolve({ error: 'Game creation error' });
-          // }
           console.log({ playerOne });
           console.log({ playerTwo });
-          // this.server
-          //   .to(playerOne.socketId)
-          //   .to(playerTwo.socketId)
-          //   .timeout(10000)
-          //   .emitWithAck('foundGame');
           return resolve({ players: [playerOne, playerTwo] });
         };
 
