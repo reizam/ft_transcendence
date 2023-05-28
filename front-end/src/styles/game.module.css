@@ -94,11 +94,7 @@
 }
 
 .ctn__game__canvas {
-  margin-top: 5%;
-  margin-left: auto;
-  margin-right: auto;
-  width: 75%;
-  height: 70%;
+  aspect-ratio: 4 / 3;
   border: 2px solid var(--main-theme-color);
   border-radius: var(--radius-container);
   box-shadow: 0 0 1px var(--main-theme-color), 0 0 2px var(--main-theme-color),

@@ -15,9 +15,9 @@ export class GameService {
     ArrowDown: false,
   };
 
-  canvasDimensions = { width: 1920, height: 1080 };
+  canvasDimensions = { width: 2560, height: 1920 };
 
-  paddleSpeed = 20;
+  paddleSpeed = 30;
 
   paddlePositions = {
     left: this.canvasDimensions.height / 2 - this.canvasDimensions.height * 0.1,
@@ -26,13 +26,13 @@ export class GameService {
   };
 
   paddleHeight = this.canvasDimensions.height * 0.2;
-  paddleWidth = this.canvasDimensions.width * 0.02;
+  paddleWidth = this.canvasDimensions.width * 0.01;
 
   ball = {
     x: this.canvasDimensions.width / 2,
     y: this.canvasDimensions.height / 2,
-    radius: 10,
-    speedX: 10,
+    radius: 15,
+    speedX: 15,
     speedY: this.getRandomNumber(-5, 5),
   };
 
@@ -88,14 +88,14 @@ export class GameService {
 
     // Collision avec les paddles
     const leftPaddleCollision =
-      this.ball.x - this.ball.radius < this.paddleWidth &&
+      this.ball.x - this.ball.radius < this.paddleWidth + 10 &&
       this.ball.y + this.ball.radius > this.paddlePositions.left &&
       this.ball.y - this.ball.radius <
         this.paddlePositions.left + this.paddleHeight;
 
     const rightPaddleCollision =
       this.ball.x + this.ball.radius >
-        this.canvasDimensions.width - this.paddleWidth &&
+        this.canvasDimensions.width - this.paddleWidth - 10 &&
       this.ball.y + this.ball.radius > this.paddlePositions.right &&
       this.ball.y - this.ball.radius <
         this.paddlePositions.right + this.paddleHeight;
@@ -133,7 +133,7 @@ export class GameService {
 
       // Si le paddle gauche a perdu, la balle se déplace vers la droite (vitesse positive en X)
       // Sinon, elle se déplace vers la gauche (vitesse négative en X)
-      this.ball.speedX = lostLeftPaddle ? -10 : 10;
+      this.ball.speedX = lostLeftPaddle ? -15 : 15;
       this.ball.speedY = this.getRandomNumber(-5, 5);
 
       lostLeftPaddle ? (this.scores.left += 1) : (this.scores.right += 1);

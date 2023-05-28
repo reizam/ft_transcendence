@@ -18,23 +18,97 @@ const Canvas = (): ReactElement => {
     const canvas = canvasRef.current;
     const context = canvas?.getContext('2d');
     const div = canvas?.parentElement;
-    const ratio = { width: 0, height: 0 };
+    let ratio = 0;
 
-    if (!canvas) {
-      toast.error('Canvas failed to mount');
-      return;
-    }
-    canvas.width = div?.clientWidth ?? 700;
-    canvas.height = div?.clientHeight ?? 400;
+    console.log(div);
+
+    // Draw the paddle for the player
+    const drawPaddle = (
+      context: CanvasRenderingContext2D,
+      dimensions: { width: number; height: number },
+      positions: { left: number; right: number }
+    ): void => {
+      const paddleHeight = dimensions.height * 0.2;
+      const paddleWidth = dimensions.width * 0.01;
+
+      // Draw the paddle on the left
+      context.fillStyle = borderColor;
+      context.fillRect(
+        10 / ratio,
+        positions.left / ratio,
+        paddleWidth,
+        paddleHeight
+      );
+
+      // Draw the paddle on the right
+      context.fillStyle = borderColor;
+      context.fillRect(
+        dimensions.width - paddleWidth - 10 / ratio,
+        positions.right / ratio,
+        paddleWidth,
+        paddleHeight
+      );
+    };
+
+    // Draw the ball
+    const drawBall = (
+      context: CanvasRenderingContext2D,
+      ball: { x: number; y: number; radius: number }
+    ): void => {
+      context.beginPath();
+      context.arc(
+        ball.x / ratio,
+        ball.y / ratio,
+        ball.radius / ratio,
+        0,
+        Math.PI * 2
+      );
+      context.fillStyle = 'white';
+      context.fill();
+      context.closePath();
+    };
+
+    const handleKeyDown = (e: KeyboardEvent): void => {
+      e.preventDefault();
+      if (['w', 's', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+        socket?.emit('keyDown', e.key);
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent): void => {
+      if (['w', 's', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+        socket?.emit('keyUp', e.key);
+      }
+    };
+
+    const handleResize = (): void => {
+      const canvas = canvasRef.current;
+      const context = canvas?.getContext('2d');
+      const div = canvas?.parentElement;
+
+      if (!canvas) {
+        toast.error('Canvas failed to mount');
+        return;
+      }
+
+      if (!div) {
+        toast.error('Canvas parent element failed to mount');
+        return;
+      }
+
+      canvas.width = div.clientWidth ?? 640;
+      canvas.height = div.clientHeight ?? 480;
+    };
 
     socket?.emit('start');
 
     socket?.once('stop', () => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       router.push('/game');
     });
 
     socket?.once('ready', () => {
-      return;
+      handleResize();
     });
 
     socket?.on(
@@ -51,8 +125,7 @@ const Canvas = (): ReactElement => {
         };
       }) => {
         if (context) {
-          ratio.width = state.canvasDimensions.width / context.canvas.width;
-          ratio.height = state.canvasDimensions.height / context.canvas.height;
+          ratio = state.canvasDimensions.width / context.canvas.width;
 
           // Clean the canvas
           context.clearRect(0, 0, context.canvas.width, context.canvas.height);
@@ -65,82 +138,6 @@ const Canvas = (): ReactElement => {
         }
       }
     );
-
-    // Draw the paddle for the player
-    const drawPaddle = (
-      context: CanvasRenderingContext2D,
-      dimensions: { width: number; height: number },
-      positions: { left: number; right: number }
-    ): void => {
-      const paddleHeight = dimensions.height * 0.2;
-      const paddleWidth = dimensions.width * 0.02;
-
-      // Draw the paddle on the left
-      context.fillStyle = borderColor;
-      context.fillRect(
-        0,
-        positions.left / ratio.height,
-        paddleWidth,
-        paddleHeight
-      );
-
-      // Draw the paddle on the right
-      context.fillStyle = borderColor;
-      context.fillRect(
-        dimensions.width,
-        positions.right / ratio.height,
-        paddleWidth,
-        paddleHeight
-      );
-    };
-
-    // Draw the ball
-    const drawBall = (
-      context: CanvasRenderingContext2D,
-      ball: { x: number; y: number; radius: number }
-    ): void => {
-      context.beginPath();
-      context.arc(
-        ball.x / ratio.width,
-        ball.y / ratio.height,
-        ball.radius,
-        0,
-        Math.PI * 2
-      );
-      context.fillStyle = 'white';
-      context.fill();
-      context.closePath();
-    };
-
-    const handleKeyDown = (e: KeyboardEvent): void => {
-      if (['w', 's', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
-        socket?.emit('keyDown', e.key);
-      }
-    };
-
-    const handleKeyUp = (e: KeyboardEvent): void => {
-      if (['w', 's', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
-        socket?.emit('keyUp', e.key);
-      }
-    };
-
-    const handleResize = (): void => {
-      const canvas = canvasRef.current;
-      const div = canvas?.parentElement;
-      const context = canvas?.getContext('2d');
-
-      if (div) {
-        const dimensions = {
-          width: div?.clientWidth,
-          height: div?.clientHeight,
-        };
-
-        if (canvasRef.current) {
-          canvas.width = dimensions.width;
-          canvas.height = dimensions.height;
-        }
-      }
-    };
 
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);

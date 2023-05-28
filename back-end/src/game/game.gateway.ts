@@ -19,7 +19,7 @@ export class GameGateway {
 
   @Interval(1000 / 60)
   loop(): void {
-    console.log(this.game);
+    // console.log(this.game); // loop only if game started?
     if (this.state === GameState.STOPPED) {
       this.state = GameState.WAITING;
       this.server.emit('stop');
