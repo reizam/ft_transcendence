@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 
 const Canvas = (): ReactElement => {
   const { borderColor } = useContext(ThemeContext);
+  const { ballColor } = useContext(ThemeContext);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -38,8 +39,6 @@ const Canvas = (): ReactElement => {
         paddleHeight
       );
 
-      // Draw the paddle on the right
-      context.fillStyle = borderColor;
       context.fillRect(
         dimensions.width - paddleWidth - 10 / ratio,
         positions.right / ratio,
@@ -61,9 +60,27 @@ const Canvas = (): ReactElement => {
         0,
         Math.PI * 2
       );
-      context.fillStyle = 'white';
+      context.fillStyle = ballColor;
       context.fill();
       context.closePath();
+    };
+
+    const drawScore = (
+      context: CanvasRenderingContext2D,
+      score: { left: number; right: number }
+    ): void => {
+      context.font = '4rem Poppins';
+      context.fillStyle = borderColor + '40';
+      context.fillText(
+        score.left.toString(),
+        context.canvas.width / 4,
+        context.canvas.height / 5
+      );
+      context.fillText(
+        score.right.toString(),
+        (context.canvas.width / 4) * 3,
+        context.canvas.height / 5
+      );
     };
 
     const handleKeyDown = (e: KeyboardEvent): void => {
@@ -132,6 +149,7 @@ const Canvas = (): ReactElement => {
           speedX: number;
           speedY: number;
         };
+        score: { left: number; right: number };
       }) => {
         if (context) {
           ratio = state.canvasDimensions.width / context.canvas.width;
@@ -144,6 +162,7 @@ const Canvas = (): ReactElement => {
             state.paddlePositions
           );
           drawBall(context, state.ball);
+          drawScore(context, state.score);
         }
       }
     );
@@ -160,7 +179,7 @@ const Canvas = (): ReactElement => {
       window.removeEventListener('keyup', handleKeyUp);
       window.removeEventListener('resize', handleResize);
     };
-  }, [socket, router]);
+  }, [socket, router, borderColor, ballColor]);
 
   return (
     <div className={gameStyles.ctn__canvas}>

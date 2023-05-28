@@ -29,6 +29,7 @@ export class GameGateway {
         canvasDimensions: this.game.canvasDimensions,
         paddlePositions: this.game.paddlePositions,
         ball: this.game.ball,
+        score: this.game.scores,
       });
     }
   }

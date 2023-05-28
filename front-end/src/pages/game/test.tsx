@@ -10,25 +10,35 @@ import { useState } from 'react';
 const Game: NextPage = () => {
   const [activeToggle, setActiveToggle] = useState<number | null>(0);
   const [borderColor, setBorderColor] = useState<string>(
-    'var(--main-theme-color)'
+    getComputedStyle(document.documentElement).getPropertyValue(
+      '--main-theme-color'
+    )
   );
+  const [ballColor, setBallColor] = useState<string>('#ffffff');
 
   const handleToggle = (
     index: number,
     checked: boolean,
-    checkedColor: string
+    borderColor: string,
+    ballColor: string
   ): void => {
     if (checked) {
       setActiveToggle(index);
-      setBorderColor(checkedColor);
+      setBorderColor(borderColor);
+      setBallColor(ballColor);
     } else {
       setActiveToggle(0);
-      setBorderColor('var(--main-theme-color)');
+      setBorderColor(
+        getComputedStyle(document.documentElement).getPropertyValue(
+          '--main-theme-color'
+        )
+      );
+      setBallColor('#ffffff');
     }
   };
 
   return (
-    <ThemeContext.Provider value={{ borderColor, setBorderColor }}>
+    <ThemeContext.Provider value={{ borderColor, ballColor, setBorderColor }}>
       <Layout title="Game">
         <div className={gameStyles.ctn__main__game}>
           <div className={gameStyles.ctn__game}>
@@ -40,7 +50,14 @@ const Game: NextPage = () => {
                 <div className={gameStyles.toggle__theme}>
                   <ToggleSwitch
                     onToggle={(checked) =>
-                      handleToggle(0, checked, 'var(--main-theme-color)')
+                      handleToggle(
+                        0,
+                        checked,
+                        getComputedStyle(
+                          document.documentElement
+                        ).getPropertyValue('--main-theme-color'),
+                        '#ffffff'
+                      )
                     }
                     backgroundColor="var(--toggle-color)"
                     checkedBackgroundColor="var(--main-theme-color)"
@@ -54,7 +71,16 @@ const Game: NextPage = () => {
                 <div className={gameStyles.toggle__theme}>
                   <ToggleSwitch
                     onToggle={(checked) =>
-                      handleToggle(1, checked, 'var(--rg-field-color)')
+                      handleToggle(
+                        1,
+                        checked,
+                        getComputedStyle(
+                          document.documentElement
+                        ).getPropertyValue('--rg-field-color'),
+                        getComputedStyle(
+                          document.documentElement
+                        ).getPropertyValue('--rg-ball-color')
+                      )
                     }
                     backgroundColor="var(--toggle-color)"
                     checkedBackgroundColor="var(--rg-ball-color)"
@@ -68,7 +94,16 @@ const Game: NextPage = () => {
                 <div className={gameStyles.toggle__theme}>
                   <ToggleSwitch
                     onToggle={(checked) =>
-                      handleToggle(2, checked, 'var(--wb-field-color)')
+                      handleToggle(
+                        2,
+                        checked,
+                        getComputedStyle(
+                          document.documentElement
+                        ).getPropertyValue('--wb-field-color'),
+                        getComputedStyle(
+                          document.documentElement
+                        ).getPropertyValue('--wb-ball-color')
+                      )
                     }
                     backgroundColor="var(--toggle-color)"
                     checkedBackgroundColor="var(--wb-ball-color)"
@@ -82,7 +117,16 @@ const Game: NextPage = () => {
                 <div className={gameStyles.toggle__theme}>
                   <ToggleSwitch
                     onToggle={(checked) =>
-                      handleToggle(3, checked, 'var(--re-ball-color)')
+                      handleToggle(
+                        3,
+                        checked,
+                        getComputedStyle(
+                          document.documentElement
+                        ).getPropertyValue('--re-field-color'),
+                        getComputedStyle(
+                          document.documentElement
+                        ).getPropertyValue('--re-ball-color')
+                      )
                     }
                     backgroundColor="var(--toggle-color)"
                     checkedBackgroundColor="var(--re-ball-color)"
@@ -96,7 +140,16 @@ const Game: NextPage = () => {
                 <div className={gameStyles.toggle__theme}>
                   <ToggleSwitch
                     onToggle={(checked) =>
-                      handleToggle(4, checked, 'var(--ma-ball-color)')
+                      handleToggle(
+                        4,
+                        checked,
+                        getComputedStyle(
+                          document.documentElement
+                        ).getPropertyValue('--ma-field-color'),
+                        getComputedStyle(
+                          document.documentElement
+                        ).getPropertyValue('--ma-ball-color')
+                      )
                     }
                     backgroundColor="var(--toggle-color)"
                     checkedBackgroundColor="var(--ma-ball-color)"
