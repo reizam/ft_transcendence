@@ -1,6 +1,9 @@
 import socket from '@/lib/socket';
 import { ISocketContext } from '@/providers/socket/socket.interface';
 import React from 'react';
+import { useAuth } from '../auth/auth.context';
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/router';
 
 export const SocketContext = React.createContext<ISocketContext>({
   socket: null,
@@ -11,6 +14,8 @@ export const useSocket = (): ISocketContext => React.useContext(SocketContext);
 
 export const useProvideSocket = (): ISocketContext => {
   const [connected, setConnected] = React.useState(socket.connected);
+  const { logout } = useAuth();
+  const router = useRouter();
 
   React.useEffect(() => {
     function onConnect(): void {
@@ -23,23 +28,32 @@ export const useProvideSocket = (): ISocketContext => {
       console.log('Socket disconnected');
     }
 
-    function onConnectError(error: unknown): void {
-      // TODO: Show an error toast ("Connexion error: please disconnect and retry later")
-      //       then push to "/"
-      setConnected(false);
-      console.error(error);
+    function onConnectError(error: any): void {
+      toast.error(
+        ('Socket connection error: ' + error?.message ?? 'unknown error') +
+          ' (try reconnecting)'
+      );
+      logout();
     }
 
     socket.on('connect', onConnect);
     socket.on('connect_error', onConnectError);
     socket.on('disconnect', onDisconnect);
 
+    if (
+      socket.disconnected &&
+      router.pathname !== '/' &&
+      router.pathname !== '/login'
+    ) {
+      socket.connect();
+    }
+
     return () => {
       socket.off('connect', onConnect);
       socket.off('connect_error', onConnectError);
       socket.off('disconnect', onDisconnect);
     };
-  }, []);
+  }, [router.pathname]);
 
   return {
     socket,
