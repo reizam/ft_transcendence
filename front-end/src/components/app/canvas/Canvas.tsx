@@ -1,5 +1,6 @@
 import { ThemeContext } from '@/pages/ThemeContext';
 import { useSocket } from '@/providers/socket/socket.context';
+import gameStyles from '@/styles/game.module.css';
 import { useRouter } from 'next/router';
 import { ReactElement, useContext, useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
@@ -17,10 +18,7 @@ const Canvas = (): ReactElement => {
   useEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas?.getContext('2d');
-    const div = canvas?.parentElement;
     let ratio = 0;
-
-    console.log(div);
 
     // Draw the paddle for the player
     const drawPaddle = (
@@ -83,7 +81,6 @@ const Canvas = (): ReactElement => {
 
     const handleResize = (): void => {
       const canvas = canvasRef.current;
-      const context = canvas?.getContext('2d');
       const div = canvas?.parentElement;
 
       if (!canvas) {
@@ -96,8 +93,20 @@ const Canvas = (): ReactElement => {
         return;
       }
 
-      canvas.width = div.clientWidth ?? 640;
-      canvas.height = div.clientHeight ?? 480;
+      const containerWidth = div.clientWidth;
+      const containerHeight = div.clientHeight;
+
+      const aspectRatio = 16 / 9;
+      let canvasWidth = containerWidth;
+      let canvasHeight = containerWidth / aspectRatio;
+
+      if (canvasHeight > containerHeight) {
+        canvasHeight = containerHeight;
+        canvasWidth = containerHeight * aspectRatio;
+      }
+
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
     };
 
     socket?.emit('start');
@@ -153,7 +162,19 @@ const Canvas = (): ReactElement => {
     };
   }, [socket, router]);
 
-  return <canvas ref={canvasRef} />;
+  return (
+    <div className={gameStyles.ctn__canvas}>
+      <div
+        className={gameStyles.ctn__game__canvas}
+        style={{
+          borderColor: borderColor,
+          boxShadow: `0 0 1px ${borderColor}, 0 0 2px ${borderColor}, 0 0 4px ${borderColor}, 0 0 8px ${borderColor}, 0 0 12px ${borderColor}`,
+        }}
+      >
+        <canvas ref={canvasRef} />
+      </div>
+    </div>
+  );
 };
 
 export default Canvas;

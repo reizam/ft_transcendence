@@ -79,6 +79,7 @@
   height: 75vh;
   background-color: var(--container-background-color);
   border-radius: var(--radius-container);
+  position: relative;
 }
 
 .ctn__select__theme {
@@ -94,7 +95,19 @@
 }
 
 .ctn__game__canvas {
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 9;
+  display: block;
+  position: absolute;
+  padding: 0;
+  margin: auto;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: auto;
+  width: auto;
+  max-width: 90%;
+  max-height: 90%;
   border: 2px solid var(--main-theme-color);
   border-radius: var(--radius-container);
   box-shadow: 0 0 1px var(--main-theme-color), 0 0 2px var(--main-theme-color),

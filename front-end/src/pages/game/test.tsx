@@ -32,19 +32,7 @@ const Game: NextPage = () => {
       <Layout title="Game">
         <div className={gameStyles.ctn__main__game}>
           <div className={gameStyles.ctn__game}>
-            <div className={gameStyles.ctn__canvas}>
-              <div
-                className={gameStyles.ctn__game__canvas}
-                style={{
-                  borderColor: borderColor,
-                  boxShadow: `0 0 1px ${borderColor}, 0 0 2px ${borderColor}, 0 0 4px ${borderColor}, 0 0 8px ${borderColor}, 0 0 12px ${borderColor}`,
-                }}
-              >
-                {/* <Pong \> */}
-                <Canvas />
-              </div>
-              <div className={gameStyles.ctn__game__rslt}></div>
-            </div>
+            <Canvas />
             <div className={gameStyles.ctn__select__theme}>
               <h3 className={gameStyles.cnt__theme__h3}>Themes</h3>
               <div className={gameStyles.box__theme}>

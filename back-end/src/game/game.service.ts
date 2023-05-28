@@ -15,7 +15,7 @@ export class GameService {
     ArrowDown: false,
   };
 
-  canvasDimensions = { width: 2560, height: 1920 };
+  canvasDimensions = { width: 1920, height: 1080 };
 
   paddleSpeed = 30;
 
