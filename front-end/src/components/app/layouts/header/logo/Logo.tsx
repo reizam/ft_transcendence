@@ -1,21 +1,19 @@
-import React, { useContext } from 'react';
-import logoStyles from './logo.module.css';
+import { useTheme } from '@/providers/theme/theme.context';
 import Link from 'next/link';
-import { ThemeContext } from '@/pages/ThemeContext';
+import React from 'react';
+import logoStyles from './logo.module.css';
 
 function Logo(): React.ReactElement {
-  const { borderColor } = useContext(ThemeContext);
+  const { theme } = useTheme();
 
   return (
-    <div
-      className={logoStyles.ctn__logo}
-    >
+    <div className={logoStyles.ctn__logo}>
       <Link href="/">
         <h2
           className={logoStyles.h2__logo}
           style={{
-            color: borderColor,
-            textShadow: `0 0 10px ${borderColor}, 0 0 20px ${borderColor}, 0 0 40px ${borderColor}, 0 0 80px ${borderColor}, 0 0 120px ${borderColor}`,
+            color: theme.colors.primary,
+            textShadow: `0 0 10px ${theme.colors.primary}, 0 0 20px ${theme.colors.primary}, 0 0 40px ${theme.colors.primary}, 0 0 80px ${theme.colors.primary}, 0 0 120px ${theme.colors.primary}`,
           }}
         >
           Pong

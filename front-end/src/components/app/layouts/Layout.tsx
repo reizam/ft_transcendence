@@ -1,9 +1,9 @@
 import Header from '@/components/app/layouts/header/Header';
 import Navbar from '@/components/app/layouts/navbar/Navbar';
 import { NavbarItemProps } from '@/components/app/layouts/navbar/NavbarItem';
-import { FaGamepad } from 'react-icons/fa';
-import { BsChatTextFill } from 'react-icons/bs';
 import Head from 'next/head';
+import { BsChatTextFill } from 'react-icons/bs';
+import { FaGamepad } from 'react-icons/fa';
 
 const navbarItems: NavbarItemProps[] = [
   {

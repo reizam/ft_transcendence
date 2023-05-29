@@ -1,15 +1,21 @@
-import { ThemeContext } from '@/pages/ThemeContext';
 import { useSocket } from '@/providers/socket/socket.context';
+import { useTheme } from '@/providers/theme/theme.context';
+import { IThemeContext } from '@/providers/theme/theme.interface';
 import gameStyles from '@/styles/game.module.css';
 import { useRouter } from 'next/router';
-import { ReactElement, useContext, useEffect, useRef } from 'react';
+import { ReactElement, useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 
 // interface Props {}
 
 const Canvas = (): ReactElement => {
-  const { borderColor } = useContext(ThemeContext);
-  const { ballColor } = useContext(ThemeContext);
+  const { theme }: IThemeContext = useTheme();
+  const primaryColor = getComputedStyle(
+    document.documentElement
+  ).getPropertyValue(theme.colors.primary);
+  const secondaryColor = getComputedStyle(
+    document.documentElement
+  ).getPropertyValue(theme.colors.secondary);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -31,7 +37,7 @@ const Canvas = (): ReactElement => {
       const paddleWidth = dimensions.width * 0.01;
 
       // Draw the paddle on the left
-      context.fillStyle = borderColor;
+      context.fillStyle = primaryColor;
       context.fillRect(
         10 / ratio,
         positions.left / ratio,
@@ -60,7 +66,7 @@ const Canvas = (): ReactElement => {
         0,
         Math.PI * 2
       );
-      context.fillStyle = ballColor;
+      context.fillStyle = secondaryColor;
       context.fill();
       context.closePath();
     };
@@ -70,7 +76,7 @@ const Canvas = (): ReactElement => {
       score: { left: number; right: number }
     ): void => {
       context.font = '4rem Poppins';
-      context.fillStyle = borderColor + '40';
+      context.fillStyle = primaryColor + '40';
       context.fillText(
         score.left.toString(),
         context.canvas.width / 4,
@@ -179,15 +185,15 @@ const Canvas = (): ReactElement => {
       window.removeEventListener('keyup', handleKeyUp);
       window.removeEventListener('resize', handleResize);
     };
-  }, [socket, router, borderColor, ballColor]);
+  }, [socket, router, theme]);
 
   return (
     <div className={gameStyles.ctn__canvas}>
       <div
         className={gameStyles.ctn__game__canvas}
         style={{
-          borderColor: borderColor,
-          boxShadow: `0 0 1px ${borderColor}, 0 0 2px ${borderColor}, 0 0 4px ${borderColor}, 0 0 8px ${borderColor}, 0 0 12px ${borderColor}`,
+          borderColor: primaryColor,
+          boxShadow: `0 0 1px ${primaryColor}, 0 0 2px ${primaryColor}, 0 0 4px ${primaryColor}, 0 0 8px ${primaryColor}, 0 0 12px ${primaryColor}`,
         }}
       >
         <canvas ref={canvasRef} />
