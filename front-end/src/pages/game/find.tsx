@@ -4,39 +4,78 @@ import gameStyles from '@/styles/game.module.css';
 import { useSocket } from '@/providers/socket/socket.context';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 function FindGame(): JSX.Element {
+  const [foundPlayer, setFoundPlayer] = useState<boolean>(false);
+  const [isReady, setIsReady] = useState<boolean>(false);
+  const isReadyRef = useRef<boolean>(false);
   const { socket } = useSocket();
   const router = useRouter();
 
   useEffect(() => {
-    let timer1: NodeJS.Timeout;
-    let timer2: NodeJS.Timeout;
+    let timer1: NodeJS.Timeout = 0 as any;
+    let timer2: NodeJS.Timeout = 0 as any;
     const handleFindError = (err: string) => {
       console.error(err);
       timer1 = setTimeout(() => toast.error(err ?? 'Unknown error'), 200);
       timer2 = setTimeout(() => router.push('/game'), 1500);
+      isReadyRef.current = false;
     };
-    const handleFoundGame = (gameId: number) => {
-      router.push('/game/' + gameId);
+
+    let timer3: NodeJS.Timeout = 0 as any;
+    let timer4: NodeJS.Timeout = 0 as any;
+    const handleJoinTimeout = (err: string) => {
+      console.error(err);
+      timer3 = setTimeout(() => toast.error(err ?? 'Unknown error'), 0);
+      timer4 = setTimeout(() => router.push('/game/find'), 1500);
+      isReadyRef.current = false;
+      setFoundPlayer(false);
+    };
+
+    let timer5: NodeJS.Timeout = 0 as any;
+    let timer6: NodeJS.Timeout = 0 as any;
+    let ackCallback: (ack: string) => void;
+    const handleFoundGame = (
+      gameId: number,
+      callback: (arg: string) => void
+    ) => {
+      setFoundPlayer(true);
+      timer5 = setTimeout(
+        () => toast.error('Taking a shit? We let your opponent know about it'),
+        8700
+      );
+      timer6 = setTimeout(() => router.push('/game'), 10000);
+      ackCallback = callback;
+      // router.push('/game/' + gameId);
     };
 
     socket?.once('findError', handleFindError);
     socket?.once('foundGame', handleFoundGame);
+    socket?.once('joinTimeout', handleJoinTimeout);
 
     return () => {
+      console.log('First effect');
       clearTimeout(timer1);
       clearTimeout(timer2);
+      clearTimeout(timer3);
+      clearTimeout(timer4);
+      clearTimeout(timer5);
+      clearTimeout(timer6);
+      if (ackCallback != undefined && isReadyRef.current === true)
+        ackCallback('ready');
       socket?.off('findError', handleFindError);
+      socket?.removeAllListeners('foundGame');
+      socket?.off('joinTimeout', handleJoinTimeout);
     };
-  }, [socket, router]);
+  }, [socket, router, isReady]);
 
   useEffect(() => {
     const sendFindGame = () => {
       socket?.volatile.emit('findGame');
     };
-    let timer3: NodeJS.Timeout;
+
+    let timer7: NodeJS.Timeout = 0 as any;
     const cancelFindGame = () => {
       toast.error(
         <div>
@@ -45,35 +84,55 @@ function FindGame(): JSX.Element {
           Retry later or invite a friend!
         </div>
       );
-      timer3 = setTimeout(() => router.push('/game'), 1500);
+      timer7 = setTimeout(() => router.push('/game'), 1500);
     };
 
-    const timer4 = setTimeout(sendFindGame, 1000);
-    const timer5 = setTimeout(cancelFindGame, 60000);
+    const timer8 = setTimeout(sendFindGame, 1000);
+    const timer9 = setTimeout(cancelFindGame, 60000);
 
     return () => {
-      clearTimeout(timer3);
-      clearTimeout(timer4);
-      clearTimeout(timer5);
-      socket?.removeAllListeners('foundGame');
+      console.log('Second effect');
+      clearTimeout(timer7);
+      clearTimeout(timer8);
+      clearTimeout(timer9);
       socket?.emit('stopFindGame');
     };
-  }, [socket]);
+  }, [socket, router]);
 
   useEffect(() => {
+    console.log('Third effect');
     if (socket?.connected === false) {
       toast.error('Server error');
       router.push('/game');
     }
   }, [socket, socket?.connected]);
 
+  const onClick = (): void => {
+    isReadyRef.current = true;
+    setIsReady(true);
+  };
+
   return (
     <Layout title="Game">
       <div className={gameStyles.ctn__pre__game}>
         <div className={gameStyles.ctn__pre__game__canvas}>
-          Looking for a player...
-          <div style={{ height: '5%', display: 'hidden' }} />
-          <div className={styleLoadingScreen.style__loader}></div>
+          {!foundPlayer ? (
+            <>
+              Looking for a player...
+              <div style={{ height: '5%', display: 'hidden' }} />
+              <div className={styleLoadingScreen.style__loader}></div>
+            </>
+          ) : !isReadyRef.current ? (
+            <button onClick={onClick} className={gameStyles.style__button}>
+              I'm ready!
+            </button>
+          ) : (
+            <>
+              Waiting for you opponent...
+              <div style={{ height: '5%', display: 'hidden' }} />
+              <div className={styleLoadingScreen.style__loader}></div>
+            </>
+          )}
         </div>
       </div>
     </Layout>

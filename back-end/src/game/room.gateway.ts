@@ -33,16 +33,46 @@ export class RoomGateway {
     if (!res) return;
     if (res?.error) return { event: 'findError', data: res.error };
     if (res?.players) {
-      const gameId = await this.roomService.findOrCreateGame(
-        res.players[0].id,
-        res.players[1].id,
-      );
+      // const gameId = await this.roomService.findOrCreateGame(
+      //   res.players[0].id,
+      //   res.players[1].id,
+      // );
+      const gameId = 3;
 
       if (!gameId) return { event: 'findError', data: 'Game creation error' };
+      // enit to all with ack, if timeout send findTimeout with
+      // 'Your opponent is taking a shit. Let's find someone else'
+      // to router.push('/game/find')
+      // OR
+      // push to game if ready, and set timeout there if two players not in
+      // the game within 10 sec?
       this.server
+        .timeout(3000)
         .to(res.players[0].socketId)
         .to(res.players[1].socketId)
-        .volatile.emit('foundGame', gameId);
+        .volatile.emit('foundGame', gameId, (err: unknown, resp: string) => {
+          if (err) {
+            // console.log({ err });
+            this.server
+              .to(res.players![0].socketId)
+              .to(res.players![1].socketId)
+              .volatile.emit(
+                'joinTimeout',
+                "Your opponent is taking a shit. Let's find someone else",
+              );
+            // deleteGame();
+          } else {
+            console.log({ resp });
+            this.server
+              .to(res.players![0].socketId)
+              // .to(res.players![1].socketId)
+              //   .volatile.emit('joinGame', gameId);
+              .volatile.emit(
+                'joinTimeout',
+                "Your opponent is taking a shit. Let's find someone else",
+              );
+          }
+        });
     }
     return;
   }
