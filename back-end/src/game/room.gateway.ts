@@ -20,10 +20,7 @@ export class RoomGateway {
   async onFindGame(
     @ConnectedSocket() client: Socket,
   ): Promise<void | WsResponse<string | Player[]>> {
-    // TODO: implement actual matching
-    // remove two users from array
-    // create the game in the back
-    // emit volatile event foundGame with gameId for front redirect
+    // TODO:
     // in front wait for two players - if not in room within 10s,
     // then error and redirect to game index
     // otherwise create socket room for players and spectators
@@ -33,26 +30,18 @@ export class RoomGateway {
     if (!res) return;
     if (res?.error) return { event: 'findError', data: res.error };
     if (res?.players) {
-      // const gameId = await this.roomService.findOrCreateGame(
-      //   res.players[0].id,
-      //   res.players[1].id,
-      // );
-      const gameId = 3;
+      const gameId = await this.roomService.findOrCreateGame(
+        res.players[0].id,
+        res.players[1].id,
+      );
 
       if (!gameId) return { event: 'findError', data: 'Game creation error' };
-      // enit to all with ack, if timeout send findTimeout with
-      // 'Your opponent is taking a shit. Let's find someone else'
-      // to router.push('/game/find')
-      // OR
-      // push to game if ready, and set timeout there if two players not in
-      // the game within 10 sec?
       this.server
-        .timeout(3000)
+        .timeout(10000)
         .to(res.players[0].socketId)
         .to(res.players[1].socketId)
-        .volatile.emit('foundGame', gameId, (err: unknown, resp: string) => {
+        .volatile.emit('foundGame', (err: unknown, _resp: string) => {
           if (err) {
-            // console.log({ err });
             this.server
               .to(res.players![0].socketId)
               .to(res.players![1].socketId)
@@ -60,17 +49,12 @@ export class RoomGateway {
                 'joinTimeout',
                 "Your opponent is taking a shit. Let's find someone else",
               );
-            // deleteGame();
+            this.roomService.deleteGame(gameId);
           } else {
-            console.log({ resp });
             this.server
               .to(res.players![0].socketId)
-              // .to(res.players![1].socketId)
-              //   .volatile.emit('joinGame', gameId);
-              .volatile.emit(
-                'joinTimeout',
-                "Your opponent is taking a shit. Let's find someone else",
-              );
+              .to(res.players![1].socketId)
+              .volatile.emit('joinGame', gameId);
           }
         });
     }

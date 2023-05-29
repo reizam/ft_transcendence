@@ -56,6 +56,19 @@ export class RoomService {
     }
   }
 
+  async deleteGame(gameId: number): Promise<void> {
+    try {
+      const _deletedGame = await this.prisma.game.delete({
+        where: {
+          id: gameId,
+        },
+      });
+      console.log({ _deletedGame });
+    } catch (e: unknown) {
+      console.error(e);
+    }
+  }
+
   removeFromPlayerQueue(@ConnectedSocket() client: Socket): void {
     const user = this.socketUserService.getSocketUser(client);
 

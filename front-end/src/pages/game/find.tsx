@@ -21,6 +21,8 @@ function FindGame(): JSX.Element {
       timer1 = setTimeout(() => toast.error(err ?? 'Unknown error'), 200);
       timer2 = setTimeout(() => router.push('/game'), 1500);
       isReadyRef.current = false;
+      setFoundPlayer(false);
+      setIsReady(false);
     };
 
     let timer3: NodeJS.Timeout = 0 as any;
@@ -31,42 +33,52 @@ function FindGame(): JSX.Element {
       timer4 = setTimeout(() => router.push('/game/find'), 1500);
       isReadyRef.current = false;
       setFoundPlayer(false);
+      setIsReady(false);
     };
 
-    let timer5: NodeJS.Timeout = 0 as any;
-    let timer6: NodeJS.Timeout = 0 as any;
-    let ackCallback: (ack: string) => void;
-    const handleFoundGame = (
-      gameId: number,
-      callback: (arg: string) => void
-    ) => {
-      setFoundPlayer(true);
-      timer5 = setTimeout(
-        () => toast.error('Taking a shit? We let your opponent know about it'),
-        8700
-      );
-      timer6 = setTimeout(() => router.push('/game'), 10000);
-      ackCallback = callback;
-      // router.push('/game/' + gameId);
+    const handleJoinGame = (gameId: number): void => {
+      router.push('/game/' + gameId);
     };
 
     socket?.once('findError', handleFindError);
-    socket?.once('foundGame', handleFoundGame);
     socket?.once('joinTimeout', handleJoinTimeout);
+    socket?.once('joinGame', handleJoinGame);
 
     return () => {
-      console.log('First effect');
+      console.log('First effect 1');
       clearTimeout(timer1);
       clearTimeout(timer2);
       clearTimeout(timer3);
       clearTimeout(timer4);
+      socket?.off('findError', handleFindError);
+      socket?.off('joinTimeout', handleJoinTimeout);
+      socket?.off('joinGame', handleJoinGame);
+    };
+  }, [socket, router]);
+
+  useEffect(() => {
+    let timer5: NodeJS.Timeout = 0 as any;
+    let timer6: NodeJS.Timeout = 0 as any;
+    let ackCallback: (ack: string) => void;
+    const handleFoundGame = (callback: (arg: string) => void) => {
+      setFoundPlayer(true);
+      timer5 = setTimeout(
+        () => toast.error('Taking a shit? We let your opponent know about it'),
+        7700
+      );
+      timer6 = setTimeout(() => router.push('/game'), 9000);
+      ackCallback = callback;
+    };
+
+    socket?.once('foundGame', handleFoundGame);
+
+    return () => {
+      console.log('First effect 2');
       clearTimeout(timer5);
       clearTimeout(timer6);
       if (ackCallback != undefined && isReadyRef.current === true)
         ackCallback('ready');
-      socket?.off('findError', handleFindError);
       socket?.removeAllListeners('foundGame');
-      socket?.off('joinTimeout', handleJoinTimeout);
     };
   }, [socket, router, isReady]);
 
@@ -88,7 +100,7 @@ function FindGame(): JSX.Element {
     };
 
     const timer8 = setTimeout(sendFindGame, 1000);
-    const timer9 = setTimeout(cancelFindGame, 60000);
+    const timer9 = setTimeout(cancelFindGame, 45000);
 
     return () => {
       console.log('Second effect');
@@ -108,6 +120,8 @@ function FindGame(): JSX.Element {
   }, [socket, socket?.connected]);
 
   const onClick = (): void => {
+    console.log({ isReady });
+    console.log({ isReadyRef });
     isReadyRef.current = true;
     setIsReady(true);
   };
@@ -122,7 +136,7 @@ function FindGame(): JSX.Element {
               <div style={{ height: '5%', display: 'hidden' }} />
               <div className={styleLoadingScreen.style__loader}></div>
             </>
-          ) : !isReadyRef.current ? (
+          ) : !isReady ? (
             <button onClick={onClick} className={gameStyles.style__button}>
               I'm ready!
             </button>
