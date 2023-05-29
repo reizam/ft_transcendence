@@ -60,6 +60,16 @@
   border: 1px solid var(--container-color);
 }
 
+.ctn__countdown {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 .ctn__main__game {
   display: flex;
   justify-content: center;
