@@ -29,11 +29,15 @@ export const useProvideSocket = (): ISocketContext => {
     }
 
     function onConnectError(error: any): void {
-      toast.error(
-        ('Socket connection error: ' + error?.message ?? 'unknown error') +
-          ' (try reconnecting)'
-      );
-      logout();
+      setTimeout(() => {
+        if (socket.disconnected) {
+          toast.error(
+            ('Socket connection error: ' + error?.message ?? 'unknown error') +
+              ' (try reconnecting)'
+          );
+          logout();
+        }
+      }, 3000);
     }
 
     socket.on('connect', onConnect);
