@@ -3,6 +3,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { SocketUserService } from '@/socket/user/socket.service';
 import { Injectable } from '@nestjs/common';
 import { ConnectedSocket } from '@nestjs/websockets';
+import { Game } from '@prisma/client';
 import { Mutex } from 'async-mutex';
 import { Socket } from 'socket.io';
 
@@ -15,6 +16,15 @@ export class RoomService {
 
   private playerQueue: Player[] = [];
   // private mutex = new Mutex();
+  private usersInRoom: { [id: number]: number[] } = {};
+
+  async findGame(gameId: number): Promise<Game | null> {
+    return await this.prisma.game.findUnique({
+      where: {
+        id: gameId,
+      },
+    });
+  }
 
   async findOrCreateGame(
     playerOneId: number,
@@ -117,7 +127,9 @@ export class RoomService {
     }
   }
 
-  async findGame(@ConnectedSocket() client: Socket): Promise<void | IFindGame> {
+  async findMatch(
+    @ConnectedSocket() client: Socket,
+  ): Promise<void | IFindGame> {
     const user = this.socketUserService.getSocketUser(client);
 
     if (!user) return { error: 'Unable to load user infos' };
@@ -212,6 +224,30 @@ export class RoomService {
 
       findMatchingPlayer();
     });
+  }
+
+  joinRoom(
+    @ConnectedSocket() client: Socket,
+    userId: number,
+    roomId: number,
+  ): void {
+    const room: number[] | undefined = this.usersInRoom[roomId];
+
+    client.join(String(roomId));
+    if (!room) this.usersInRoom[roomId] = [userId];
+    else if (room.findIndex((id) => id === userId) == -1) room.push(userId);
+    console.log(this.usersInRoom);
+  }
+
+  playersReady(game: Game): boolean {
+    const room: number[] | undefined = this.usersInRoom[game.id];
+
+    if (
+      room?.findIndex((id) => game.playerOneId === id) !== -1 || //&&
+      room?.findIndex((id) => game.playerTwoId === id) !== -1
+    )
+      return true;
+    return false;
   }
 
   // async launchGame({ gameId, playerTwoId }: LaunchGame): Promise<void> {

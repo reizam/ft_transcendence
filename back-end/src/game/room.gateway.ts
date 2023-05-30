@@ -1,5 +1,6 @@
 import {
   ConnectedSocket,
+  MessageBody,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -8,10 +9,14 @@ import {
 import { Server, Socket } from 'socket.io';
 import { RoomService } from '@/game/room.service';
 import { Player } from './types/game.types';
+import { SocketUserService } from '@/socket/user/socket.service';
 
 @WebSocketGateway()
 export class RoomGateway {
-  constructor(private roomService: RoomService) {}
+  constructor(
+    private roomService: RoomService,
+    private socketUserService: SocketUserService,
+  ) {}
 
   @WebSocketServer()
   server: Server;
@@ -26,7 +31,7 @@ export class RoomGateway {
     // otherwise create socket room for players and spectators
 
     this.roomService.addToPlayerQueue(client);
-    const res = await this.roomService.findGame(client);
+    const res = await this.roomService.findMatch(client);
     if (!res) return;
     if (res?.error) return { event: 'findError', data: res.error };
     if (res?.players) {
@@ -65,5 +70,42 @@ export class RoomGateway {
   onStopFindGame(@ConnectedSocket() client: Socket): void {
     console.log('Stoooooooooooooooooooooooooooooooooooop');
     this.roomService.removeFromPlayerQueue(client);
+  }
+
+  @SubscribeMessage('joinGame')
+  async onJoinGame(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() gameId: number,
+  ): Promise<boolean | WsResponse<string>> {
+    // TODO:
+    // Check if game exists, otherwise gameError
+    // Add client to room
+    // Check if player (if so return true to isPlayer)
+    // If so start timer for other to join ?
+    // When two players are in game, start timer
+    // When leave before game start, delete game ? Or button to leave ? Or prompt confirm ?
+    // If game left by a player, count him as loser and X as score (-1 in DB)
+    // When game over, update DB and check achievements
+    // When all have left room, delete game if hasn't started ?
+
+    // Also:
+    // Deal with 'join-room' and 'leave-room' in case of disconnect/reconnect
+    // in the middle of a game ? Or through the front useEffect?
+
+    console.log({ gameId });
+    const game = await this.roomService.findGame(gameId);
+    const user = this.socketUserService.getSocketUser(client);
+
+    if (!game) return { event: 'gameError', data: "This game doesn't exist" };
+    if (!user) return { event: 'gameError', data: 'User not found' };
+    this.roomService.joinRoom(client, user.id, gameId);
+    if (this.roomService.playersReady(game))
+      setTimeout(
+        () => this.server.to(String(gameId)).emit('startCountdown'),
+        1500,
+      );
+    if (user.id === game.playerOneId || user.id === game.playerTwoId)
+      return true;
+    return false;
   }
 }

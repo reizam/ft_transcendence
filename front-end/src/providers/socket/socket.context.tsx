@@ -37,7 +37,7 @@ export const useProvideSocket = (): ISocketContext => {
           );
           logout();
         }
-      }, 3000);
+      }, 5000);
     }
 
     socket.on('connect', onConnect);
