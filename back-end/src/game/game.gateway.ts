@@ -1,6 +1,6 @@
 import { GameService } from '@/game/game.service';
 import { GameState } from '@/game/types/game.types';
-import { Interval } from '@nestjs/schedule';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import {
   SubscribeMessage,
   WebSocketGateway,
@@ -10,18 +10,20 @@ import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway()
 export class GameGateway {
-  constructor(private readonly game: GameService) {}
+  constructor(
+    private readonly game: GameService,
+    private schedulerRegistry: SchedulerRegistry,
+  ) {}
 
   state: GameState = GameState.WAITING;
 
   @WebSocketServer()
   server: Server;
 
-  @Interval(1000 / 60)
   loop(): void {
-    // console.log(this.game); // loop only if game started?
     if (this.state === GameState.STOPPED) {
       this.state = GameState.WAITING;
+      this.schedulerRegistry.deleteInterval('gameLoop');
       this.server.emit('stop');
     } else if (this.state === GameState.INGAME) {
       this.state = this.game.update();
@@ -34,14 +36,11 @@ export class GameGateway {
     }
   }
 
-  @SubscribeMessage('keyDown')
-  onKeyDown(_client: Socket, key: string): void {
-    this.game.keyStates[key] = true;
-  }
-
-  @SubscribeMessage('keyUp')
-  onKeyUp(_client: Socket, key: string): void {
-    this.game.keyStates[key] = false;
+  @SubscribeMessage('move')
+  onMove(_client: Socket, data: { [key: string]: boolean }): void {
+    Object.entries(data).forEach(([key, value]) => {
+      this.game.keyStates[key] = value;
+    });
   }
 
   @SubscribeMessage('start')
@@ -50,6 +49,8 @@ export class GameGateway {
     if (this.state === GameState.WAITING) {
       this.state = GameState.INGAME;
       this.server?.emit('ready');
+      const interval = setInterval(() => this.loop(), 1000 / 120);
+      this.schedulerRegistry.addInterval('gameLoop', interval);
     }
   }
 }

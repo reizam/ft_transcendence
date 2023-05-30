@@ -13,9 +13,6 @@ const Canvas = (): ReactElement => {
   const primaryColor = getComputedStyle(
     document.documentElement
   ).getPropertyValue(theme.colors.primary);
-  const secondaryColor = getComputedStyle(
-    document.documentElement
-  ).getPropertyValue(theme.colors.secondary);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -26,6 +23,29 @@ const Canvas = (): ReactElement => {
     const canvas = canvasRef.current;
     const context = canvas?.getContext('2d');
     let ratio = 0;
+    let state = {
+      canvasDimensions: { width: 0, height: 0 },
+      paddlePositions: { left: 0, right: 0 },
+      ball: {
+        x: 0,
+        y: 0,
+        radius: 0,
+        speedX: 0,
+        speedY: 0,
+      },
+      score: { left: 0, right: 0 },
+    };
+    let requestId = 0;
+    const fps = 120;
+    const frameInterval = 1000 / fps;
+    let lastTime = new Date().getTime();
+
+    const primaryColor = getComputedStyle(
+      document.documentElement
+    ).getPropertyValue(theme.colors.primary);
+    const secondaryColor = getComputedStyle(
+      document.documentElement
+    ).getPropertyValue(theme.colors.secondary);
 
     // Draw the paddle for the player
     const drawPaddle = (
@@ -76,7 +96,7 @@ const Canvas = (): ReactElement => {
       score: { left: number; right: number }
     ): void => {
       context.font = '4rem Poppins';
-      context.fillStyle = primaryColor + '40';
+      context.fillStyle = primaryColor + '60';
       context.fillText(
         score.left.toString(),
         context.canvas.width / 4,
@@ -89,19 +109,104 @@ const Canvas = (): ReactElement => {
       );
     };
 
+    socket?.emit('start');
+
+    socket?.once('stop', () => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      router.push('/game');
+    });
+
+    socket?.once('ready', () => {
+      return;
+    });
+
+    socket?.on(
+      'gameState',
+      (state_: {
+        canvasDimensions: { width: number; height: number };
+        paddlePositions: { left: number; right: number };
+        ball: {
+          x: number;
+          y: number;
+          radius: number;
+          speedX: number;
+          speedY: number;
+        };
+        score: { left: number; right: number };
+      }) => {
+        state = state_;
+        if (context) {
+          ratio = state.canvasDimensions.width / context.canvas.width;
+        }
+      }
+    );
+
+    const draw = (): void => {
+      const now = new Date().getTime();
+      const elapsed = now - lastTime;
+
+      if (context && elapsed > frameInterval) {
+        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+        drawBall(context, state.ball);
+        drawPaddle(
+          context,
+          { width: context.canvas.width, height: context.canvas.height },
+          state.paddlePositions
+        );
+        drawScore(context, state.score);
+
+        lastTime = now;
+      }
+      requestId = window.requestAnimationFrame(draw);
+    };
+
+    window.requestAnimationFrame(draw);
+
+    return () => {
+      socket?.removeAllListeners('stop');
+      socket?.removeAllListeners('ready');
+      socket?.removeAllListeners('gamestate');
+      cancelAnimationFrame(requestId);
+    };
+  }, [socket, router, theme]);
+
+  useEffect(() => {
+    const keyState: { [key: string]: boolean } = {};
+    let requestId = 0;
+
     const handleKeyDown = (e: KeyboardEvent): void => {
-      e.preventDefault();
       if (['w', 's', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
-        socket?.emit('keyDown', e.key);
+        keyState[e.key] = true;
       }
     };
 
     const handleKeyUp = (e: KeyboardEvent): void => {
       if (['w', 's', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
-        socket?.emit('keyUp', e.key);
+        keyState[e.key] = false;
       }
     };
 
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
+
+    const loop = (): void => {
+      socket?.emit('move', keyState);
+
+      requestId = requestAnimationFrame(() => {
+        loop();
+      });
+    };
+
+    loop();
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keyup', handleKeyUp);
+      cancelAnimationFrame(requestId);
+    };
+  }, []);
+
+  useEffect(() => {
     const handleResize = (): void => {
       const canvas = canvasRef.current;
       const div = canvas?.parentElement;
@@ -132,60 +237,14 @@ const Canvas = (): ReactElement => {
       canvas.height = canvasHeight;
     };
 
-    socket?.emit('start');
-
-    socket?.once('stop', () => {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      router.push('/game');
-    });
-
-    socket?.once('ready', () => {
-      handleResize();
-    });
-
-    socket?.on(
-      'gameState',
-      (state: {
-        canvasDimensions: { width: number; height: number };
-        paddlePositions: { left: number; right: number };
-        ball: {
-          x: number;
-          y: number;
-          radius: number;
-          speedX: number;
-          speedY: number;
-        };
-        score: { left: number; right: number };
-      }) => {
-        if (context) {
-          ratio = state.canvasDimensions.width / context.canvas.width;
-
-          // Clean the canvas
-          context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-          drawPaddle(
-            context,
-            { width: context.canvas.width, height: context.canvas.height },
-            state.paddlePositions
-          );
-          drawBall(context, state.ball);
-          drawScore(context, state.score);
-        }
-      }
-    );
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
     window.addEventListener('resize', handleResize);
 
+    handleResize();
+
     return () => {
-      socket?.removeAllListeners('stop');
-      socket?.removeAllListeners('ready');
-      socket?.removeAllListeners('gamestate');
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
       window.removeEventListener('resize', handleResize);
     };
-  }, [socket, router, theme]);
+  }, []);
 
   return (
     <div className={gameStyles.ctn__canvas}>
