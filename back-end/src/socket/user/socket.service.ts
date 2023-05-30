@@ -18,6 +18,10 @@ export class SocketUserService {
     );
   }
 
+  getOnlineUsers(): ISocketUser[] {
+    return this.onlineUsers;
+  }
+
   getOnlineUsersCount(): number {
     return this.onlineUsers.length;
   }
