@@ -76,39 +76,35 @@ const Game: NextPage = () => {
     };
   }, [socket, router]);
 
-  // useEffect(() => {
-  //   const handleBeforeUnload = (e) => {
-  //     e.preventDefault();
-  //     const confirmationMessage = 'Are you sure you want to leave the game?';
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      const confirmationMessage = 'Are you sure you want to leave the game?';
 
-  //     e.returnValue = ''; // Required for Chrome
-  //     return confirmationMessage;
-  //   };
+      e.returnValue = ''; // Required for Chrome
+      return confirmationMessage;
+    };
 
-  //   window.addEventListener('beforeunload', handleBeforeUnload);
+    const handleRouteChange = () => {
+      if (!window.confirm('Are you sure you want to leave the game?')) {
+        throw 'routeChange aborted';
+      }
+    };
 
-  //   return () => {
-  //     window.removeEventListener('beforeunload', handleBeforeUnload);
-  //   };
-  // }, []);
-  // useEffect(() => {
-  //   const handleRouteChangeStart = (url: unknown) => {
-  //     if (confirm('Are you sure you want to leave the game?')) {
-  //       // Continue with the navigation if the user confirms
-  //       router.events.emit('routeChangeComplete', url);
-  //     } else {
-  //       // Cancel the navigation if the user cancels
-  //       router.events.emit('routeChangeError');
-  //       throw 'routeChange aborted.';
-  //     }
-  //   };
+    const handleRejection = (e: any) => {
+      if (e?.reason === 'routeChange aborted') e.preventDefault();
+    };
 
-  //   router.events.on('routeChangeStart', handleRouteChangeStart);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    router.events.on('routeChangeStart', handleRouteChange);
+    window.addEventListener('unhandledrejection', handleRejection);
 
-  //   return () => {
-  //     router.events.off('routeChangeStart', handleRouteChangeStart);
-  //   };
-  // }, []);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      router.events.off('routeChangeStart', handleRouteChange);
+      window.removeEventListener('unhandledrejection', handleRejection);
+    };
+  }, []);
 
   const handleStartGame = () => setStartGame(true);
 
