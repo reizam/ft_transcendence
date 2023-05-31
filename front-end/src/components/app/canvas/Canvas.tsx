@@ -13,11 +13,15 @@ const Canvas = (): ReactElement => {
   const primaryColor = getComputedStyle(
     document.documentElement
   ).getPropertyValue(theme.colors.primary);
+  const secondaryColor = getComputedStyle(
+    document.documentElement
+  ).getPropertyValue(theme.colors.secondary);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const { socket } = useSocket();
   const router = useRouter();
+  const frame = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -35,17 +39,9 @@ const Canvas = (): ReactElement => {
       },
       score: { left: 0, right: 0 },
     };
-    let requestId = 0;
     const fps = 120;
     const frameInterval = 1000 / fps;
     let lastTime = new Date().getTime();
-
-    const primaryColor = getComputedStyle(
-      document.documentElement
-    ).getPropertyValue(theme.colors.primary);
-    const secondaryColor = getComputedStyle(
-      document.documentElement
-    ).getPropertyValue(theme.colors.secondary);
 
     // Draw the paddle for the player
     const drawPaddle = (
@@ -95,16 +91,16 @@ const Canvas = (): ReactElement => {
       context: CanvasRenderingContext2D,
       score: { left: number; right: number }
     ): void => {
-      context.font = '4rem Poppins';
+      context.font = `${(context.canvas.height / 100) * 15}px Poppins`;
       context.fillStyle = primaryColor + '60';
       context.fillText(
         score.left.toString(),
-        context.canvas.width / 4,
+        (context.canvas.width * 25) / 100,
         context.canvas.height / 5
       );
       context.fillText(
         score.right.toString(),
-        (context.canvas.width / 4) * 3,
+        context.canvas.width - (context.canvas.width * 30) / 100,
         context.canvas.height / 5
       );
     };
@@ -157,22 +153,21 @@ const Canvas = (): ReactElement => {
 
         lastTime = now;
       }
-      requestId = window.requestAnimationFrame(draw);
+      frame.current = window.requestAnimationFrame(draw);
     };
 
-    window.requestAnimationFrame(draw);
+    frame.current = window.requestAnimationFrame(draw);
 
     return () => {
       socket?.removeAllListeners('stop');
       socket?.removeAllListeners('ready');
       socket?.removeAllListeners('gamestate');
-      cancelAnimationFrame(requestId);
+      cancelAnimationFrame(frame.current);
     };
   }, [socket, router, theme]);
 
   useEffect(() => {
     const keyState: { [key: string]: boolean } = {};
-    let requestId = 0;
 
     const handleKeyDown = (e: KeyboardEvent): void => {
       if (['w', 's', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
@@ -189,22 +184,16 @@ const Canvas = (): ReactElement => {
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('keyup', handleKeyUp);
 
-    const loop = (): void => {
+    const intervalId = setInterval((): void => {
       socket?.emit('move', keyState);
-
-      requestId = requestAnimationFrame(() => {
-        loop();
-      });
-    };
-
-    loop();
+    }, 1000 / 120);
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('keyup', handleKeyUp);
-      cancelAnimationFrame(requestId);
+      clearInterval(intervalId);
     };
-  }, []);
+  }, [socket]);
 
   useEffect(() => {
     const handleResize = (): void => {
