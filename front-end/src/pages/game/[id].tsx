@@ -25,6 +25,8 @@ const Game: NextPage = () => {
   const { id } = router.query;
 
   const [isPlayer, setIsPlayer] = useState<boolean>(false);
+  const [startCountdown, setStartCountdown] = useState<boolean>(false);
+  const [startGame, setStartGame] = useState<boolean>(false);
 
   useEffect(() => {
     // console.log(router.query.id);
@@ -34,13 +36,13 @@ const Game: NextPage = () => {
       socket?.volatile.emit(
         'joinGame',
         parseInt(id as string),
-        (isPlayer: boolean) => {
-          if (isPlayer) setIsPlayer(true);
-          else setIsPlayer(false);
+        (asPlayer: boolean) => {
+          if (asPlayer && !isPlayer) setIsPlayer(true);
+          else if (!asPlayer) setIsPlayer(false);
         }
       );
     };
-    const timer1 = setTimeout(sendJoinGame, 500);
+    const timer1 = setTimeout(sendJoinGame, 200);
 
     return () => {
       console.log('First effect');
@@ -58,34 +60,86 @@ const Game: NextPage = () => {
       timer2 = setTimeout(() => router.push('/game'), 1500);
     };
 
+    const handleStartCountdown = (): void => {
+      if (!startCountdown) setStartCountdown(true);
+    };
+
+    socket?.once('gameError', handleGameError);
+    socket?.once('startCountdown', handleStartCountdown);
+
     return () => {
       console.log('Second effect');
       clearTimeout(timer1);
       clearTimeout(timer2);
-      socket?.off('findError', handleGameError);
+      socket?.off('gameError', handleGameError);
+      socket?.off('startCountdown', handleStartCountdown);
     };
   }, [socket, router]);
+
+  // useEffect(() => {
+  //   const handleBeforeUnload = (e) => {
+  //     e.preventDefault();
+  //     const confirmationMessage = 'Are you sure you want to leave the game?';
+
+  //     e.returnValue = ''; // Required for Chrome
+  //     return confirmationMessage;
+  //   };
+
+  //   window.addEventListener('beforeunload', handleBeforeUnload);
+
+  //   return () => {
+  //     window.removeEventListener('beforeunload', handleBeforeUnload);
+  //   };
+  // }, []);
+  // useEffect(() => {
+  //   const handleRouteChangeStart = (url: unknown) => {
+  //     if (confirm('Are you sure you want to leave the game?')) {
+  //       // Continue with the navigation if the user confirms
+  //       router.events.emit('routeChangeComplete', url);
+  //     } else {
+  //       // Cancel the navigation if the user cancels
+  //       router.events.emit('routeChangeError');
+  //       throw 'routeChange aborted.';
+  //     }
+  //   };
+
+  //   router.events.on('routeChangeStart', handleRouteChangeStart);
+
+  //   return () => {
+  //     router.events.off('routeChangeStart', handleRouteChangeStart);
+  //   };
+  // }, []);
+
+  const handleStartGame = () => setStartGame(true);
 
   return (
     <Layout title="Game">
       <div className={gameStyles.ctn__main__game}>
         <div className={gameStyles.ctn__game}>
-          {/* <Canvas /> */}
-          <div className={gameStyles.ctn__canvas}>
-            <div
-              className={gameStyles.ctn__game__canvas}
-              style={{
-                borderColor: primaryColor,
-                boxShadow: `0 0 1px ${primaryColor}, 0 0 2px ${primaryColor}, 0 0 4px ${primaryColor}, 0 0 8px ${primaryColor}, 0 0 12px ${primaryColor}`,
-              }}
-            >
-              <div className={gameStyles.ctn__countdown}>
-                <button className={gameStyles.style__button}>
-                  Countdown over!
-                </button>
+          {startGame ? (
+            <Canvas />
+          ) : (
+            // <Countdown
+            //   timer="10"
+            //   start={startCountdown}
+            //   onEnd={handleStartGame}
+            // />
+            <div className={gameStyles.ctn__canvas}>
+              <div
+                className={gameStyles.ctn__game__canvas}
+                style={{
+                  borderColor: primaryColor,
+                  boxShadow: `0 0 1px ${primaryColor}, 0 0 2px ${primaryColor}, 0 0 4px ${primaryColor}, 0 0 8px ${primaryColor}, 0 0 12px ${primaryColor}`,
+                }}
+              >
+                <div className={gameStyles.ctn__countdown}>
+                  <button className={gameStyles.style__button}>
+                    Countdown over!
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          )}
           <ThemeSwitcher />
         </div>
       </div>
