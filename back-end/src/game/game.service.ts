@@ -1,152 +1,207 @@
 import { GameState } from '@/game/types/game.types';
 import { Injectable } from '@nestjs/common';
-import { WebSocketServer } from '@nestjs/websockets';
-import { Server } from 'socket.io';
+
+function getRandomArbitrary(min: number, max: number): number {
+  return Math.random() * (max - min) + min;
+}
+
+const parameters = {
+  dimensions: {
+    width: 1920,
+    height: 1080,
+  },
+  paddle: {
+    width: 20,
+    height: 200,
+    offset: 10,
+    speed: 15,
+  },
+  ball: {
+    speed: 8,
+    radius: 20,
+  },
+  scoreLimit: 10,
+};
+
+class Ball {
+  x: number;
+  y: number;
+  radius: number;
+  speed: number;
+  dx: number;
+  dy: number;
+
+  constructor() {
+    this.reset();
+    this.radius = parameters.ball.radius;
+    this.speed = parameters.ball.speed;
+  }
+
+  update(): void {
+    this.x += this.dx;
+    this.y += this.dy;
+
+    if (this.y - this.radius < 0) {
+      this.y = this.radius;
+      this.dy *= -1;
+    } else if (this.y + this.radius >= parameters.dimensions.height) {
+      this.y = parameters.dimensions.height - this.radius - 1;
+      this.dy *= -1;
+    }
+  }
+
+  updateAfterCollision(paddle: Paddle): void {
+    const maxYSpeed = 5;
+    const relativeIntersectY = this.y - (paddle.y + paddle.height / 2);
+
+    this.dy = (relativeIntersectY / (paddle.height / 2)) * maxYSpeed;
+    this.dx *= -1.05;
+
+    if (paddle.side === 'left') {
+      this.x = paddle.x + paddle.width + this.radius;
+    } else {
+      this.x = paddle.x - this.radius;
+    }
+  }
+
+  reset(): void {
+    this.x = parameters.dimensions.width / 2;
+    this.y = parameters.dimensions.height / 2;
+    this.dx = parameters.ball.speed;
+    this.dy = getRandomArbitrary(-parameters.ball.speed, parameters.ball.speed);
+  }
+}
+
+class Paddle {
+  side: 'left' | 'right';
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  speed: number;
+
+  constructor(side: 'left' | 'right') {
+    this.side = side;
+    if (side === 'left') this.x = parameters.paddle.offset;
+    else
+      this.x =
+        parameters.dimensions.width -
+        parameters.paddle.offset -
+        parameters.paddle.width;
+    this.width = parameters.paddle.width;
+    this.height = parameters.paddle.height;
+    this.speed = parameters.paddle.speed;
+  }
+
+  detectCollision(ball: Ball): boolean {
+    return (
+      ball.x < this.x + this.width &&
+      ball.x + ball.radius > this.x &&
+      ball.y < this.y + this.height &&
+      ball.y + ball.radius > this.y
+    );
+  }
+
+  reset(): void {
+    this.y = (parameters.dimensions.height - parameters.paddle.height) / 2;
+  }
+}
+
+class Score {
+  left = 0;
+  right = 0;
+
+  reset(): void {
+    this.left = 0;
+    this.right = 0;
+  }
+}
 
 @Injectable()
 export class GameService {
-  @WebSocketServer()
-  server: Server;
+  ball: Ball = new Ball();
 
-  keyStates: { [key: string]: boolean } = {
+  paddles: { left: Paddle; right: Paddle } = {
+    left: new Paddle('left'),
+    right: new Paddle('right'),
+  };
+
+  keyState: { [key: string]: boolean } = {
     w: false,
     s: false,
     ArrowUp: false,
     ArrowDown: false,
   };
 
-  canvasDimensions = { width: 1920, height: 1080 };
+  score = new Score();
 
-  paddleSpeed = 15;
-
-  paddlePositions = {
-    left: this.canvasDimensions.height / 2 - this.canvasDimensions.height * 0.1,
-    right:
-      this.canvasDimensions.height / 2 - this.canvasDimensions.height * 0.1,
-  };
-
-  paddleHeight = this.canvasDimensions.height * 0.2;
-  paddleWidth = this.canvasDimensions.width * 0.01;
-
-  ball = {
-    x: this.canvasDimensions.width / 2,
-    y: this.canvasDimensions.height / 2,
-    radius: 15,
-    speedX: 7.5,
-    speedY: this.getRandomNumber(-5, 5),
-  };
-
-  scores = {
-    left: 0,
-    right: 0,
-  };
-
-  getRandomNumber(min: number, max: number): number {
-    return Math.random() * (max - min) + min;
-  }
-
-  resetScores(): void {
-    this.scores.left = 0;
-    this.scores.right = 0;
-  }
-
-  updatePaddlePosition(): void {
-    if (this.keyStates.w && this.paddlePositions.left > 0) {
-      this.paddlePositions.left -= this.paddleSpeed;
+  updatePaddles(): void {
+    if (this.keyState.w) {
+      this.paddles.left.y -= this.paddles.left.speed;
+      if (this.paddles.left.y < 0) this.paddles.left.y = 0;
     }
-    if (
-      this.keyStates.s &&
-      this.paddlePositions.left <
-        this.canvasDimensions.height - this.paddleHeight
-    ) {
-      this.paddlePositions.left += this.paddleSpeed;
+    if (this.keyState.s) {
+      this.paddles.left.y += this.paddles.left.speed;
+      if (
+        this.paddles.left.y + this.paddles.left.height >=
+        parameters.dimensions.height
+      )
+        this.paddles.left.y =
+          parameters.dimensions.height - this.paddles.left.height;
     }
-    if (this.keyStates.ArrowUp && this.paddlePositions.right > 0) {
-      this.paddlePositions.right -= this.paddleSpeed;
+    if (this.keyState.ArrowUp) {
+      this.paddles.right.y -= this.paddles.right.speed;
+      if (this.paddles.right.y < 0) this.paddles.right.y = 0;
     }
-    if (
-      this.keyStates.ArrowDown &&
-      this.paddlePositions.right <
-        this.canvasDimensions.height - this.paddleHeight
-    ) {
-      this.paddlePositions.right += this.paddleSpeed;
+    if (this.keyState.ArrowDown) {
+      this.paddles.right.y += this.paddles.right.speed;
+      if (
+        this.paddles.right.y + this.paddles.right.height >=
+        parameters.dimensions.height
+      )
+        this.paddles.right.y =
+          parameters.dimensions.height - this.paddles.right.height;
     }
   }
 
-  updateBallPosition(): void {
-    // Mettre à jour la position de la Balle
-    this.ball.x += this.ball.speedX;
-    this.ball.y += this.ball.speedY;
+  updateBall(): void {
+    this.ball.update();
 
-    // Collisions avec les limites inférieurs et supérieures du canvas
-    if (
-      this.ball.y - this.ball.radius < 0 ||
-      this.ball.y + this.ball.radius > this.canvasDimensions.height
-    ) {
-      this.ball.speedY *= -1;
-    }
-
-    // Collision avec les paddles
-    const leftPaddleCollision =
-      this.ball.x - this.ball.radius < this.paddleWidth + 10 &&
-      this.ball.y + this.ball.radius > this.paddlePositions.left &&
-      this.ball.y - this.ball.radius <
-        this.paddlePositions.left + this.paddleHeight;
-
-    const rightPaddleCollision =
-      this.ball.x + this.ball.radius >
-        this.canvasDimensions.width - this.paddleWidth - 10 &&
-      this.ball.y + this.ball.radius > this.paddlePositions.right &&
-      this.ball.y - this.ball.radius <
-        this.paddlePositions.right + this.paddleHeight;
-
-    if (leftPaddleCollision || rightPaddleCollision) {
-      this.ball.speedX *= -1.1;
-
-      const paddle = leftPaddleCollision
-        ? this.paddlePositions.left
-        : this.paddlePositions.right;
-      const relativeIntersectY = this.ball.y - (paddle + this.paddleHeight / 2);
-
-      // Utiliser une interpolation linéaire pour déterminer la vitesse en Y de la balle
-      const maxYSpeed = 10; // Vitesse maximale en Y pour la balle
-      this.ball.speedY =
-        (relativeIntersectY / (this.paddleHeight / 2)) * maxYSpeed;
-
-      // Ajuster la position de la balle pour éviter qu'elle ne reste bloquée dans le paddle
-      if (leftPaddleCollision) {
-        this.ball.x = this.paddleWidth + this.ball.radius;
-      } else {
-        this.ball.x =
-          this.canvasDimensions.width - this.paddleWidth - this.ball.radius;
-      }
-    }
-
-    // Remise à zéro de la balle si elle sort du canvas sur les côtés gauche ou droit
-    if (
+    if (this.paddles.left.detectCollision(this.ball)) {
+      this.ball.updateAfterCollision(this.paddles.left);
+    } else if (this.paddles.right.detectCollision(this.ball)) {
+      this.ball.updateAfterCollision(this.paddles.right);
+    } else if (
       this.ball.x - this.ball.radius < 0 ||
-      this.ball.x + this.ball.radius > this.canvasDimensions.width
+      this.ball.x + this.ball.radius >= parameters.dimensions.width
     ) {
       const lostLeftPaddle = this.ball.x - this.ball.radius < 0;
-      this.ball.x = this.canvasDimensions.width / 2;
-      this.ball.y = this.canvasDimensions.height / 2;
 
-      // Si le paddle gauche a perdu, la balle se déplace vers la droite (vitesse positive en X)
-      // Sinon, elle se déplace vers la gauche (vitesse négative en X)
-      this.ball.speedX = lostLeftPaddle ? -7.5 : 7.5;
-      this.ball.speedY = this.getRandomNumber(-5, 5);
+      this.ball.dx = lostLeftPaddle ? -this.ball.speed : this.ball.speed;
+      this.ball.dy = getRandomArbitrary(-this.ball.speed, this.ball.speed);
 
-      lostLeftPaddle ? (this.scores.left += 1) : (this.scores.right += 1);
+      lostLeftPaddle ? (this.score.left += 1) : (this.score.right += 1);
+
+      this.ball.reset();
     }
+  }
+
+  reset(): void {
+    this.paddles.left.reset();
+    this.paddles.right.reset();
+    this.ball.reset();
+    this.score.reset();
   }
 
   update(): GameState {
-    this.updatePaddlePosition();
-    this.updateBallPosition();
+    this.updatePaddles();
+    this.updateBall();
 
-    // Vérifie si l'un des joueurs a atteint 10 points
-    if (this.scores.left === 10 || this.scores.right === 10) {
-      this.resetScores();
+    if (
+      this.score.left === parameters.scoreLimit ||
+      this.score.right === parameters.scoreLimit
+    ) {
+      this.reset();
       return GameState.STOPPED;
     } else return GameState.INGAME;
   }

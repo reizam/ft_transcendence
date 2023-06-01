@@ -28,10 +28,16 @@ export class GameGateway {
     } else if (this.state === GameState.INGAME) {
       this.state = this.game.update();
       this.server.emit('gameState', {
-        canvasDimensions: this.game.canvasDimensions,
-        paddlePositions: this.game.paddlePositions,
-        ball: this.game.ball,
-        score: this.game.scores,
+        paddles: {
+          left: this.game.paddles.left.y,
+          right: this.game.paddles.right.y,
+        },
+        ball: {
+          x: this.game.ball.x,
+          y: this.game.ball.y,
+          radius: this.game.ball.radius,
+        },
+        score: this.game.score,
       });
     }
   }
@@ -39,7 +45,7 @@ export class GameGateway {
   @SubscribeMessage('move')
   onMove(_client: Socket, data: { [key: string]: boolean }): void {
     Object.entries(data).forEach(([key, value]) => {
-      this.game.keyStates[key] = value;
+      this.game.keyState[key] = value;
     });
   }
 
