@@ -81,7 +81,6 @@ export class RoomGateway {
     // Check if game exists, otherwise gameError
     // Add client to room
     // Check if player (if so return true to isPlayer)
-    // If so start timer for other to join ?
     // When two players are in game, start timer
     // When leave before game start, delete game ? Or button to leave ? Or prompt confirm ?
     // If game left by a player, count him as loser and X as score (-1 in DB)
@@ -93,11 +92,11 @@ export class RoomGateway {
     // in the middle of a game ? Or through the front useEffect?
 
     console.log({ gameId });
-    const game = await this.roomService.findGame(gameId);
     const user = this.socketUserService.getSocketUser(client);
+    const game = await this.roomService.findGame(gameId);
 
-    if (!game) return { event: 'gameError', data: "This game doesn't exist" };
     if (!user) return { event: 'gameError', data: 'User not found' };
+    if (!game) return { event: 'gameError', data: "This game doesn't exist" };
     this.roomService.joinRoom(client, user.id, gameId);
     if (this.roomService.playersReady(game))
       setTimeout(
@@ -107,5 +106,21 @@ export class RoomGateway {
     if (user.id === game.playerOneId || user.id === game.playerTwoId)
       return true;
     return false;
+  }
+
+  @SubscribeMessage('leaveGame')
+  async onLeaveGame(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() gameId: number,
+  ): Promise<void> {
+    console.log(gameId);
+    const user = this.socketUserService.getSocketUser(client);
+    const game = await this.roomService.findGame(gameId);
+
+    if (!user) return;
+    if (!game) return;
+    this.roomService.leaveRoom(client, user.id, gameId);
+    if (user.id === game.playerOneId || user.id === game.playerTwoId)
+      setTimeout(() => this.roomService.leaveGame(game, user.id), 3000);
   }
 }

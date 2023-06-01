@@ -64,7 +64,7 @@ function FindGame(): JSX.Element {
       setFoundPlayer(true);
       timer5 = setTimeout(
         () => toast.error('Taking a shit? We let your opponent know about it'),
-        7700
+        8000
       );
       timer6 = setTimeout(() => router.push('/game'), 9000);
       ackCallback = callback;

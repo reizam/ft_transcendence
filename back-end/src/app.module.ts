@@ -16,6 +16,8 @@ import { ChannelService } from './channel/channel.service';
 import { ProfileModule } from './profile/profile.module';
 import { UserModule } from './user/user.module';
 import { UserService } from './user/user.service';
+import { RoomGateway } from './game/room.gateway';
+import { RoomService } from './game/room.service';
 
 @Module({
   imports: [
@@ -38,6 +40,8 @@ import { UserService } from './user/user.service';
     SocketUserService,
     ChannelService,
     GameService,
+    RoomGateway,
+    RoomService,
   ],
 })
 export class AppModule {}

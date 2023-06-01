@@ -42,7 +42,7 @@ const Game: NextPage = () => {
         }
       );
     };
-    const timer1 = setTimeout(sendJoinGame, 200);
+    const timer1 = setTimeout(sendJoinGame, 1000);
 
     return () => {
       console.log('First effect');
@@ -77,6 +77,8 @@ const Game: NextPage = () => {
   }, [socket, router]);
 
   useEffect(() => {
+    if (!id) return;
+
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       e.preventDefault();
       const confirmationMessage = 'Are you sure you want to leave the game?';
@@ -88,6 +90,8 @@ const Game: NextPage = () => {
     const handleRouteChange = () => {
       if (!window.confirm('Are you sure you want to leave the game?')) {
         throw 'routeChange aborted';
+      } else {
+        socket?.volatile.emit('leaveGame', parseInt(id as string));
       }
     };
 
@@ -104,7 +108,7 @@ const Game: NextPage = () => {
       router.events.off('routeChangeStart', handleRouteChange);
       window.removeEventListener('unhandledrejection', handleRejection);
     };
-  }, []);
+  }, [socket, router]);
 
   const handleStartGame = () => setStartGame(true);
 

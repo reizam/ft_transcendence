@@ -250,6 +250,29 @@ export class RoomService {
     return false;
   }
 
+  leaveRoom(
+    @ConnectedSocket() client: Socket,
+    userId: number,
+    gameId: number,
+  ): void {
+    // TODO:
+    // Only stop game if player not back in 3 sec
+
+    const room: number[] | undefined = this.usersInRoom[gameId];
+
+    client.leave(String(gameId));
+    if (room) {
+      const i = room.findIndex((id) => id === userId);
+      if (i != -1) room.splice(i, 1);
+    }
+    if (room?.length === 0) delete this.usersInRoom[gameId];
+    console.log(this.usersInRoom);
+  }
+
+  leaveGame(game: Game, userId: number): void {
+    //
+  }
+
   // async launchGame({ gameId, playerTwoId }: LaunchGame): Promise<void> {
   //   await this.prisma.game.update({
   //     where: {
