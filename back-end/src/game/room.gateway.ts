@@ -35,7 +35,7 @@ export class RoomGateway {
     if (!res) return;
     if (res?.error) return { event: 'findError', data: res.error };
     if (res?.players) {
-      const gameId = await this.roomService.findOrCreateGame(
+      const gameId = await this.roomService.getOrCreateGame(
         res.players[0].id,
         res.players[1].id,
       );
@@ -93,11 +93,11 @@ export class RoomGateway {
 
     console.log({ gameId });
     const user = this.socketUserService.getSocketUser(client);
-    const game = await this.roomService.findGame(gameId);
+    const game = await this.roomService.getGame(gameId);
 
     if (!user) return { event: 'gameError', data: 'User not found' };
     if (!game) return { event: 'gameError', data: "This game doesn't exist" };
-    this.roomService.joinRoom(client, user.id, gameId);
+    this.roomService.joinRoom(client, user.id, game);
     if (this.roomService.playersReady(game))
       setTimeout(
         () => this.server.to(String(gameId)).emit('startCountdown'),
@@ -115,7 +115,7 @@ export class RoomGateway {
   ): Promise<void> {
     console.log(gameId);
     const user = this.socketUserService.getSocketUser(client);
-    const game = await this.roomService.findGame(gameId);
+    const game = await this.roomService.getGame(gameId);
 
     if (!user) return;
     if (!game) return;

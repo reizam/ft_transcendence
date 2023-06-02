@@ -1,4 +1,10 @@
-import { IFindGame, Player } from '@/game/types/game.types';
+import {
+  Ball,
+  IFindGame,
+  Paddle,
+  Player,
+  GameRoom,
+} from '@/game/types/game.types';
 import { PrismaService } from '@/prisma/prisma.service';
 import { SocketUserService } from '@/socket/user/socket.service';
 import { Injectable } from '@nestjs/common';
@@ -16,9 +22,9 @@ export class RoomService {
 
   private playerQueue: Player[] = [];
   // private mutex = new Mutex();
-  private usersInRoom: { [id: number]: number[] } = {};
+  private rooms: { [id: number]: GameRoom } = {};
 
-  async findGame(gameId: number): Promise<Game | null> {
+  async getGame(gameId: number): Promise<Game | null> {
     return await this.prisma.game.findUnique({
       where: {
         id: gameId,
@@ -26,7 +32,7 @@ export class RoomService {
     });
   }
 
-  async findOrCreateGame(
+  async getOrCreateGame(
     playerOneId: number,
     playerTwoId: number,
   ): Promise<number | null> {
@@ -229,25 +235,39 @@ export class RoomService {
   joinRoom(
     @ConnectedSocket() client: Socket,
     userId: number,
-    roomId: number,
+    game: Game,
   ): void {
-    const room: number[] | undefined = this.usersInRoom[roomId];
+    const room: GameRoom | undefined = this.rooms[game.id];
 
-    client.join(String(roomId));
-    if (!room) this.usersInRoom[roomId] = [userId];
-    else if (room.findIndex((id) => id === userId) == -1) room.push(userId);
-    console.log(this.usersInRoom);
+    client.join(String(game.id));
+    if (!room) {
+      this.rooms[game.id] = {
+        game: {
+          ...game,
+          ball: new Ball(),
+          paddles: { left: new Paddle('left'), right: new Paddle('right') },
+          keyState: { w: false, s: false, ArrowUp: false, ArrowDown: false },
+        },
+        userIds: [userId],
+      };
+    } else if (room.userIds.findIndex((id) => id === userId) == -1)
+      room.userIds.push(userId);
+    console.log(this.rooms);
   }
 
   playersReady(game: Game): boolean {
-    const room: number[] | undefined = this.usersInRoom[game.id];
+    const room: GameRoom | undefined = this.rooms[game.id];
 
     if (
-      room?.findIndex((id) => game.playerOneId === id) !== -1 || //&&
-      room?.findIndex((id) => game.playerTwoId === id) !== -1
+      room?.userIds.findIndex((id) => game.playerOneId === id) !== -1 || //&&
+      room?.userIds.findIndex((id) => game.playerTwoId === id) !== -1
     )
       return true;
     return false;
+  }
+
+  getRoom(gameId: number): GameRoom | undefined {
+    return this.rooms[gameId];
   }
 
   leaveRoom(
@@ -256,17 +276,17 @@ export class RoomService {
     gameId: number,
   ): void {
     // TODO:
-    // Only stop game if player not back in 3 sec
+    // Update DB before deleting GameRoom ?
 
-    const room: number[] | undefined = this.usersInRoom[gameId];
+    const room: GameRoom | undefined = this.rooms[gameId];
 
     client.leave(String(gameId));
     if (room) {
-      const i = room.findIndex((id) => id === userId);
-      if (i != -1) room.splice(i, 1);
+      const i = room.userIds.findIndex((id) => id === userId);
+      if (i != -1) room.userIds.splice(i, 1);
     }
-    if (room?.length === 0) delete this.usersInRoom[gameId];
-    console.log(this.usersInRoom);
+    if (room?.userIds?.length === 0) delete this.rooms[gameId];
+    console.log(this.rooms);
   }
 
   leaveGame(game: Game, userId: number): void {

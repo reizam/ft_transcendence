@@ -148,7 +148,7 @@ const Canvas = (): ReactElement => {
       );
     };
 
-    socket?.emit('start');
+    socket?.emit('startGame');
 
     socket?.once('stop', () => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
