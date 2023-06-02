@@ -120,29 +120,39 @@
   max-height: 90%;
   border: 2px solid var(--main-theme-color);
   border-radius: var(--radius-container);
-  box-shadow: 0 0 1px var(--main-theme-color), 0 0 2px var(--main-theme-color),
+  /* box-shadow: 0 0 1px var(--main-theme-color), 0 0 2px var(--main-theme-color),
     0 0 4px var(--main-theme-color), 0 0 8px var(--main-theme-color),
-    0 0 12px var(--main-theme-color);
-  animation: animate 3s infinite alternate;
+    0 0 12px var(--main-theme-color); */
+  /* animation: animate 3s infinite alternate; */
 }
 
-@keyframes animate {
+/* @keyframes animate {
   35% {
-    opacity: 1;
+    box-shadow: 0 0 1px var(--main-theme-color), 0 0 2px var(--main-theme-color),
+      0 0 4px var(--main-theme-color), 0 0 8px var(--main-theme-color),
+      0 0 12px var(--main-theme-color);
   }
   48% {
-    opacity: 0.8;
+    box-shadow: 0 0 1px var(--main-theme-color1),
+      0 0 2px var(--main-theme-color1), 0 0 4px var(--main-theme-color1),
+      0 0 8px var(--main-theme-color1), 0 0 12px var(--main-theme-color1);
   }
   51% {
-    opacity: 0.9;
+    box-shadow: 0 0 1px var(--main-theme-color2),
+      0 0 2px var(--main-theme-color2), 0 0 4px var(--main-theme-color2),
+      0 0 8px var(--main-theme-color2), 0 0 12px var(--main-theme-color2);
   }
   54% {
-    opacity: 0.7;
+    box-shadow: 0 0 1px var(--main-theme-color3),
+      0 0 2px var(--main-theme-color3), 0 0 4px var(--main-theme-color3),
+      0 0 8px var(--main-theme-color3), 0 0 12px var(--main-theme-color3);
   }
   60% {
-    opacity: 1;
+    box-shadow: 0 0 1px var(--main-theme-color), 0 0 2px var(--main-theme-color),
+      0 0 4px var(--main-theme-color), 0 0 8px var(--main-theme-color),
+      0 0 12px var(--main-theme-color);
   }
-}
+} */
 
 .ctn__game__rslt {
   width: 80%;

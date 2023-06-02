@@ -1,3 +1,4 @@
+import { Keyframes } from '@/components/utils/Keyframes';
 import { useSocket } from '@/providers/socket/socket.context';
 import { useTheme } from '@/providers/theme/theme.context';
 import { IThemeContext } from '@/providers/theme/theme.interface';
@@ -5,8 +6,6 @@ import gameStyles from '@/styles/game.module.css';
 import { useRouter } from 'next/router';
 import { ReactElement, useEffect, useLayoutEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
-
-// interface Props {}
 
 const Canvas = (): ReactElement => {
   const { theme }: IThemeContext = useTheme();
@@ -242,9 +241,28 @@ const Canvas = (): ReactElement => {
         className={gameStyles.ctn__game__canvas}
         style={{
           borderColor: primaryColor,
-          boxShadow: `0 0 1px ${primaryColor}, 0 0 2px ${primaryColor}, 0 0 4px ${primaryColor}, 0 0 8px ${primaryColor}, 0 0 12px ${primaryColor}`,
+          boxShadow: `0 0 1px ${primaryColor}ff, 0 0 2px ${primaryColor}ff, 0 0 4px ${primaryColor}ff, 0 0 8px ${primaryColor}ff, 0 0 12px ${primaryColor}ff`,
+          animation: 'neon-blink 3s infinite alternate',
         }}
       >
+        <Keyframes
+          name={'neon-blink'}
+          _35={{
+            boxShadow: `0 0 1px ${primaryColor}ff, 0 0 2px ${primaryColor}ff, 0 0 4px ${primaryColor}ff, 0 0 8px ${primaryColor}ff, 0 0 12px ${primaryColor}ff`,
+          }}
+          _48={{
+            boxShadow: `0 0 1px ${primaryColor}d9, 0 0 2px ${primaryColor}d9, 0 0 4px ${primaryColor}d9, 0 0 8px ${primaryColor}d9, 0 0 12px ${primaryColor}d9`,
+          }}
+          _51={{
+            boxShadow: `0 0 1px ${primaryColor}f2, 0 0 2px ${primaryColor}f2, 0 0 4px ${primaryColor}f2, 0 0 8px ${primaryColor}f2, 0 0 12px ${primaryColor}f2`,
+          }}
+          _54={{
+            boxShadow: `0 0 1px ${primaryColor}b7, 0 0 2px ${primaryColor}b7, 0 0 4px ${primaryColor}b7, 0 0 8px ${primaryColor}b7, 0 0 12px ${primaryColor}b7`,
+          }}
+          _60={{
+            boxShadow: `0 0 1px ${primaryColor}ff, 0 0 2px ${primaryColor}ff, 0 0 4px ${primaryColor}ff, 0 0 8px ${primaryColor}ff, 0 0 12px ${primaryColor}ff`,
+          }}
+        />
         <canvas ref={canvasRef} />
       </div>
     </div>
