@@ -119,19 +119,19 @@ export class GameService {
     return Math.random() * (max - min) + min;
   }
 
-  ball: Ball = new Ball();
+  // ball: Ball = new Ball();
 
-  paddles: { left: Paddle; right: Paddle } = {
-    left: new Paddle('left'),
-    right: new Paddle('right'),
-  };
+  // paddles: { left: Paddle; right: Paddle } = {
+  //   left: new Paddle('left'),
+  //   right: new Paddle('right'),
+  // };
 
-  keyState: { [key: string]: boolean } = {
-    w: false,
-    s: false,
-    ArrowUp: false,
-    ArrowDown: false,
-  };
+  // keyState: { [key: string]: boolean } = {
+  //   w: false,
+  //   s: false,
+  //   ArrowUp: false,
+  //   ArrowDown: false,
+  // };
 
   // score = new Score();
 
@@ -164,44 +164,45 @@ export class GameService {
     }
   }
 
-  updateBall(): void {
-    this.ball.update();
+  updateBall(game: GameInfos): void {
+    game.ball.update();
 
-    if (this.paddles.left.detectCollision(this.ball)) {
-      this.ball.updateAfterCollision(this.paddles.left);
-    } else if (this.paddles.right.detectCollision(this.ball)) {
-      this.ball.updateAfterCollision(this.paddles.right);
+    if (game.paddles.left.detectCollision(game.ball)) {
+      game.ball.updateAfterCollision(game.paddles.left);
+    } else if (game.paddles.right.detectCollision(game.ball)) {
+      game.ball.updateAfterCollision(game.paddles.right);
     } else if (
-      this.ball.x - this.ball.radius < 0 ||
-      this.ball.x + this.ball.radius >= GameService.parameters.dimensions.width
+      game.ball.x - game.ball.radius < 0 ||
+      game.ball.x + game.ball.radius >= GameService.parameters.dimensions.width
     ) {
-      const lostLeftPaddle = this.ball.x - this.ball.radius < 0;
+      const lostLeftPaddle = game.ball.x - game.ball.radius < 0;
 
-      this.ball.dx = lostLeftPaddle ? -this.ball.speed : this.ball.speed;
-      this.ball.dy = getRandomArbitrary(-this.ball.speed, this.ball.speed);
+      game.ball.dx = lostLeftPaddle ? -game.ball.speed : game.ball.speed;
+      game.ball.dy = GameService.getRandomArbitrary(
+        -game.ball.speed,
+        game.ball.speed,
+      );
 
-      lostLeftPaddle ? (this.score.left += 1) : (this.score.right += 1);
+      lostLeftPaddle ? (game.playerOneScore += 1) : (game.playerTwoScore += 1);
 
-      this.ball.reset();
+      game.ball.reset();
     }
   }
 
-  reset(): void {
-    this.paddles.left.reset();
-    this.paddles.right.reset();
-    this.ball.reset();
-    this.score.reset();
+  reset(game: GameInfos): void {
+    game.paddles.left.reset();
+    game.paddles.right.reset();
+    game.ball.reset();
   }
 
   update(game: GameInfos): GameState {
-    this.updatePaddles();
-    this.updateBall();
-
+    this.updatePaddles(game);
+    this.updateBall(game);
     if (
-      this.score.left === GameService.parameters.scoreLimit ||
-      this.score.right === GameService.parameters.scoreLimit
+      game.playerOneScore === GameService.parameters.scoreLimit ||
+      game.playerTwoScore === GameService.parameters.scoreLimit
     ) {
-      this.reset();
+      this.reset(game);
       return GameState.STOPPED;
     } else return GameState.INGAME;
   }

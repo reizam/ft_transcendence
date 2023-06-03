@@ -9,7 +9,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [PrismaModule, ScheduleModule.forRoot()],
-  providers: [SocketUserService, GameService, GameGateway, RoomService],
+  providers: [SocketUserService, GameService, RoomService],
   controllers: [GameController],
 })
 export class GameModule {}

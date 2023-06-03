@@ -29,9 +29,8 @@ export class GameGateway {
 
   loop(game: GameInfos): void {
     if (game.status === GameState.STOPPED) {
-      game.status = GameState.WAITING;
       this.schedulerRegistry.deleteInterval('gameLoop');
-      this.server.emit('stop');
+      this.server.emit('stopGame');
     } else if (game.status === GameState.INGAME) {
       game.status = this.gameService.update(game);
       this.server.to(String(game.id)).volatile.emit('gameState', {
@@ -55,10 +54,14 @@ export class GameGateway {
   @SubscribeMessage('move')
   onMove(
     @ConnectedSocket() _client: Socket,
-    @MessageBody() data: { [key: string]: boolean },
+    @MessageBody('gameId') gameId: number,
+    @MessageBody('data') data: { [key: string]: boolean },
   ): void {
+    const gameRoom: GameRoom | undefined = this.roomService.getRoom(gameId);
+
+    if (!gameRoom) return;
     Object.entries(data).forEach(([key, value]) => {
-      this.game.keyState[key] = value;
+      gameRoom.game.keyState[key] = value;
     });
   }
 
@@ -95,5 +98,25 @@ export class GameGateway {
         }
       }, 12500);
     }
+  }
+
+  startGame(game: GameInfos): void {
+    // TODO:
+    // Give the scheduler a unique ID related to the gameId ?
+    // Or no need if the interval is a unique value ?
+    // Send gameStarted to players to make sure they see the game
+    // and not the countdown if they did not started it yet
+
+    game.status = GameState.INGAME;
+    setTimeout(() => {
+      this.server.to(String(game.id)).emit('startCountdown');
+    }, 1000);
+    setTimeout(() => {
+      const interval = setInterval(() => this.loop(game), 1000 / 120);
+
+      game.launchedAt = new Date();
+      this.server.to(String(game.id)).emit('startGame');
+      this.schedulerRegistry.addInterval('gameLoop', interval);
+    }, 11000);
   }
 }

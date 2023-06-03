@@ -18,6 +18,7 @@ import { UserModule } from './user/user.module';
 import { UserService } from './user/user.service';
 import { RoomGateway } from './game/room.gateway';
 import { RoomService } from './game/room.service';
+import { GameGateway } from './game/game.gateway';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { RoomService } from './game/room.service';
     SocketGateway,
     SocketUserService,
     ChannelService,
+    GameGateway,
     GameService,
     RoomGateway,
     RoomService,

@@ -8,14 +8,16 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { RoomService } from '@/game/room.service';
-import { Player } from './types/game.types';
+import { GameRoom, GameState, Player } from './types/game.types';
 import { SocketUserService } from '@/socket/user/socket.service';
+import { GameGateway } from './game.gateway';
 
 @WebSocketGateway()
 export class RoomGateway {
   constructor(
     private roomService: RoomService,
     private socketUserService: SocketUserService,
+    private gameGateway: GameGateway,
   ) {}
 
   @WebSocketServer()
@@ -98,11 +100,20 @@ export class RoomGateway {
     if (!user) return { event: 'gameError', data: 'User not found' };
     if (!game) return { event: 'gameError', data: "This game doesn't exist" };
     this.roomService.joinRoom(client, user.id, game);
-    if (this.roomService.playersReady(game))
-      setTimeout(
-        () => this.server.to(String(gameId)).emit('startCountdown'),
-        1500,
-      );
+    if (this.roomService.playersReady(game)) {
+      const gameRoom: GameRoom | undefined = this.roomService.getRoom(gameId);
+
+      if (!gameRoom)
+        return { event: 'gameError', data: "This room doesn't exist" };
+      if (gameRoom.game.status === GameState.WAITING) {
+        gameRoom.game.status = GameState.INGAME;
+        this.gameGateway.startGame(gameRoom.game);
+      }
+    }
+    // setTimeout(
+    //   () => this.server.to(String(gameId)).emit('startCountdown'),
+    //   1500,
+    // );
     if (user.id === game.playerOneId || user.id === game.playerTwoId)
       return true;
     return false;
