@@ -22,40 +22,30 @@ const Game: NextPage = () => {
 
   const { socket } = useSocket();
   const router = useRouter();
-  const { id } = router.query;
 
-  const [isPlayer, setIsPlayer] = useState<boolean>(false);
+  const [gameId, setGameId] = useState<number>(-1);
   const [startCountdown, setStartCountdown] = useState<boolean>(false);
   const [startGame, setStartGame] = useState<boolean>(false);
 
   useEffect(() => {
-    // console.log(router.query.id);
-    if (!id) return;
-
     const sendJoinGame = () => {
-      socket?.volatile.emit(
-        'joinGame',
-        parseInt(id as string),
-        (asPlayer: boolean) => {
-          if (asPlayer && !isPlayer) setIsPlayer(true);
-          else if (!asPlayer) setIsPlayer(false);
-        }
-      );
+      socket?.volatile.emit('joinLocalGame', (id: number) => {
+        if (gameId < 0) setGameId(id);
+      });
     };
     const timer1 = setTimeout(sendJoinGame, 1000);
 
     return () => {
-      console.log('First effect');
       clearTimeout(timer1);
     };
-  }, [socket, router, id]);
-  // }, [id]);
+  }, [socket, router]);
 
   useEffect(() => {
+    if (!gameId) return;
+
     let timer1: NodeJS.Timeout = 0 as any;
     let timer2: NodeJS.Timeout = 0 as any;
     const handleGameError = (err: string) => {
-      console.error(err);
       timer1 = setTimeout(() => toast.error(err ?? 'Unknown error'), 200);
       timer2 = setTimeout(() => router.push('/game'), 1500);
     };
@@ -73,7 +63,6 @@ const Game: NextPage = () => {
     socket?.once('startGame', handleStartGame);
 
     return () => {
-      console.log('Second effect');
       clearTimeout(timer1);
       clearTimeout(timer2);
       socket?.off('gameError', handleGameError);
@@ -83,7 +72,7 @@ const Game: NextPage = () => {
   }, [socket, router]);
 
   useEffect(() => {
-    if (!id) return;
+    if (!gameId) return;
 
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       e.preventDefault();
@@ -97,7 +86,7 @@ const Game: NextPage = () => {
       if (!window.confirm('Are you sure you want to leave the game?')) {
         throw 'routeChange aborted';
       } else {
-        socket?.volatile.emit('leaveGame', parseInt(id as string));
+        socket?.volatile.emit('leaveGame', gameId);
       }
     };
 
@@ -120,8 +109,8 @@ const Game: NextPage = () => {
     <Layout title="Game">
       <div className={gameStyles.ctn__main__game}>
         <div className={gameStyles.ctn__game}>
-          {startGame ? (
-            <Canvas gameId={parseInt(id as string)} />
+          {startGame && gameId > 0 ? (
+            <Canvas gameId={gameId} />
           ) : (
             <div className={gameStyles.ctn__canvas}>
               <div

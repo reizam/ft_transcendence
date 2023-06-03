@@ -85,6 +85,23 @@ export class RoomService {
     }
   }
 
+  async createUniqueGameId(): Promise<number> {
+    const generateUniqueId = (): number => {
+      const timestamp = Date.now();
+      const random = Math.floor(Math.random() * 10000) + 1;
+      let uniqueId = Math.floor(timestamp / random);
+
+      while (uniqueId.toString.length > 9) uniqueId /= 10;
+      return uniqueId;
+    };
+    let gameId = generateUniqueId();
+    while ((await this.getGame(gameId)) != null) {
+      gameId = generateUniqueId();
+    }
+    console.log({ gameId });
+    return gameId;
+  }
+
   removeFromPlayerQueue(@ConnectedSocket() client: Socket): void {
     const user = this.socketUserService.getSocketUser(client);
 
@@ -250,6 +267,8 @@ export class RoomService {
         },
         userIds: [userId],
       };
+      this.rooms[game.id].game.paddles.left.reset();
+      this.rooms[game.id].game.paddles.right.reset();
     } else if (room.userIds.findIndex((id) => id === userId) == -1)
       room.userIds.push(userId);
     console.log(this.rooms);

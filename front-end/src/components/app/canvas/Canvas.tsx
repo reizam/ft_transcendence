@@ -7,7 +7,11 @@ import { useRouter } from 'next/router';
 import { ReactElement, useEffect, useLayoutEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 
-const Canvas = (): ReactElement => {
+interface CanvasProps {
+  gameId: number;
+}
+
+const Canvas = ({ gameId }: CanvasProps): ReactElement => {
   const { theme }: IThemeContext = useTheme();
   const primaryColor = getComputedStyle(
     document.documentElement
@@ -148,15 +152,9 @@ const Canvas = (): ReactElement => {
       );
     };
 
-    socket?.emit('startGame');
-
     socket?.once('stop', () => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       router.push('/game');
-    });
-
-    socket?.once('ready', () => {
-      return;
     });
 
     socket?.on(
@@ -225,7 +223,7 @@ const Canvas = (): ReactElement => {
     document.addEventListener('keyup', handleKeyUp);
 
     const intervalId = setInterval((): void => {
-      socket?.volatile.emit('move', keyState);
+      socket?.volatile.emit('move', { gameId: gameId, data: keyState });
     }, 1000 / 120);
 
     return () => {

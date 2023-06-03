@@ -9,7 +9,7 @@ function Game(): ReactElement {
     <Layout title="Game">
       <div className={gameStyles.ctn__pre__game}>
         <div className={gameStyles.ctn__pre__game__canvas}>
-          <Link href="/game/test">
+          <Link href="/game/local">
             <button className={gameStyles.style__button}>Local mode</button>
           </Link>
           <div style={{ height: '10%', display: 'hidden' }} />

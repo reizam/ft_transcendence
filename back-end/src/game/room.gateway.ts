@@ -11,6 +11,7 @@ import { RoomService } from '@/game/room.service';
 import { GameRoom, GameState, Player } from './types/game.types';
 import { SocketUserService } from '@/socket/user/socket.service';
 import { GameGateway } from './game.gateway';
+import { Game } from '@prisma/client';
 
 @WebSocketGateway()
 export class RoomGateway {
@@ -117,6 +118,50 @@ export class RoomGateway {
     if (user.id === game.playerOneId || user.id === game.playerTwoId)
       return true;
     return false;
+  }
+
+  @SubscribeMessage('joinLocalGame')
+  async onJoinLocalGame(
+    @ConnectedSocket() client: Socket,
+  ): Promise<number | WsResponse<string>> {
+    // TODO:
+    // Create UUID for local game
+    // Add client to room
+    // Check if player (if so return true to isPlayer)
+    // When leave before game start, delete game ? Or button to leave ? Or prompt confirm ?
+    // When all have left room, delete game if hasn't started ?
+    // Also:
+    // Deal with 'join-room' and 'leave-room' in case of disconnect/reconnect
+    // in the middle of a game ? Or through the front useEffect?
+
+    const user = this.socketUserService.getSocketUser(client);
+
+    if (!user) return { event: 'gameError', data: 'User not found' };
+
+    const gameId = await this.roomService.createUniqueGameId();
+    const game: Game = {
+      id: gameId,
+      playerOneId: user.id,
+      playerOneScore: 0,
+      playerTwoId: user.id,
+      playerTwoScore: 0,
+      createdAt: new Date(),
+      launchedAt: null,
+      finishedAt: null,
+      status: GameState.WAITING,
+    };
+
+    this.roomService.joinRoom(client, user.id, game);
+
+    const gameRoom: GameRoom | undefined = this.roomService.getRoom(gameId);
+
+    if (!gameRoom)
+      return { event: 'gameError', data: "This room doesn't exist" };
+    if (gameRoom.game.status === GameState.WAITING) {
+      gameRoom.game.status = GameState.INGAME;
+      this.gameGateway.startGame(gameRoom.game);
+    }
+    return gameId;
   }
 
   @SubscribeMessage('leaveGame')

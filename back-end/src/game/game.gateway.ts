@@ -53,52 +53,58 @@ export class GameGateway {
 
   @SubscribeMessage('move')
   onMove(
-    @ConnectedSocket() _client: Socket,
+    @ConnectedSocket() client: Socket,
     @MessageBody('gameId') gameId: number,
     @MessageBody('data') data: { [key: string]: boolean },
   ): void {
+    const user = this.socketUserService.getSocketUser(client);
     const gameRoom: GameRoom | undefined = this.roomService.getRoom(gameId);
 
-    if (!gameRoom) return;
+    if (!user || !gameRoom) return;
+    if (
+      user.id !== gameRoom.game.playerOneId &&
+      user.id !== gameRoom.game.playerTwoId
+    )
+      return;
     Object.entries(data).forEach(([key, value]) => {
       gameRoom.game.keyState[key] = value;
     });
   }
 
-  @SubscribeMessage('startGame')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onStartGame(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() gameId: number,
-  ): void | WsResponse<string> {
-    // TODO:
-    // Give the scheduler a unique ID related to the gameId ?
-    // Or no need if the interval is a unique value ?
+  // @SubscribeMessage('startGame')
+  // // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // onStartGame(
+  //   @ConnectedSocket() client: Socket,
+  //   @MessageBody() gameId: number,
+  // ): void | WsResponse<string> {
+  //   // TODO:
+  //   // Give the scheduler a unique ID related to the gameId ?
+  //   // Or no need if the interval is a unique value ?
 
-    const user = this.socketUserService.getSocketUser(client);
-    const gameRoom: GameRoom | undefined = this.roomService.getRoom(gameId);
+  //   const user = this.socketUserService.getSocketUser(client);
+  //   const gameRoom: GameRoom | undefined = this.roomService.getRoom(gameId);
 
-    if (!user) return { event: 'gameError', data: 'User not found' };
-    if (!gameRoom)
-      return { event: 'gameError', data: "This game doesn't exist" };
-    if (gameRoom.game.playerOneId != 0 && gameRoom.game.playerTwoId != 0) {
-      setTimeout(() => {
-        if (gameRoom.game.status === GameState.WAITING)
-          this.server.to(String(gameId)).emit('startCountdown');
-      }, 1500);
-      setTimeout(() => {
-        if (gameRoom.game.status === GameState.WAITING) {
-          gameRoom.game.launchedAt = new Date();
-          gameRoom.game.status = GameState.INGAME;
-          const interval = setInterval(
-            () => this.loop(gameRoom.game),
-            1000 / 120,
-          );
-          this.schedulerRegistry.addInterval('gameLoop', interval);
-        }
-      }, 12500);
-    }
-  }
+  //   if (!user) return { event: 'gameError', data: 'User not found' };
+  //   if (!gameRoom)
+  //     return { event: 'gameError', data: "This game doesn't exist" };
+  //   if (gameRoom.game.playerOneId != 0 && gameRoom.game.playerTwoId != 0) {
+  //     setTimeout(() => {
+  //       if (gameRoom.game.status === GameState.WAITING)
+  //         this.server.to(String(gameId)).emit('startCountdown');
+  //     }, 1500);
+  //     setTimeout(() => {
+  //       if (gameRoom.game.status === GameState.WAITING) {
+  //         gameRoom.game.launchedAt = new Date();
+  //         gameRoom.game.status = GameState.INGAME;
+  //         const interval = setInterval(
+  //           () => this.loop(gameRoom.game),
+  //           1000 / 120,
+  //         );
+  //         this.schedulerRegistry.addInterval('gameLoop', interval);
+  //       }
+  //     }, 12500);
+  //   }
+  // }
 
   startGame(game: GameInfos): void {
     // TODO:
@@ -106,11 +112,13 @@ export class GameGateway {
     // Or no need if the interval is a unique value ?
     // Send gameStarted to players to make sure they see the game
     // and not the countdown if they did not started it yet
+    // Stop the interval when the game is stopped,
+    // even if not finished (e.g. a player left)
 
     game.status = GameState.INGAME;
     setTimeout(() => {
       this.server.to(String(game.id)).emit('startCountdown');
-    }, 1000);
+    }, 100);
     setTimeout(() => {
       const interval = setInterval(() => this.loop(game), 1000 / 120);
 
