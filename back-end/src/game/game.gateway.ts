@@ -30,7 +30,8 @@ export class GameGateway {
   loop(game: GameInfos): void {
     if (game.status === GameState.STOPPED) {
       this.schedulerRegistry.deleteInterval('gameLoop');
-      this.server.emit('stopGame');
+      // record game
+      this.server.emit('endGame');
     } else if (game.status === GameState.INGAME) {
       game.status = this.gameService.update(game);
       this.server.to(String(game.id)).volatile.emit('gameState', {

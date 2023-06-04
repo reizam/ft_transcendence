@@ -3,15 +3,15 @@ import { useSocket } from '@/providers/socket/socket.context';
 import { useTheme } from '@/providers/theme/theme.context';
 import { IThemeContext } from '@/providers/theme/theme.interface';
 import gameStyles from '@/styles/game.module.css';
-import { useRouter } from 'next/router';
 import { ReactElement, useEffect, useLayoutEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 
 interface CanvasProps {
   gameId: number;
+  isPlayer: boolean;
 }
 
-const Canvas = ({ gameId }: CanvasProps): ReactElement => {
+const Canvas = ({ gameId, isPlayer }: CanvasProps): ReactElement => {
   const { theme }: IThemeContext = useTheme();
   const primaryColor = getComputedStyle(
     document.documentElement
@@ -23,7 +23,6 @@ const Canvas = ({ gameId }: CanvasProps): ReactElement => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const { socket } = useSocket();
-  const router = useRouter();
   const frame = useRef(0);
 
   const parameters = {
@@ -53,7 +52,6 @@ const Canvas = ({ gameId }: CanvasProps): ReactElement => {
         toast.error('Canvas failed to mount');
         return;
       }
-
       if (!div) {
         toast.error('Canvas parent element failed to mount');
         return;
@@ -152,11 +150,6 @@ const Canvas = ({ gameId }: CanvasProps): ReactElement => {
       );
     };
 
-    socket?.once('stop', () => {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      router.push('/game');
-    });
-
     socket?.on(
       'gameState',
       (state_: {
@@ -197,14 +190,14 @@ const Canvas = ({ gameId }: CanvasProps): ReactElement => {
     frame.current = window.requestAnimationFrame(draw);
 
     return () => {
-      socket?.removeAllListeners('stop');
-      socket?.removeAllListeners('ready');
       socket?.removeAllListeners('gamestate');
       cancelAnimationFrame(frame.current);
     };
-  }, [socket, router, theme]);
+  }, [socket, theme]);
 
   useEffect(() => {
+    if (!isPlayer) return;
+
     const keyState: { [key: string]: boolean } = {};
 
     const handleKeyDown = (e: KeyboardEvent): void => {
