@@ -1,6 +1,6 @@
-import Canvas from '@/components/app/canvas/Canvas';
 import Layout from '@/components/app/layouts/Layout';
 import ThemeSwitcher from '@/components/app/theme/ThemeSwitcher';
+import Canvas from '@/components/game/Pong';
 import { withProtected } from '@/providers/auth/auth.routes';
 import { useSocket } from '@/providers/socket/socket.context';
 import { useTheme } from '@/providers/theme/theme.context';

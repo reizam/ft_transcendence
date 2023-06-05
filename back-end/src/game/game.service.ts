@@ -1,4 +1,4 @@
-import { GameInfos, GameState, GameParameters } from '@/game/types/game.types';
+import { GameInfos, GameParameters, GameState } from '@/game/types/game.types';
 import { Injectable } from '@nestjs/common';
 
 // class Ball {
@@ -177,6 +177,7 @@ export class GameService {
     ) {
       const lostLeftPaddle = game.ball.x - game.ball.radius < 0;
 
+      game.ball.reset();
       game.ball.dx = lostLeftPaddle ? -game.ball.speed : game.ball.speed;
       game.ball.dy = GameService.getRandomArbitrary(
         -game.ball.speed,
@@ -184,8 +185,6 @@ export class GameService {
       );
 
       lostLeftPaddle ? (game.playerOneScore += 1) : (game.playerTwoScore += 1);
-
-      game.ball.reset();
     }
   }
 

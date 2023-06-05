@@ -60,7 +60,7 @@ export class Ball {
   }
 
   updateAfterCollision(paddle: Paddle): void {
-    const maxYSpeed = 5;
+    const maxYSpeed = 10;
     const relativeIntersectY = this.y - (paddle.y + paddle.height / 2);
 
     this.dy = (relativeIntersectY / (paddle.height / 2)) * maxYSpeed;

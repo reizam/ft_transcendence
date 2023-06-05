@@ -1,6 +1,6 @@
-import Canvas from '@/components/app/canvas/Canvas';
 import Layout from '@/components/app/layouts/Layout';
 import ThemeSwitcher from '@/components/app/theme/ThemeSwitcher';
+import Pong from '@/components/game/Pong';
 import { withProtected } from '@/providers/auth/auth.routes';
 import { useSocket } from '@/providers/socket/socket.context';
 import { useTheme } from '@/providers/theme/theme.context';
@@ -123,7 +123,7 @@ const Game: NextPage = () => {
       <div className={gameStyles.ctn__main__game}>
         <div className={gameStyles.ctn__game}>
           {startGame && gameId > 0 ? (
-            <Canvas gameId={gameId} isPlayer={true} />
+            <Pong gameId={gameId} isPlayer={true} />
           ) : (
             <div className={gameStyles.ctn__canvas}>
               <div
