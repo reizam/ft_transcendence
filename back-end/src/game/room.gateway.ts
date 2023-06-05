@@ -8,7 +8,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { RoomService } from '@/game/room.service';
-import { GameRoom, GameState, Player } from './types/game.types';
+import { GameState, Player } from './types/game.types';
 import { SocketUserService } from '@/socket/user/socket.service';
 import { GameGateway } from './game.gateway';
 import { Game } from '@prisma/client';
@@ -28,11 +28,6 @@ export class RoomGateway {
   async onFindGame(
     @ConnectedSocket() client: Socket,
   ): Promise<void | WsResponse<string | Player[]>> {
-    // TODO:
-    // in front wait for two players - if not in room within 10s,
-    // then error and redirect to game index
-    // otherwise create socket room for players and spectators
-
     this.roomService.addToPlayerQueue(client);
     const res = await this.roomService.findMatch(client);
     if (!res) return;
@@ -79,7 +74,7 @@ export class RoomGateway {
   async onJoinGame(
     @ConnectedSocket() client: Socket,
     @MessageBody() gameId: number,
-  ): Promise<boolean | WsResponse<string>> {
+  ): Promise<{ asPlayer: boolean; gameStarted: boolean } | WsResponse<string>> {
     // TODO:
     // Check if game exists, otherwise gameError
     // Add client to room
@@ -111,17 +106,22 @@ export class RoomGateway {
     gameRoom = this.roomService.joinRoom(client, user.id, gameInDB);
     if (!gameRoom)
       return { event: 'gameError', data: "This room doesn't exist" };
+
+    let gameStarted: boolean = false;
+
     if (this.roomService.playersReady(gameRoom)) {
       if (gameRoom.game.status === GameState.WAITING) {
         this.gameGateway.startGame(gameRoom.game);
+      } else {
+        gameStarted = true;
       }
     }
     // TODO:
     // Send something else if game has started in order to let the
     // spectators join and mount the right countdown or directly the game
     if (user.id === gameInDB.playerOneId || user.id === gameInDB.playerTwoId)
-      return true;
-    return false;
+      return { asPlayer: true, gameStarted };
+    return { asPlayer: false, gameStarted };
   }
 
   @SubscribeMessage('joinLocalGame')
@@ -137,13 +137,6 @@ export class RoomGateway {
     // Also:
     // Deal with 'join-room' and 'leave-room' in case of disconnect/reconnect
     // in the middle of a game ? Or through the front useEffect?
-
-    // And also:
-    // Think about the logic of leaving and re-joining the "/game/local"
-    // in order to avoid dangling local gameRooms, and re-join the
-    // last local game if not finished (like re-connection), or simply
-    // stop and delete the local gameRoom at each leaveRoom ?
-    // If too different from normal games, create "leaveLocalGame" ?
 
     const user = this.socketUserService.getSocketUser(client);
 
@@ -186,7 +179,6 @@ export class RoomGateway {
 
     if (!user) return;
     if (!gameInDB) {
-      // TODO: Try getRoom first (especially for local games) before returning?
       const localGame = this.roomService.leaveRoom(client, user.id, gameId);
 
       if (localGame) {
@@ -200,14 +192,22 @@ export class RoomGateway {
     if (
       gameRoom &&
       (user.id === gameInDB.playerOneId || user.id === gameInDB.playerTwoId)
-    )
+    ) {
+      const userId = user.id;
+      const player: string =
+        user.id === gameInDB.playerOneId ? 'Player one' : 'Player two';
+
       setTimeout(() => {
-        if (this.roomService.leaveGame(gameRoom, user.id)) {
-          this.server
-            .to(String(gameId))
-            .volatile.emit('playerHasLeft', user.username);
+        if (gameRoom?.game && this.roomService.hasLeftGame(gameRoom, userId)) {
+          this.server.to(String(gameId)).volatile.emit('playerHasLeft', player);
+          if (userId === gameRoom.game.playerOneId) {
+            gameRoom.game.playerOneScore = -1;
+          } else {
+            gameRoom.game.playerTwoScore = -1;
+          }
           gameRoom.game.status = GameState.STOPPED;
         }
-      }, 2500);
+      }, 2000);
+    }
   }
 }

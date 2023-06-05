@@ -10,7 +10,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { SocketUserService } from '@/socket/user/socket.service';
 import { Injectable } from '@nestjs/common';
 import { ConnectedSocket } from '@nestjs/websockets';
-import { Game, Statistic } from '@prisma/client';
+import { Game, User } from '@prisma/client';
 import { Socket } from 'socket.io';
 
 @Injectable()
@@ -25,6 +25,7 @@ export class RoomService {
   private rooms: { [id: number]: GameRoom } = {};
 
   async getGame(gameId: number): Promise<Game | null> {
+    if (gameId === null) return null;
     return await this.prisma.game.findUnique({
       where: {
         id: gameId,
@@ -95,6 +96,7 @@ export class RoomService {
       return uniqueId;
     };
     let gameId = generateUniqueId();
+
     while ((await this.getGame(gameId)) != null) {
       gameId = generateUniqueId();
     }
@@ -293,9 +295,6 @@ export class RoomService {
     userId: number,
     gameId: number,
   ): GameRoom | undefined {
-    // TODO:
-    // Update DB before deleting GameRoom ? It has rather already been done ?
-
     const room: GameRoom | undefined = this.rooms[gameId];
 
     client.leave(String(gameId));
@@ -303,47 +302,40 @@ export class RoomService {
       const i = room.userIds.findIndex((id) => id === userId);
 
       if (i != -1) room.userIds.splice(i, 1);
-      // if (room.game.playerOneId == room.game.playerTwoId) {
-      //   delete this.rooms[gameId];
-      //   return undefined;
-      // }
     }
-    // or setTimeout version ? Or if game finished ? Or not here ?
-    // or only if local game (2 players with same ID) ?
-    // if (room?.userIds.length === 0 && room?.game.status === GameState.STOPPED)
-    //   delete this.rooms[gameId];
     console.log(this.rooms);
     return room;
   }
 
-  leaveGame(gameRoom: GameRoom, userId: number): boolean {
-    // TODO:
-    // Emit endGame if player has really left without reconnecting
-
+  hasLeftGame(gameRoom: GameRoom, userId: number): boolean {
     if (gameRoom.userIds.findIndex((id) => id === userId) == -1) {
       return true;
     }
     return false;
   }
 
+  deleteRoom(roomId: number): void {
+    if (this.rooms[roomId]) delete this.rooms[roomId];
+  }
+
   async getPlayerStats(
     winnerId: number,
     loserId: number,
-  ): Promise<{ winner: Statistic; loser: Statistic }> {
-    const winnerStats = await this.prisma.statistic.findUnique({
+  ): Promise<{ winner: User; loser: User }> {
+    const winner = await this.prisma.user.findUnique({
       where: {
-        userId: winnerId,
+        id: winnerId,
       },
     });
-    const loserStats = await this.prisma.statistic.findUnique({
+    const loser = await this.prisma.user.findUnique({
       where: {
-        userId: loserId,
+        id: loserId,
       },
     });
-    if (!winnerStats || !loserStats) {
+    if (!winner || !loser) {
       throw new Error('Player stats unavailable');
     }
-    return { winner: winnerStats, loser: loserStats };
+    return { winner, loser };
   }
 
   updateElo(
@@ -382,17 +374,17 @@ export class RoomService {
     );
 
     await this.prisma.$transaction([
-      this.prisma.statistic.update({
+      this.prisma.user.update({
         where: {
-          userId: loser.userId,
+          id: loser.id,
         },
         data: {
           elo: Math.round(loserElo),
         },
       }),
-      this.prisma.statistic.update({
+      this.prisma.user.update({
         where: {
-          userId: winner.userId,
+          id: winner.id,
         },
         data: {
           elo: Math.round(winnerElo),
@@ -400,19 +392,4 @@ export class RoomService {
       }),
     ]);
   }
-
-  // async launchGame({ gameId, playerTwoId }: LaunchGame): Promise<void> {
-  //   await this.prisma.game.update({
-  //     where: {
-  //       id: gameId,
-  //     },
-  //     data: {
-  //       playerTwoId: playerTwoId,
-  //       launchedAt: new Date().toISOString(),
-  //       players: {
-  //         connect: [{ id: playerTwoId }],
-  //       },
-  //     },
-  //   });
-  // }
 }

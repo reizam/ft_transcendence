@@ -1,5 +1,6 @@
 import Layout from '@/components/app/layouts/Layout';
 import ThemeSwitcher from '@/components/app/theme/ThemeSwitcher';
+import Pong from '@/components/game/Pong';
 import Canvas from '@/components/game/Pong';
 import { withProtected } from '@/providers/auth/auth.routes';
 import { useSocket } from '@/providers/socket/socket.context';
@@ -38,9 +39,10 @@ const Game: NextPage = () => {
       socket?.volatile.emit(
         'joinGame',
         parseInt(id as string),
-        (asPlayer: boolean) => {
-          if (asPlayer && !isPlayer) setIsPlayer(true);
-          else if (!asPlayer) setIsPlayer(false);
+        (ack: { asPlayer: boolean; gameStarted: boolean }) => {
+          if (ack.asPlayer && !isPlayer) setIsPlayer(true);
+          else if (!ack.asPlayer) setIsPlayer(false);
+          if (ack.gameStarted && !startGame) setStartGame(true);
         }
       );
     };
@@ -115,9 +117,8 @@ const Game: NextPage = () => {
       window.removeEventListener('unhandledrejection', handleRejection);
     };
 
-    const handlePlayerHasLeft = (username: string): void => {
-      // handleEndGame();
-      toast.error(username + ' has left and lost the game!');
+    const handlePlayerHasLeft = (player: string): void => {
+      toast.error(player + ' has left and lost the game!');
     };
 
     socket?.once('gameError', handleGameError);
@@ -142,7 +143,7 @@ const Game: NextPage = () => {
       <div className={gameStyles.ctn__main__game}>
         <div className={gameStyles.ctn__game}>
           {startGame ? (
-            <Canvas gameId={parseInt(id as string)} isPlayer={isPlayer} />
+            <Pong gameId={parseInt(id as string)} isPlayer={isPlayer} />
           ) : (
             <div className={gameStyles.ctn__canvas}>
               <div

@@ -29,8 +29,22 @@ export class GameGateway {
       this.schedulerRegistry.deleteInterval('gameLoop');
       game.finishedAt = new Date();
       this.server.emit('endGame');
-      // record game and delete room? But error will not be listened to!
-      // and record it only if not a local game!
+      this.roomService.getGame(game.id).then((res) => {
+        if (res) {
+          this.roomService
+            .recordGame(game)
+            .catch((_e: unknown) => {
+              this.server
+                .to(String(game.id))
+                .volatile.emit('gameError', 'The game could not be saved');
+            })
+            .finally(() => {
+              setTimeout(() => this.roomService.deleteRoom(game.id), 2500);
+            });
+        } else {
+          this.roomService.deleteRoom(game.id);
+        }
+      });
     } else if (game.status === GameState.INGAME) {
       game.status = this.gameService.update(game);
       this.server.to(String(game.id)).volatile.emit('gameState', {
@@ -71,49 +85,10 @@ export class GameGateway {
     });
   }
 
-  // @SubscribeMessage('startGame')
-  // // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // onStartGame(
-  //   @ConnectedSocket() client: Socket,
-  //   @MessageBody() gameId: number,
-  // ): void | WsResponse<string> {
-  //   // TODO:
-  //   // Give the scheduler a unique ID related to the gameId ?
-  //   // Or no need if the interval is a unique value ?
-
-  //   const user = this.socketUserService.getSocketUser(client);
-  //   const gameRoom: GameRoom | undefined = this.roomService.getRoom(gameId);
-
-  //   if (!user) return { event: 'gameError', data: 'User not found' };
-  //   if (!gameRoom)
-  //     return { event: 'gameError', data: "This game doesn't exist" };
-  //   if (gameRoom.game.playerOneId != 0 && gameRoom.game.playerTwoId != 0) {
-  //     setTimeout(() => {
-  //       if (gameRoom.game.status === GameState.WAITING)
-  //         this.server.to(String(gameId)).emit('startCountdown');
-  //     }, 1500);
-  //     setTimeout(() => {
-  //       if (gameRoom.game.status === GameState.WAITING) {
-  //         gameRoom.game.launchedAt = new Date();
-  //         gameRoom.game.status = GameState.INGAME;
-  //         const interval = setInterval(
-  //           () => this.loop(gameRoom.game),
-  //           1000 / 120,
-  //         );
-  //         this.schedulerRegistry.addInterval('gameLoop', interval);
-  //       }
-  //     }, 12500);
-  //   }
-  // }
-
   startGame(game: GameInfos): void {
     // TODO:
     // Give the scheduler a unique ID related to the gameId ?
     // Or no need if the interval is a unique value ?
-    // Send gameStarted to players to make sure they see the game
-    // and not the countdown if they did not started it yet
-    // Stop the interval when the game is stopped,
-    // even if not finished (e.g. a player left)
 
     game.status = GameState.INGAME;
     setTimeout(() => {
