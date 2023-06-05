@@ -32,6 +32,8 @@ const Game: NextPage = () => {
     // console.log(router.query.id);
     if (!id) return;
 
+    // TODO: For spectators, return something else if game has started
+    // in order to mount the Canvas
     const sendJoinGame = () => {
       socket?.volatile.emit(
         'joinGame',
@@ -113,14 +115,21 @@ const Game: NextPage = () => {
       window.removeEventListener('unhandledrejection', handleRejection);
     };
 
+    const handlePlayerHasLeft = (username: string): void => {
+      // handleEndGame();
+      toast.error(username + ' has left and lost the game!');
+    };
+
     socket?.once('gameError', handleGameError);
     socket?.once('endGame', handleEndGame);
+    socket?.once('playerHasLeft', handlePlayerHasLeft);
 
     return () => {
       clearTimeout(timer1);
       clearTimeout(timer2);
       socket?.off('gameError', handleGameError);
       socket?.off('endGame', handleEndGame);
+      socket?.off('playerHasLeft', handlePlayerHasLeft);
       window.removeEventListener('beforeunload', handleBeforeUnload);
       window.removeEventListener('unload', handleUnload);
       router.events.off('routeChangeStart', handleRouteChange);

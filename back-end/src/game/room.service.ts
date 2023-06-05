@@ -253,7 +253,7 @@ export class RoomService {
     @ConnectedSocket() client: Socket,
     userId: number,
     game: Game,
-  ): void {
+  ): GameRoom | undefined {
     const room: GameRoom | undefined = this.rooms[game.id];
 
     client.join(String(game.id));
@@ -272,14 +272,13 @@ export class RoomService {
     } else if (room.userIds.findIndex((id) => id === userId) == -1)
       room.userIds.push(userId);
     console.log(this.rooms);
+    return this.rooms[game.id];
   }
 
-  playersReady(game: Game): boolean {
-    const room: GameRoom | undefined = this.rooms[game.id];
-
+  playersReady(room: GameRoom): boolean {
     if (
-      room?.userIds.findIndex((id) => game.playerOneId === id) !== -1 || //&&
-      room?.userIds.findIndex((id) => game.playerTwoId === id) !== -1
+      room.userIds.findIndex((id) => room.game.playerOneId === id) !== -1 || //&&
+      room.userIds.findIndex((id) => room.game.playerTwoId === id) !== -1
     )
       return true;
     return false;
@@ -293,24 +292,41 @@ export class RoomService {
     @ConnectedSocket() client: Socket,
     userId: number,
     gameId: number,
-  ): void {
+  ): GameRoom | undefined {
     // TODO:
-    // Update DB before deleting GameRoom ?
+    // Update DB before deleting GameRoom ? It has rather already been done ?
 
     const room: GameRoom | undefined = this.rooms[gameId];
 
     client.leave(String(gameId));
     if (room) {
       const i = room.userIds.findIndex((id) => id === userId);
+
       if (i != -1) room.userIds.splice(i, 1);
+      // if (room.game.playerOneId == room.game.playerTwoId) {
+      //   delete this.rooms[gameId];
+      //   return undefined;
+      // }
     }
-    if (room?.userIds?.length === 0) delete this.rooms[gameId];
+    // or setTimeout version ? Or if game finished ? Or not here ?
+    // or only if local game (2 players with same ID) ?
+    // if (room?.userIds.length === 0 && room?.game.status === GameState.STOPPED)
+    //   delete this.rooms[gameId];
     console.log(this.rooms);
+    return room;
   }
 
-  leaveGame(game: Game, userId: number): void {
-    //
+  leaveGame(gameRoom: GameRoom, userId: number): boolean {
+    // TODO:
+    // Emit endGame if player has really left without reconnecting
+
+    if (gameRoom.userIds.findIndex((id) => id === userId) == -1) {
+      return true;
+    }
+    return false;
   }
+
+  async recordGame(): Promise<void> {}
 
   // async launchGame({ gameId, playerTwoId }: LaunchGame): Promise<void> {
   //   await this.prisma.game.update({

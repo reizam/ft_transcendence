@@ -96,26 +96,30 @@ export class RoomGateway {
 
     console.log({ gameId });
     const user = this.socketUserService.getSocketUser(client);
-    const game = await this.roomService.getGame(gameId);
+    const gameInDB = await this.roomService.getGame(gameId);
+    let gameRoom = this.roomService.getRoom(gameId);
 
     if (!user) return { event: 'gameError', data: 'User not found' };
-    if (!game) return { event: 'gameError', data: "This game doesn't exist" };
-    this.roomService.joinRoom(client, user.id, game);
-    if (this.roomService.playersReady(game)) {
-      const gameRoom: GameRoom | undefined = this.roomService.getRoom(gameId);
+    if (!gameInDB)
+      return { event: 'gameError', data: "This game doesn't exist" };
+    if (
+      gameRoom?.game.status === GameState.STOPPED ||
+      gameInDB.status === GameState.STOPPED
+    )
+      return { event: 'gameError', data: 'This game is finished' };
 
-      if (!gameRoom)
-        return { event: 'gameError', data: "This room doesn't exist" };
+    gameRoom = this.roomService.joinRoom(client, user.id, gameInDB);
+    if (!gameRoom)
+      return { event: 'gameError', data: "This room doesn't exist" };
+    if (this.roomService.playersReady(gameRoom)) {
       if (gameRoom.game.status === GameState.WAITING) {
-        gameRoom.game.status = GameState.INGAME;
         this.gameGateway.startGame(gameRoom.game);
       }
     }
-    // setTimeout(
-    //   () => this.server.to(String(gameId)).emit('startCountdown'),
-    //   1500,
-    // );
-    if (user.id === game.playerOneId || user.id === game.playerTwoId)
+    // TODO:
+    // Send something else if game has started in order to let the
+    // spectators join and mount the right countdown or directly the game
+    if (user.id === gameInDB.playerOneId || user.id === gameInDB.playerTwoId)
       return true;
     return false;
   }
@@ -134,6 +138,13 @@ export class RoomGateway {
     // Deal with 'join-room' and 'leave-room' in case of disconnect/reconnect
     // in the middle of a game ? Or through the front useEffect?
 
+    // And also:
+    // Think about the logic of leaving and re-joining the "/game/local"
+    // in order to avoid dangling local gameRooms, and re-join the
+    // last local game if not finished (like re-connection), or simply
+    // stop and delete the local gameRoom at each leaveRoom ?
+    // If too different from normal games, create "leaveLocalGame" ?
+
     const user = this.socketUserService.getSocketUser(client);
 
     if (!user) return { event: 'gameError', data: 'User not found' };
@@ -150,19 +161,19 @@ export class RoomGateway {
       finishedAt: null,
       status: GameState.WAITING,
     };
-
-    this.roomService.joinRoom(client, user.id, game);
-
-    const gameRoom: GameRoom | undefined = this.roomService.getRoom(gameId);
+    const gameRoom = this.roomService.joinRoom(client, user.id, game);
 
     if (!gameRoom)
       return { event: 'gameError', data: "This room doesn't exist" };
     if (gameRoom.game.status === GameState.WAITING) {
-      gameRoom.game.status = GameState.INGAME;
       this.gameGateway.startGame(gameRoom.game);
     }
     return gameId;
   }
+
+  // TODO:
+  // Add an interval to clear the dangling inactive rooms that have
+  // not already been deleted
 
   @SubscribeMessage('leaveGame')
   async onLeaveGame(
@@ -171,12 +182,32 @@ export class RoomGateway {
   ): Promise<void> {
     console.log(gameId);
     const user = this.socketUserService.getSocketUser(client);
-    const game = await this.roomService.getGame(gameId);
+    const gameInDB = await this.roomService.getGame(gameId);
 
     if (!user) return;
-    if (!game) return;
-    this.roomService.leaveRoom(client, user.id, gameId);
-    if (user.id === game.playerOneId || user.id === game.playerTwoId)
-      setTimeout(() => this.roomService.leaveGame(game, user.id), 3000);
+    if (!gameInDB) {
+      // TODO: Try getRoom first (especially for local games) before returning?
+      const localGame = this.roomService.leaveRoom(client, user.id, gameId);
+
+      if (localGame) {
+        localGame.game.status = GameState.STOPPED;
+      }
+      return;
+    }
+
+    const gameRoom = this.roomService.leaveRoom(client, user.id, gameId);
+
+    if (
+      gameRoom &&
+      (user.id === gameInDB.playerOneId || user.id === gameInDB.playerTwoId)
+    )
+      setTimeout(() => {
+        if (this.roomService.leaveGame(gameRoom, user.id)) {
+          this.server
+            .to(String(gameId))
+            .volatile.emit('playerHasLeft', user.username);
+          gameRoom.game.status = GameState.STOPPED;
+        }
+      }, 2500);
   }
 }

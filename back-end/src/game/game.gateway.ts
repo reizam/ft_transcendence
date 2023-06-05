@@ -7,7 +7,6 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  WsResponse,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { RoomService } from './room.service';
@@ -22,16 +21,16 @@ export class GameGateway {
     private socketUserService: SocketUserService,
   ) {}
 
-  state: GameState = GameState.WAITING;
-
   @WebSocketServer()
   server: Server;
 
   loop(game: GameInfos): void {
     if (game.status === GameState.STOPPED) {
       this.schedulerRegistry.deleteInterval('gameLoop');
-      // record game
+      game.finishedAt = new Date();
       this.server.emit('endGame');
+      // record game and delete room? But error will not be listened to!
+      // and record it only if not a local game!
     } else if (game.status === GameState.INGAME) {
       game.status = this.gameService.update(game);
       this.server.to(String(game.id)).volatile.emit('gameState', {
