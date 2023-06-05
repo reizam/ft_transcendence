@@ -1,5 +1,6 @@
 import { GameService } from '@/game/game.service';
 import { GameInfos, GameRoom, GameState } from '@/game/types/game.types';
+import { SocketUserService } from '@/socket/user/socket.service';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import {
   ConnectedSocket,
@@ -10,7 +11,6 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { RoomService } from './room.service';
-import { SocketUserService } from '@/socket/user/socket.service';
 
 @WebSocketGateway()
 export class GameGateway {
@@ -24,12 +24,12 @@ export class GameGateway {
   @WebSocketServer()
   server: Server;
 
-  loop(game: GameInfos): void {
+  async loop(game: GameInfos): Promise<void> {
     if (game.status === GameState.STOPPED) {
       this.schedulerRegistry.deleteInterval('gameLoop');
       game.finishedAt = new Date();
       this.server.emit('endGame');
-      this.roomService.getGame(game.id).then((res) => {
+      void this.roomService.getGame(game.id).then((res) => {
         if (res) {
           this.roomService
             .recordGame(game)
@@ -39,7 +39,7 @@ export class GameGateway {
                 .volatile.emit('gameError', 'The game could not be saved');
             })
             .finally(() => {
-              setTimeout(() => this.roomService.deleteRoom(game.id), 2500);
+              setTimeout(() => this.roomService.deleteRoom(game.id), 2000);
             });
         } else {
           this.roomService.deleteRoom(game.id);

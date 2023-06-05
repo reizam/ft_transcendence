@@ -391,5 +391,18 @@ export class RoomService {
         },
       }),
     ]);
+
+    await this.prisma.game.update({
+      where: {
+        id: game.id,
+      },
+      data: {
+        playerOneScore: game.playerOneScore,
+        playerTwoScore: game.playerTwoScore,
+        status: game.status,
+        launchedAt: game.launchedAt,
+        finishedAt: game.finishedAt,
+      },
+    });
   }
 }
