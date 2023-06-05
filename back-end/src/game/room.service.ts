@@ -1,16 +1,16 @@
 import {
   Ball,
+  GameInfos,
+  GameRoom,
   IFindGame,
   Paddle,
   Player,
-  GameRoom,
 } from '@/game/types/game.types';
 import { PrismaService } from '@/prisma/prisma.service';
 import { SocketUserService } from '@/socket/user/socket.service';
 import { Injectable } from '@nestjs/common';
 import { ConnectedSocket } from '@nestjs/websockets';
-import { Game } from '@prisma/client';
-import { Mutex } from 'async-mutex';
+import { Game, Statistic } from '@prisma/client';
 import { Socket } from 'socket.io';
 
 @Injectable()
@@ -326,7 +326,80 @@ export class RoomService {
     return false;
   }
 
-  async recordGame(): Promise<void> {}
+  async getPlayerStats(
+    winnerId: number,
+    loserId: number,
+  ): Promise<{ winner: Statistic; loser: Statistic }> {
+    const winnerStats = await this.prisma.statistic.findUnique({
+      where: {
+        userId: winnerId,
+      },
+    });
+    const loserStats = await this.prisma.statistic.findUnique({
+      where: {
+        userId: loserId,
+      },
+    });
+    if (!winnerStats || !loserStats) {
+      throw new Error('Player stats unavailable');
+    }
+    return { winner: winnerStats, loser: loserStats };
+  }
+
+  updateElo(
+    winnerElo: number,
+    loserElo: number,
+    isDraw: boolean,
+  ): { winnerElo: number; loserElo: number } {
+    const kFactor = 32;
+
+    const expectedOutcomeWinner =
+      1 / (1 + 10 ** ((loserElo - winnerElo) / 400));
+    const expectedOutcomeLoser = 1 / (1 + 10 ** ((winnerElo - loserElo) / 400));
+
+    const actualOutcomeWinner = isDraw ? 0.5 : 1;
+    const actualOutcomeLoser = isDraw ? 0.5 : 0;
+
+    winnerElo += kFactor * (actualOutcomeWinner - expectedOutcomeWinner);
+    loserElo += kFactor * (actualOutcomeLoser - expectedOutcomeLoser);
+
+    return { winnerElo, loserElo };
+  }
+
+  async recordGame(game: GameInfos): Promise<void> {
+    const { winner, loser } = await this.getPlayerStats(
+      game.playerOneScore > game.playerTwoScore
+        ? game.playerOneId
+        : game.playerTwoId,
+      game.playerOneScore <= game.playerTwoScore
+        ? game.playerOneId
+        : game.playerTwoId,
+    );
+    const { winnerElo, loserElo } = this.updateElo(
+      winner.elo,
+      loser.elo,
+      game.playerOneScore === game.playerTwoScore,
+    );
+
+    await this.prisma.$transaction([
+      this.prisma.statistic.update({
+        where: {
+          userId: loser.userId,
+        },
+        data: {
+          elo: Math.round(loserElo),
+        },
+      }),
+      this.prisma.statistic.update({
+        where: {
+          userId: winner.userId,
+        },
+        data: {
+          elo: Math.round(winnerElo),
+        },
+      }),
+    ]);
+  }
 
   // async launchGame({ gameId, playerTwoId }: LaunchGame): Promise<void> {
   //   await this.prisma.game.update({

@@ -143,12 +143,6 @@ export type GameRoom = {
   userIds: number[];
 };
 
-export type MatchResult = {
-  isDraw: boolean;
-  winner: Player;
-  loser: Player;
-};
-
 export enum GameState {
   WAITING = 'waiting',
   INGAME = 'playing',
