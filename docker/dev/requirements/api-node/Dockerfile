@@ -20,6 +20,7 @@ WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 
 COPY package.json ./
+COPY .dockerignore ./
 # COPY package-lock.json ./
 
 RUN npm install -g prisma

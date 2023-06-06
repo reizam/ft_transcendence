@@ -1,8 +1,28 @@
-import { CreateChannelDto, GetChannelsDto } from '@/channel/channel.dto';
+import {
+  CreateChannelDto,
+  GetChannelMessagesDto,
+  GetChannelsDto,
+  PostChannelSendMessageDto,
+  PutChannelDto,
+} from '@/channel/channel.dto';
 import { ChannelService } from '@/channel/channel.service';
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { IChannel, IChannelPage } from '@/channel/types/channel.types';
+import {
+  IChannel,
+  IChannelPage,
+  IMessage,
+  IMessagePage,
+} from '@/channel/types/channel.types';
 import { DUser } from '@/decorators/user.decorator';
 import { User } from '@prisma/client';
 
@@ -25,7 +45,78 @@ export class ChannelController {
     return channel as IChannel;
   }
 
+  @Post('message')
+  @UseGuards(AuthGuard('jwt'))
+  async sendMessage(
+    @Body() sendMessageDto: PostChannelSendMessageDto,
+    @DUser() user: User,
+  ): Promise<IMessage> {
+    return await this.channelService.sendMessage(
+      user.id,
+      sendMessageDto.channelId,
+      sendMessageDto.message,
+    );
+  }
+
   @Get()
+  @UseGuards(AuthGuard('jwt'))
+  async getChannel(
+    @Query('channelId') channelId: string,
+    @DUser() user: User,
+  ): Promise<IChannel> {
+    const channel = await this.channelService.getChannel(
+      user.id,
+      Number(channelId),
+    );
+
+    return channel as IChannel;
+  }
+
+  @Post('leave')
+  @UseGuards(AuthGuard('jwt'))
+  async deleteChannel(
+    @Query('channelId') channelId: string,
+    @DUser() user: User,
+  ): Promise<boolean> {
+    await this.channelService.leaveChannel(user.id, Number(channelId));
+
+    return true;
+  }
+
+  @Put()
+  @UseGuards(AuthGuard('jwt'))
+  async putChannel(
+    @Body() putChannelDto: PutChannelDto,
+    @DUser() user: User,
+  ): Promise<boolean> {
+    await this.channelService.updateChannel(
+      user.id,
+      putChannelDto.channelId,
+      putChannelDto.admins,
+      putChannelDto.withPassword,
+      putChannelDto.password,
+    );
+
+    return true;
+  }
+
+  @Get('message/page')
+  @UseGuards(AuthGuard('jwt'))
+  async getChannelMessages(
+    @Query() getChannelMessagesDto: GetChannelMessagesDto,
+    @DUser() user: User,
+  ): Promise<IMessagePage> {
+    const messagePage = await this.channelService.getChannelMessagePage(
+      user.id,
+      getChannelMessagesDto.channelId,
+      getChannelMessagesDto.page,
+      getChannelMessagesDto.limit,
+    );
+
+    return messagePage;
+  }
+
+  @Get('page')
   @UseGuards(AuthGuard('jwt'))
   async getChannels(
     @Query() getChannelsDto: GetChannelsDto,

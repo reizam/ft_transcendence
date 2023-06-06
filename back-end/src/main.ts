@@ -15,7 +15,7 @@ async function bootstrap(): Promise<void> {
   app.use(json({ limit: '5mb' }));
   app.enableCors({
     origin: process.env.FRONTEND_URL || 'http://localhost:4000',
-    methods: 'GET, POST, PATCH',
+    methods: 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
     credentials: true,
   });
   app.useGlobalPipes(

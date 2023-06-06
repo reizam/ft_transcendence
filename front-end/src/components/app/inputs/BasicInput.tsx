@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react';
 
 interface BasicInputProps {
+  disabled?: boolean;
   type?: string;
   name?: string;
   placeholder?: string;
@@ -9,9 +10,11 @@ interface BasicInputProps {
   className?: string;
   checked?: boolean;
   accept?: string;
+  onKeyPress?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 function BasicInput({
+  disabled,
   accept,
   type,
   name,
@@ -20,9 +23,12 @@ function BasicInput({
   onChange,
   className,
   checked,
+  onKeyPress,
 }: BasicInputProps): ReactElement {
   return (
     <input
+      onKeyPress={onKeyPress}
+      disabled={disabled}
       type={type}
       name={name}
       placeholder={placeholder}

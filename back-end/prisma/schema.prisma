@@ -28,48 +28,40 @@ model User {
 
   channelsOwned Channel[]
   channels      ChannelUser[]
+  messages      Message[]
 
-  statistics        Statistic?
-  matchHistory      Game[]
-  achievements      String[]
+  statistics   Statistic?
+  matchHistory Game[]
+  achievements String[]
 }
 
 model Statistic {
-  user              User    @relation(fields: [userId], references: [id])
-  userId            Int     @unique
+  user   User @relation(fields: [userId], references: [id])
+  userId Int  @unique
 
-  elo               Int     @default(1000)
+  elo Int @default(1000)
 
-  wins              Int     @default(0)
-  draws             Int     @default(0)
-  losses            Int     @default(0)
+  wins   Int @default(0)
+  draws  Int @default(0)
+  losses Int @default(0)
 }
 
 model Game {
   id Int @id @default(autoincrement())
 
-  players          User[]
-  playerOneId      Int
-  playerTwoId      Int?
-  playerOneScore   Int?
-  playerTwoScore   Int?
+  players        User[]
+  playerOneId    Int
+  playerTwoId    Int?
+  playerOneScore Int?
+  playerTwoScore Int?
 
   status String // waiting, pending, finished
 
-  createdAt        DateTime @default(now())
+  createdAt DateTime @default(now())
 
-  launchedAt       DateTime?
-  finishedAt       DateTime?
+  launchedAt DateTime?
+  finishedAt DateTime?
 }
-
-// model PlayersOnGames {
-//   user          User @relation(fields: [userId], references: [id])
-//   userId        Int
-//   game          Game @relation(fields: [gameId], references: [id])
-//   gameId        Int
-
-//   @@id([userId, gameId])
-// }
 
 model Channel {
   id Int @id @default(autoincrement())
@@ -113,18 +105,10 @@ model Message {
 
   channelId Int
   userId    Int
+  user      User @relation(fields: [userId], references: [id])
   message   String
 
   gameId Int?
-
-  createdAt DateTime @default(now())
-}
-
-model VerificationToken {
-  id           Int    @id @default(autoincrement())
-  userId       String
-  accessToken  String
-  refreshToken String
 
   createdAt DateTime @default(now())
 }
