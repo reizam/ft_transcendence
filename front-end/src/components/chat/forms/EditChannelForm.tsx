@@ -36,6 +36,8 @@ function EditChannelForm({
       validationSchema: schema,
     });
 
+  console.log(users);
+
   const onClick = (): void => {
     if (isValid) {
       handleSubmit();

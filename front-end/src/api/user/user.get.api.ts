@@ -1,6 +1,10 @@
 import { getWithToken } from '@/api';
-import { IUserData } from '@/api/user/user.type';
-import { UseQueryResult, useQuery } from '@tanstack/react-query';
+import { IUserData } from '@/api/user/user.types';
+import {
+  UseQueryOptions,
+  UseQueryResult,
+  useQuery,
+} from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 
 const onFetchError = (err: Error): void => {
@@ -18,15 +22,18 @@ const defaultUserFetchConfig = {
   onSuccess: onFetchSuccess,
 };
 
-export const useGetMe = (): UseQueryResult<IUserData, Error> =>
-  useQuery(
-    ['PROFILE', 'GET', 'ME'],
+export const useGetMe = (
+  watched?: string,
+  options: UseQueryOptions<IUserData, Error> = {}
+): UseQueryResult<IUserData, Error> =>
+  useQuery<IUserData, Error>(
+    ['PROFILE', 'GET', 'ME', watched],
     async () => {
       const data = await getWithToken('/profile');
 
-      return data;
+      return data as IUserData;
     },
-    { ...defaultUserFetchConfig }
+    { ...defaultUserFetchConfig, ...options }
   );
 
 export const useGetUser = (id?: string): UseQueryResult<IUserData, Error> =>

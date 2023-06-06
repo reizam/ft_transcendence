@@ -11,8 +11,8 @@ const queryClient = new QueryClient();
 
 function ft_transcendence({ Component, pageProps }: AppProps): ReactElement {
   return (
-    <AuthProvider>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
         <SocketProvider>
           <Component {...pageProps} />
           <ReactQueryDevtools />
@@ -29,8 +29,8 @@ function ft_transcendence({ Component, pageProps }: AppProps): ReactElement {
             theme="dark"
           />
         </SocketProvider>
-      </QueryClientProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 
