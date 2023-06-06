@@ -1,8 +1,7 @@
 import Canvas from '@/components/app/canvas/Canvas';
 import { Keyframes } from '@/components/utils/Keyframes';
+import useColors from '@/hooks/useColors';
 import { useSocket } from '@/providers/socket/socket.context';
-import { useTheme } from '@/providers/theme/theme.context';
-import { IThemeContext } from '@/providers/theme/theme.interface';
 import gameStyles from '@/styles/game.module.css';
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
@@ -13,18 +12,14 @@ interface PongProps {
 }
 
 const Pong = ({ gameId, isPlayer }: PongProps): JSX.Element => {
-  const { theme }: IThemeContext = useTheme();
-  const primaryColor = getComputedStyle(
-    document.documentElement
-  ).getPropertyValue(theme.colors.primary);
-  const secondaryColor = getComputedStyle(
-    document.documentElement
-  ).getPropertyValue(theme.colors.secondary);
+  const { primary: primaryColor, secondary: secondaryColor } = useColors();
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const { socket } = useSocket();
+
   const frame = useRef(0);
+  const ratio = useRef(0);
 
   const parameters = {
     dimensions: {
@@ -76,7 +71,6 @@ const Pong = ({ gameId, isPlayer }: PongProps): JSX.Element => {
   useEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas?.getContext('2d');
-    let ratio = 0;
     let state = {
       paddles: { left: 0, right: 0 },
       ball: {
@@ -99,19 +93,18 @@ const Pong = ({ gameId, isPlayer }: PongProps): JSX.Element => {
       // Draw the paddle on the left
       context.fillStyle = primaryColor;
       context.fillRect(
-        parameters.paddle.offset / ratio,
-        positions.left / ratio,
-        parameters.paddle.width / ratio,
-        parameters.paddle.height / ratio
+        parameters.paddle.offset / ratio.current,
+        positions.left / ratio.current,
+        parameters.paddle.width / ratio.current,
+        parameters.paddle.height / ratio.current
       );
 
       context.fillRect(
         canvas.width -
-          parameters.paddle.offset -
-          parameters.paddle.width / ratio,
-        positions.right / ratio,
-        parameters.paddle.width / ratio,
-        parameters.paddle.height / ratio
+          (parameters.paddle.offset + parameters.paddle.width) / ratio.current,
+        positions.right / ratio.current,
+        parameters.paddle.width / ratio.current,
+        parameters.paddle.height / ratio.current
       );
     };
 
@@ -122,9 +115,9 @@ const Pong = ({ gameId, isPlayer }: PongProps): JSX.Element => {
     ): void => {
       context.beginPath();
       context.arc(
-        ball.x / ratio,
-        ball.y / ratio,
-        ball.radius / ratio,
+        ball.x / ratio.current,
+        ball.y / ratio.current,
+        ball.radius / ratio.current,
         0,
         Math.PI * 2
       );
@@ -164,7 +157,7 @@ const Pong = ({ gameId, isPlayer }: PongProps): JSX.Element => {
       }) => {
         state = state_;
         if (context) {
-          ratio = parameters.dimensions.width / context.canvas.width;
+          ratio.current = parameters.dimensions.width / context.canvas.width;
         }
       }
     );
@@ -194,7 +187,7 @@ const Pong = ({ gameId, isPlayer }: PongProps): JSX.Element => {
       socket?.removeAllListeners('gamestate');
       cancelAnimationFrame(frame.current);
     };
-  }, [socket, theme]);
+  }, [socket, primaryColor, secondaryColor]);
 
   useEffect(() => {
     if (!isPlayer) return;

@@ -10,15 +10,15 @@ import { ReactElement, useState } from 'react';
 
 const ThemeSwitcher = (): ReactElement => {
   const { theme, setTheme }: IThemeContext = useTheme();
-  const [activeToggle, setActiveToggle] = useState<string>(theme.name);
+  const [activeToggle, setActiveToggle] = useState<string>(theme.id);
 
   const handleToggle = (theme: ITheme, checked: boolean): void => {
     if (checked) {
-      setActiveToggle(theme.name);
+      setActiveToggle(theme.id);
       setTheme(theme);
     } else {
-      setActiveToggle(ThemeStore['default'].name);
-      setTheme(ThemeStore['default']);
+      setActiveToggle('default');
+      setTheme(ThemeStore[0]);
     }
   };
 
@@ -36,7 +36,7 @@ const ThemeSwitcher = (): ReactElement => {
                   backgroundColor="var(--toggle-color)"
                   checkedBackgroundColor={'var(' + theme.colors.secondary + ')'}
                   sliderColor={'var(' + theme.colors.primary + ')'}
-                  checked={activeToggle === theme.name}
+                  checked={activeToggle === theme.id}
                 />
               </div>
             </div>
