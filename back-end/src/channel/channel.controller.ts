@@ -89,13 +89,17 @@ export class ChannelController {
     @Body() putChannelDto: PutChannelDto,
     @DUser() user: User,
   ): Promise<boolean> {
-    await this.channelService.updateChannel(
-      user.id,
-      putChannelDto.channelId,
-      putChannelDto.admins,
-      putChannelDto.withPassword,
-      putChannelDto.password,
-    );
+    try {
+      await this.channelService.updateChannel(
+        user.id,
+        putChannelDto.channelId,
+        putChannelDto.admins,
+        putChannelDto.withPassword,
+        putChannelDto.password,
+      );
+    } catch (error) {
+      console.log(error);
+    }
 
     return true;
   }

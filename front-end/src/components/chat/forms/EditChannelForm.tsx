@@ -3,6 +3,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import BasicInput from '@/components/app/inputs/BasicInput';
 import { IChannelUser } from '@/api/channel/channel.types';
+import AdminList from '@/components/chat/lists/AdminList';
 
 const schema = Yup.object().shape({
   password: Yup.string(),
@@ -35,8 +36,6 @@ function EditChannelForm({
       onSubmit,
       validationSchema: schema,
     });
-
-  console.log(users);
 
   const onClick = (): void => {
     if (isValid) {
@@ -75,6 +74,11 @@ function EditChannelForm({
             onChange={handleChange('password')}
           />
         )}
+        <AdminList
+          admins={values.admins}
+          users={users}
+          onChange={(admins): void => void setFieldValue('admins', admins)}
+        />
       </div>
       <div className="flex flex-row space-x-4">
         <button
