@@ -1,10 +1,9 @@
 import Layout from '@/components/app/layouts/Layout';
 import ThemeSwitcher from '@/components/app/theme/ThemeSwitcher';
 import Pong from '@/components/game/Pong';
+import useColors from '@/hooks/useColors';
 import { withProtected } from '@/providers/auth/auth.routes';
 import { useSocket } from '@/providers/socket/socket.context';
-import { useTheme } from '@/providers/theme/theme.context';
-import { IThemeContext } from '@/providers/theme/theme.interface';
 import gameStyles from '@/styles/game.module.css';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
@@ -12,13 +11,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 const Game: NextPage = () => {
-  const { theme }: IThemeContext = useTheme();
-  const primaryColor = getComputedStyle(
-    document.documentElement
-  ).getPropertyValue(theme.colors.primary);
-  const secondaryColor = getComputedStyle(
-    document.documentElement
-  ).getPropertyValue(theme.colors.secondary);
+  const { primary: primaryColor } = useColors();
 
   const { socket } = useSocket();
   const router = useRouter();

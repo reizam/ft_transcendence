@@ -104,7 +104,7 @@ export class GameService {
     },
     paddle: {
       width: 20,
-      height: 200,
+      height: 250,
       offset: 10,
       speed: 15,
     },

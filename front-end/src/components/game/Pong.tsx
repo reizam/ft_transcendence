@@ -28,7 +28,7 @@ const Pong = ({ gameId, isPlayer }: PongProps): JSX.Element => {
     },
     paddle: {
       width: 20,
-      height: 200,
+      height: 250,
       offset: 10,
       speed: 15,
     },
@@ -113,6 +113,7 @@ const Pong = ({ gameId, isPlayer }: PongProps): JSX.Element => {
       context: CanvasRenderingContext2D,
       ball: { x: number; y: number; radius: number }
     ): void => {
+      if (ball.x === -1 || ball.y === -1) return;
       context.beginPath();
       context.arc(
         ball.x / ratio.current,
