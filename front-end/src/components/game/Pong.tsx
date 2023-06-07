@@ -1,8 +1,6 @@
 import Canvas from '@/components/app/canvas/Canvas';
-import { Keyframes } from '@/components/utils/Keyframes';
 import useColors from '@/hooks/useColors';
 import { useSocket } from '@/providers/socket/socket.context';
-import gameStyles from '@/styles/game.module.css';
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 
@@ -221,38 +219,7 @@ const Pong = ({ gameId, isPlayer }: PongProps): JSX.Element => {
     };
   }, [socket]);
 
-  return (
-    <div className={gameStyles.ctn__canvas}>
-      <div
-        className={gameStyles.ctn__game__canvas}
-        style={{
-          borderColor: primaryColor,
-          boxShadow: `0 0 1px ${primaryColor}ff, 0 0 2px ${primaryColor}ff, 0 0 4px ${primaryColor}ff, 0 0 8px ${primaryColor}ff, 0 0 12px ${primaryColor}ff`,
-          animation: 'neon-blink 3s infinite alternate',
-        }}
-      >
-        <Keyframes
-          name={'neon-blink'}
-          _35={{
-            boxShadow: `0 0 1px ${primaryColor}ff, 0 0 2px ${primaryColor}ff, 0 0 4px ${primaryColor}ff, 0 0 8px ${primaryColor}ff, 0 0 12px ${primaryColor}ff`,
-          }}
-          _48={{
-            boxShadow: `0 0 1px ${primaryColor}d9, 0 0 2px ${primaryColor}d9, 0 0 4px ${primaryColor}d9, 0 0 8px ${primaryColor}d9, 0 0 12px ${primaryColor}d9`,
-          }}
-          _51={{
-            boxShadow: `0 0 1px ${primaryColor}f2, 0 0 2px ${primaryColor}f2, 0 0 4px ${primaryColor}f2, 0 0 8px ${primaryColor}f2, 0 0 12px ${primaryColor}f2`,
-          }}
-          _54={{
-            boxShadow: `0 0 1px ${primaryColor}b7, 0 0 2px ${primaryColor}b7, 0 0 4px ${primaryColor}b7, 0 0 8px ${primaryColor}b7, 0 0 12px ${primaryColor}b7`,
-          }}
-          _60={{
-            boxShadow: `0 0 1px ${primaryColor}ff, 0 0 2px ${primaryColor}ff, 0 0 4px ${primaryColor}ff, 0 0 8px ${primaryColor}ff, 0 0 12px ${primaryColor}ff`,
-          }}
-        />
-        <Canvas ref={canvasRef} />
-      </div>
-    </div>
-  );
+  return <Canvas ref={canvasRef} />;
 };
 
 export default Pong;

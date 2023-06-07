@@ -92,18 +92,6 @@
   position: relative;
 }
 
-.ctn__select__theme {
-  width: 15vw;
-  height: 75vh;
-  margin-left: 5vw;
-  background-color: var(--container-background-color);
-  border-radius: var(--radius-container);
-}
-
-.cnt__theme__h3 {
-  font-size: 1.2em;
-}
-
 .ctn__game__canvas {
   aspect-ratio: 16 / 9;
   display: block;
@@ -120,47 +108,18 @@
   max-height: 90%;
   border: 2px solid var(--main-theme-color);
   border-radius: var(--radius-container);
-  /* box-shadow: 0 0 1px var(--main-theme-color), 0 0 2px var(--main-theme-color),
-    0 0 4px var(--main-theme-color), 0 0 8px var(--main-theme-color),
-    0 0 12px var(--main-theme-color); */
-  /* animation: animate 3s infinite alternate; */
 }
 
-/* @keyframes animate {
-  35% {
-    box-shadow: 0 0 1px var(--main-theme-color), 0 0 2px var(--main-theme-color),
-      0 0 4px var(--main-theme-color), 0 0 8px var(--main-theme-color),
-      0 0 12px var(--main-theme-color);
-  }
-  48% {
-    box-shadow: 0 0 1px var(--main-theme-color1),
-      0 0 2px var(--main-theme-color1), 0 0 4px var(--main-theme-color1),
-      0 0 8px var(--main-theme-color1), 0 0 12px var(--main-theme-color1);
-  }
-  51% {
-    box-shadow: 0 0 1px var(--main-theme-color2),
-      0 0 2px var(--main-theme-color2), 0 0 4px var(--main-theme-color2),
-      0 0 8px var(--main-theme-color2), 0 0 12px var(--main-theme-color2);
-  }
-  54% {
-    box-shadow: 0 0 1px var(--main-theme-color3),
-      0 0 2px var(--main-theme-color3), 0 0 4px var(--main-theme-color3),
-      0 0 8px var(--main-theme-color3), 0 0 12px var(--main-theme-color3);
-  }
-  60% {
-    box-shadow: 0 0 1px var(--main-theme-color), 0 0 2px var(--main-theme-color),
-      0 0 4px var(--main-theme-color), 0 0 8px var(--main-theme-color),
-      0 0 12px var(--main-theme-color);
-  }
-} */
+.ctn__select__theme {
+  width: 15vw;
+  height: 75vh;
+  margin-left: 5vw;
+  background-color: var(--container-background-color);
+  border-radius: var(--radius-container);
+}
 
-.ctn__game__rslt {
-  width: 80%;
-  height: 15%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 2.5%;
-  border: 1px solid green;
+.cnt__theme__h3 {
+  font-size: 1.2em;
 }
 
 .ctn__select__theme h3 {

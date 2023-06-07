@@ -1,6 +1,7 @@
 import Layout from '@/components/app/layouts/Layout';
 import ThemeSwitcher from '@/components/app/theme/ThemeSwitcher';
 import Pong from '@/components/game/Pong';
+import { Keyframes } from '@/components/utils/Keyframes';
 import useColors from '@/hooks/useColors';
 import { withProtected } from '@/providers/auth/auth.routes';
 import { useSocket } from '@/providers/socket/socket.context';
@@ -21,12 +22,12 @@ const Game: NextPage = () => {
   const [startGame, setStartGame] = useState<boolean>(false);
 
   useEffect(() => {
-    const sendJoinGame = () => {
+    const sendJoinGame = (): void => {
       socket?.volatile.emit('joinLocalGame', (id: number) => {
         if (gameId < 0) setGameId(id);
       });
     };
-    const timer1 = setTimeout(sendJoinGame, 1000);
+    const timer1 = setTimeout(sendJoinGame, 100);
 
     return () => {
       clearTimeout(timer1);
@@ -115,26 +116,45 @@ const Game: NextPage = () => {
     <Layout title="Game">
       <div className={gameStyles.ctn__main__game}>
         <div className={gameStyles.ctn__game}>
-          {startGame && gameId > 0 ? (
-            <Pong gameId={gameId} isPlayer={true} />
-          ) : (
-            <div className={gameStyles.ctn__canvas}>
-              <div
-                className={gameStyles.ctn__game__canvas}
-                style={{
-                  borderColor: primaryColor,
-                  boxShadow: `0 0 1px ${primaryColor}, 0 0 2px ${primaryColor}, 0 0 4px ${primaryColor}, 0 0 8px ${primaryColor}, 0 0 12px ${primaryColor}`,
-                }}
-              >
+          <div className={gameStyles.ctn__canvas}>
+            <Keyframes
+              name={'neon-blink'}
+              _35={{
+                boxShadow: `0 0 1px ${primaryColor}ff, 0 0 2px ${primaryColor}ff, 0 0 4px ${primaryColor}ff, 0 0 8px ${primaryColor}ff, 0 0 12px ${primaryColor}ff`,
+              }}
+              _48={{
+                boxShadow: `0 0 1px ${primaryColor}d9, 0 0 2px ${primaryColor}d9, 0 0 4px ${primaryColor}d9, 0 0 8px ${primaryColor}d9, 0 0 12px ${primaryColor}d9`,
+              }}
+              _51={{
+                boxShadow: `0 0 1px ${primaryColor}f2, 0 0 2px ${primaryColor}f2, 0 0 4px ${primaryColor}f2, 0 0 8px ${primaryColor}f2, 0 0 12px ${primaryColor}f2`,
+              }}
+              _54={{
+                boxShadow: `0 0 1px ${primaryColor}b7, 0 0 2px ${primaryColor}b7, 0 0 4px ${primaryColor}b7, 0 0 8px ${primaryColor}b7, 0 0 12px ${primaryColor}b7`,
+              }}
+              _60={{
+                boxShadow: `0 0 1px ${primaryColor}ff, 0 0 2px ${primaryColor}ff, 0 0 4px ${primaryColor}ff, 0 0 8px ${primaryColor}ff, 0 0 12px ${primaryColor}ff`,
+              }}
+            />
+            <div
+              className={gameStyles.ctn__game__canvas}
+              style={{
+                borderColor: primaryColor,
+                boxShadow: `0 0 1px ${primaryColor}, 0 0 2px ${primaryColor}, 0 0 4px ${primaryColor}, 0 0 8px ${primaryColor}, 0 0 12px ${primaryColor}`,
+                animation: 'neon-blink 3s infinite alternate',
+              }}
+            >
+              {startGame && gameId > 0 ? (
+                <Pong gameId={gameId} isPlayer={true} />
+              ) : (
                 <div className={gameStyles.ctn__countdown}>
                   {/* <Countdown timer="10" start={startCountdown} /> */}
                   <button className={gameStyles.style__button}>
                     {startCountdown ? 'Countdown started' : 'Countdown stopped'}
                   </button>
                 </div>
-              </div>
+              )}
             </div>
-          )}
+          </div>
           <ThemeSwitcher />
         </div>
       </div>
