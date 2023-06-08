@@ -1,8 +1,10 @@
 import Layout from '@/components/app/layouts/Layout';
 import ThemeSwitcher from '@/components/app/theme/ThemeSwitcher';
 import Pong from '@/components/game/Pong';
+import Countdown from '@/components/utils/Countdown';
 import { Keyframes } from '@/components/utils/Keyframes';
 import useColors from '@/hooks/useColors';
+import { useCountdown } from '@/hooks/useCountdown';
 import { withProtected } from '@/providers/auth/auth.routes';
 import { useSocket } from '@/providers/socket/socket.context';
 import gameStyles from '@/styles/game.module.css';
@@ -13,13 +15,22 @@ import { toast } from 'react-toastify';
 
 const Game: NextPage = () => {
   const { primary: primaryColor } = useColors();
+  const [count, { startCountdown, stopCountdown, resetCountdown }] =
+    useCountdown({
+      countStart: 10,
+    });
 
   const { socket } = useSocket();
   const router = useRouter();
 
   const [gameId, setGameId] = useState<number>(-1);
-  const [startCountdown, setStartCountdown] = useState<boolean>(false);
   const [startGame, setStartGame] = useState<boolean>(false);
+
+  if (count === 0) {
+    stopCountdown();
+  }
+
+  useEffect(() => resetCountdown(), []);
 
   useEffect(() => {
     const sendJoinGame = (): void => {
@@ -35,18 +46,15 @@ const Game: NextPage = () => {
   }, [socket, router]);
 
   useEffect(() => {
-    const handleStartCountdown = (): void => {
-      if (!startCountdown) setStartCountdown(true);
-    };
     const handleStartGame = (): void => {
       if (!startGame) setStartGame(true);
     };
 
-    socket?.once('startCountdown', handleStartCountdown);
+    socket?.once('startCountdown', startCountdown);
     socket?.once('startGame', handleStartGame);
 
     return () => {
-      socket?.off('startCountdown', handleStartCountdown);
+      socket?.off('startCountdown', startCountdown);
       socket?.off('startGame', handleStartGame);
     };
   }, [socket, router]);
@@ -146,12 +154,7 @@ const Game: NextPage = () => {
               {startGame && gameId > 0 ? (
                 <Pong gameId={gameId} isPlayer={true} />
               ) : (
-                <div className={gameStyles.ctn__countdown}>
-                  {/* <Countdown timer="10" start={startCountdown} /> */}
-                  <button className={gameStyles.style__button}>
-                    {startCountdown ? 'Countdown started' : 'Countdown stopped'}
-                  </button>
-                </div>
+                <Countdown count={count} total={10} color={primaryColor} />
               )}
             </div>
           </div>

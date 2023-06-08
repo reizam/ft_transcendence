@@ -3,19 +3,19 @@ import Navbar from '@/components/app/layouts/navbar/Navbar';
 import { NavbarItemProps } from '@/components/app/layouts/navbar/NavbarItem';
 import Head from 'next/head';
 import { BsChatTextFill } from 'react-icons/bs';
-import { FaGamepad } from 'react-icons/fa';
+import { FaGamepad, FaUser } from 'react-icons/fa';
 
 const navbarItems: NavbarItemProps[] = [
   {
-    href: '/game',
-    icon: <FaGamepad size={24} />,
+    href: '/profile',
+    icon: <FaUser size={24} />,
   },
   {
     href: '/chat',
     icon: <BsChatTextFill size={24} />,
   },
   {
-    href: '/profile',
+    href: '/game',
     icon: <FaGamepad size={24} />,
   },
 ];
@@ -56,7 +56,6 @@ function Layout({
             <main
               style={{
                 height: 'calc(100vh - 4rem)',
-                maxHeight: 'calc(100vh - 4rem)',
               }}
               className={className}
             >

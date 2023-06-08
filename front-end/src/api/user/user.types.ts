@@ -1,4 +1,4 @@
-import { Game, GameStats } from '@/components/profile/types/profile.type';
+import { Game } from '@/components/profile/types/profile.type';
 
 export interface IUserData {
   id: number;

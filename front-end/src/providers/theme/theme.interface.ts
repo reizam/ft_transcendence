@@ -20,7 +20,7 @@ export const ThemeStore: ITheme[] = [
     name: 'Pong2000',
     colors: {
       primary: '--main-theme-color',
-      secondary: '--button-background-color-hover',
+      secondary: '--button-background-color',
     },
   },
   {
