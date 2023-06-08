@@ -26,9 +26,11 @@ const Game: NextPage = () => {
   const [gameId, setGameId] = useState<number>(-1);
   const [startGame, setStartGame] = useState<boolean>(false);
 
-  if (count === 0) {
-    stopCountdown();
-  }
+  useEffect(() => {
+    if (count === 0) {
+      stopCountdown();
+    }
+  }, [count]);
 
   useEffect(() => resetCountdown(), []);
 
