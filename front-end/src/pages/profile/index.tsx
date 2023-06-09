@@ -8,18 +8,14 @@ import { ReactElement } from 'react';
 function Profile(): ReactElement {
   const { data, isLoading, isError } = useGetMe();
 
-  if (isLoading) return <LoadingScreen />;
-
-  if (isError || !data) return <p>No profile data</p>;
-
   return (
     <Layout title="Dashboard">
       {isLoading ? (
         <LoadingScreen />
-      ) : data ? (
-        <ProfileContent canEdit={true} userData={data} />
+      ) : isError || !data ? (
+        <p>No profile data</p>
       ) : (
-        <p>No data</p>
+        <ProfileContent canEdit={true} userData={data} />
       )}
     </Layout>
   );

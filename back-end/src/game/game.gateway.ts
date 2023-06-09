@@ -26,7 +26,7 @@ export class GameGateway {
 
   async loop(game: GameInfos): Promise<void> {
     if (game.status === GameState.STOPPED) {
-      this.schedulerRegistry.deleteInterval('gameLoop');
+      this.schedulerRegistry.deleteInterval(`${game.id}`);
       game.finishedAt = new Date();
       this.server.emit('endGame');
       void this.roomService.getGame(game.id).then((res) => {
@@ -86,10 +86,6 @@ export class GameGateway {
   }
 
   startGame(game: GameInfos): void {
-    // TODO:
-    // Give the scheduler a unique ID related to the gameId ?
-    // Or no need if the interval is a unique value ?
-
     game.status = GameState.INGAME;
     setTimeout(() => {
       this.server.to(String(game.id)).emit('startCountdown');
@@ -99,7 +95,7 @@ export class GameGateway {
 
       game.launchedAt = new Date();
       this.server.to(String(game.id)).emit('startGame');
-      this.schedulerRegistry.addInterval('gameLoop', interval);
+      this.schedulerRegistry.addInterval(`${game.id}`, interval);
     }, 11000);
   }
 }

@@ -7,7 +7,7 @@ interface ThemeProviderProps {
 }
 
 function ThemeProvider({ children }: ThemeProviderProps): ReactElement {
-  const [theme, setTheme] = useState<ITheme>(ThemeStore.default);
+  const [theme, setTheme] = useState<ITheme>(ThemeStore[0]);
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
       {children}

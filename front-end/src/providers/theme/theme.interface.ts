@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction } from 'react';
 
 export interface ITheme {
+  id: string;
   name: string;
   colors: {
     primary: string;
@@ -13,40 +14,45 @@ export interface IThemeContext {
   setTheme: Dispatch<SetStateAction<ITheme>>;
 }
 
-export const ThemeStore: { [id: string]: ITheme } = {
-  default: {
+export const ThemeStore: ITheme[] = [
+  {
+    id: 'default',
     name: 'Pong2000',
     colors: {
       primary: '--main-theme-color',
-      secondary: '--button-background-color-hover',
+      secondary: '--button-background-color',
     },
   },
-  rg: {
+  {
+    id: 'rg',
     name: 'R.Garros',
     colors: {
       primary: '--rg-field-color',
       secondary: '--rg-ball-color',
     },
   },
-  wb: {
+  {
+    id: 'wb',
     name: 'Wimbledon',
     colors: {
       primary: '--wb-field-color',
       secondary: '--wb-ball-color',
     },
   },
-  re: {
+  {
+    id: 're',
     name: 'Retro',
     colors: {
       primary: '--re-field-color',
       secondary: '--re-ball-color',
     },
   },
-  ma: {
+  {
+    id: 'ma',
     name: 'Matrix',
     colors: {
       primary: '--ma-field-color',
       secondary: '--ma-ball-color',
     },
   },
-} as const;
+];
