@@ -39,6 +39,7 @@ export const useProvideAuth = (): IAuthContext => {
     const update = async (): Promise<void> => {
       const token = await getAccessToken();
 
+      //Check if 2FA is activated
       setStatus(token ? 'authenticated' : 'unauthenticated');
     };
 

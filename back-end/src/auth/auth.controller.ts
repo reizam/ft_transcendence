@@ -1,6 +1,6 @@
 import { AuthService } from '@/auth/auth.service';
 import { DUser } from '@/decorators/user.decorator';
-import { Controller, Get, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Res, UseGuards, Post, Body } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from '@prisma/client';
@@ -33,8 +33,31 @@ export class AuthController {
     };
 
     res.cookie('jwt', jwt.accessToken, cookieOptions);
-    res.redirect(
-      this.configService.get<string>('FRONTEND_URL', 'localhost:4000'),
-    );
+
+    if(user.has2FA) {
+      res.redirect(
+        this.configService.get<string>('FRONTEND_URL', 'localhost:4000') + '/check2FA',
+      );
+    } else {
+      res.redirect(
+        this.configService.get<string>('FRONTEND_URL', 'localhost:4000'),
+      );
+    }
+  }
+
+  // 2FAuthenticator
+  @Post('enable-2fa')
+  async enable2FA(@DUser() user: User): Promise<{ dataUrl: string }> {
+    const dataUrl = await this.authService.enable2FA(user);
+    return { dataUrl };
+  }
+
+  @Post('verify-2fa')
+  async verify2FA(
+    @DUser() user: User,
+    @Body('token') token: string,
+  ): Promise<{ isValid: boolean }> {
+    const isValid = await this.authService.verify2FA(user, token);
+    return { isValid };
   }
 }
