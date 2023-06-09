@@ -59,13 +59,15 @@ export class ProfileController {
     @Res() res: Response,
   ): Promise<Response> {
     if (updateDto.has2FA !== undefined) {
-      await this.profileService
-        .switch2FA(user.id, updateDto.has2FA)
+      const qrCodeDataUrl: string | null = await this.profileService
+        .switch2FA(user, updateDto.has2FA)
         .catch((error) => {
           console.error({ error });
           throw new InternalServerErrorException();
         });
-      return res.status(204).send();
+      return !!qrCodeDataUrl
+        ? res.send({ qrCodeDataUrl })
+        : res.status(204).send();
     }
     if (updateDto.profilePicture !== undefined) {
       await this.profileService

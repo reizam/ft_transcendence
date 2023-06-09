@@ -93,16 +93,20 @@ export class AuthService {
   // 2FAuthenticator
   async enable2FA(user: User): Promise<string> {
     const secret = authenticator.generateSecret();
-    const otpauth = authenticator.keyuri(user.email, 'Ft_Transcendance', secret);
+    const otpauth = authenticator.keyuri(
+      user.email,
+      'ft_transcendence',
+      secret,
+    );
 
     // Save the secret in the database
     user = await this.prisma.user.update({
       where: {
-        id: user.id
+        id: user.id,
       },
       data: {
         twoFactorSecret: secret,
-      }
+      },
     });
 
     // Generate a QR Code for the user to scan
@@ -112,10 +116,15 @@ export class AuthService {
 
   async verify2FA(user: User, token: string): Promise<boolean> {
     if (!user.twoFactorSecret) {
-      throw new Error('Two factor authentification is not enabled for this user.');
+      throw new Error(
+        'Two factor authentification is not enabled for this user.',
+      );
     }
 
-    const isValid = authenticator.verify({ token, secret: user.twoFactorSecret });
+    const isValid = authenticator.verify({
+      token,
+      secret: user.twoFactorSecret,
+    });
     return isValid;
   }
 

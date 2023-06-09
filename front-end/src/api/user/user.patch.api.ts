@@ -6,7 +6,12 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
+import { createElement } from 'react';
 import { Id, toast } from 'react-toastify';
+
+interface IMutationResult {
+  qrCodeDataUrl: string | undefined;
+}
 
 interface IContext {
   previousData?: IUserData;
@@ -14,7 +19,7 @@ interface IContext {
 }
 
 export const useUpdateMe = (): UseMutationResult<
-  unknown,
+  IMutationResult,
   unknown,
   UpdateProfile,
   IContext
@@ -25,7 +30,7 @@ export const useUpdateMe = (): UseMutationResult<
       const data = await updateWithToken('/profile', body, {
         headers: { 'Content-Type': 'application/json' },
       });
-      return data;
+      return data as IMutationResult;
     },
     onMutate: async (newData: UpdateProfile) => {
       await queryClient.cancelQueries(['PROFILE', 'GET', 'ME']);
@@ -44,15 +49,33 @@ export const useUpdateMe = (): UseMutationResult<
       return { previousData, id };
     },
     onSuccess: (
-      _data: unknown,
+      data: IMutationResult,
       _variables: unknown,
       context?: IContext
     ): void => {
       if (context !== undefined) {
+        if (!data) toast.dismiss();
         toast.update(context.id, {
-          render: 'Updated',
+          render: !!data
+            ? createElement(
+                'div',
+                {
+                  style: {
+                    display: 'flex',
+                    flexDirection: 'column',
+                    textAlign: 'center',
+                  },
+                },
+                createElement('img', {
+                  src: data.qrCodeDataUrl,
+                  alt: 'Scan this QR code with your 2FA app',
+                }),
+                createElement('p', {}, 'Scan this QR code with your 2FA app')
+              )
+            : 'Updated',
           type: 'success',
-          autoClose: 1000,
+          autoClose: !!data ? false : 1000,
+          closeButton: true,
           isLoading: false,
         });
       } else {

@@ -6,8 +6,6 @@ import UserInfo from '@/components/profile/sections/UserInfoSection';
 import { ProfileData } from '@/components/profile/types/profile.type';
 import dashStyles from '@/styles/dash.module.css';
 import React, { useState } from 'react';
-import axios from 'axios';
-import { BACKEND_URL } from '@/constants/env';
 
 interface ProfileDataProps {
   profileData: ProfileData;
@@ -20,11 +18,6 @@ function ProfileCard({
 }: ProfileDataProps): React.ReactElement {
   const [isEditing, setIsEditing] = useState(false);
   const { mutate } = useUpdateMe();
-
-  async function enable2FA() {
-    const { data } = await axios.post(`${BACKEND_URL}/auth/enable-2fa`);
-    setQrCodeDataUrl(data.dataUrl);
-  }
 
   return (
     <div className={dashStyles.dash__profile}>
@@ -48,7 +41,7 @@ function ProfileCard({
             onToggle={
               isEditing
                 ? (): void => mutate({ has2FA: !profileData.has2FA })
-                : undefined
+                : undefined 
             }
             isEditing={isEditing}
           />
@@ -74,7 +67,3 @@ function ProfileCard({
 }
 
 export default ProfileCard;
-function setQrCodeDataUrl(dataUrl: any) {
-  throw new Error('Function not implemented.');
-}
-
