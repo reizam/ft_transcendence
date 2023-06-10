@@ -36,16 +36,18 @@ export class GameService {
       game.ball.x - game.ball.radius < 0 ||
       game.ball.x + game.ball.radius >= GameService.parameters.dimensions.width
     ) {
-      const lostLeftPaddle = game.ball.x - game.ball.radius < 0;
-
       game.ball.reset();
-      game.ball.dx = lostLeftPaddle ? -game.ball.speed : game.ball.speed;
+      if (game.ball.x - game.ball.radius < 0) {
+        game.ball.dx = -game.ball.speed;
+        game.playerTwoScore += 1;
+      } else {
+        game.ball.dx = game.ball.speed;
+        game.playerOneScore += 1;
+      }
       game.ball.dy = GameService.getRandomArbitrary(
         -game.ball.speed,
         game.ball.speed,
       );
-
-      lostLeftPaddle ? (game.playerOneScore += 1) : (game.playerTwoScore += 1);
     }
   }
 

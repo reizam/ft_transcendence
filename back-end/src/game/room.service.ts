@@ -267,7 +267,6 @@ export class RoomService {
           ...game,
           ball: new Ball(),
           paddles: { left: new Paddle('left'), right: new Paddle('right') },
-          keyState: { w: false, s: false, ArrowUp: false, ArrowDown: false },
         },
         userIds: [userId],
       };

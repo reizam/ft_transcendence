@@ -80,6 +80,7 @@ export class GameGateway {
         user.id !== gameRoom.game.playerTwoId)
     )
       return;
+
     if (gameRoom.isLocal) {
       gameRoom.game.paddles.left.update(data.paddleY.left);
       gameRoom.game.paddles.right.update(data.paddleY.right);
@@ -88,6 +89,7 @@ export class GameGateway {
     } else if (user.id === gameRoom.game.playerTwoId) {
       gameRoom.game.paddles.right.update(data.paddleY.left);
     }
+
     return {
       left: gameRoom.game.paddles.left.y,
       right: gameRoom.game.paddles.right.y,

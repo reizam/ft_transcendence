@@ -129,7 +129,6 @@ export class Paddle {
 export type GameInfos = Game & {
   ball: Ball;
   paddles: { left: Paddle; right: Paddle };
-  keyState: { [key: string]: boolean };
 };
 
 export type GameRoom = {
