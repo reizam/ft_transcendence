@@ -255,12 +255,14 @@ export class RoomService {
     @ConnectedSocket() client: Socket,
     userId: number,
     game: Game,
+    isLocal: boolean,
   ): GameRoom | undefined {
     const room: GameRoom | undefined = this.rooms[game.id];
 
     client.join(String(game.id));
     if (!room) {
       this.rooms[game.id] = {
+        isLocal,
         game: {
           ...game,
           ball: new Ball(),

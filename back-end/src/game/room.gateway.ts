@@ -1,3 +1,5 @@
+import { RoomService } from '@/game/room.service';
+import { SocketUserService } from '@/socket/user/socket.service';
 import {
   ConnectedSocket,
   MessageBody,
@@ -6,12 +8,10 @@ import {
   WebSocketServer,
   WsResponse,
 } from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
-import { RoomService } from '@/game/room.service';
-import { GameState, Player } from './types/game.types';
-import { SocketUserService } from '@/socket/user/socket.service';
-import { GameGateway } from './game.gateway';
 import { Game } from '@prisma/client';
+import { Server, Socket } from 'socket.io';
+import { GameGateway } from './game.gateway';
+import { GameState, Player } from './types/game.types';
 
 @WebSocketGateway()
 export class RoomGateway {
@@ -39,6 +39,7 @@ export class RoomGateway {
       );
 
       if (!gameId) return { event: 'findError', data: 'Game creation error' };
+
       this.server
         .timeout(10000)
         .to(res.players[0].socketId)
@@ -103,12 +104,11 @@ export class RoomGateway {
     )
       return { event: 'gameError', data: 'This game is finished' };
 
-    gameRoom = this.roomService.joinRoom(client, user.id, gameInDB);
+    gameRoom = this.roomService.joinRoom(client, user.id, gameInDB, false);
     if (!gameRoom)
       return { event: 'gameError', data: "This room doesn't exist" };
 
-    let gameStarted: boolean = false;
-
+    let gameStarted = false;
     if (this.roomService.playersReady(gameRoom)) {
       if (gameRoom.game.status === GameState.WAITING) {
         this.gameGateway.startGame(gameRoom.game);
@@ -154,7 +154,7 @@ export class RoomGateway {
       finishedAt: null,
       status: GameState.WAITING,
     };
-    const gameRoom = this.roomService.joinRoom(client, user.id, game);
+    const gameRoom = this.roomService.joinRoom(client, user.id, game, true);
 
     if (!gameRoom)
       return { event: 'gameError', data: "This room doesn't exist" };

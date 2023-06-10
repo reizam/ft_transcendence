@@ -1,11 +1,12 @@
 import Layout from '@/components/app/layouts/Layout';
 import ThemeSwitcher from '@/components/app/theme/ThemeSwitcher';
 import Pong from '@/components/game/Pong';
-import Canvas from '@/components/game/Pong';
+import Countdown from '@/components/utils/Countdown';
+import { Keyframes } from '@/components/utils/Keyframes';
+import useColors from '@/hooks/useColors';
+import { useCountdown } from '@/hooks/useCountdown';
 import { withProtected } from '@/providers/auth/auth.routes';
 import { useSocket } from '@/providers/socket/socket.context';
-import { useTheme } from '@/providers/theme/theme.context';
-import { IThemeContext } from '@/providers/theme/theme.interface';
 import gameStyles from '@/styles/game.module.css';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
@@ -13,32 +14,38 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 const Game: NextPage = () => {
-  const { theme }: IThemeContext = useTheme();
-  const primaryColor = getComputedStyle(
-    document.documentElement
-  ).getPropertyValue(theme.colors.primary);
-  const secondaryColor = getComputedStyle(
-    document.documentElement
-  ).getPropertyValue(theme.colors.secondary);
+  const { primary: primaryColor } = useColors();
+  const [count, { startCountdown, stopCountdown, resetCountdown }] =
+    useCountdown({
+      countStart: 10,
+    });
 
   const { socket } = useSocket();
   const router = useRouter();
-  const { id } = router.query;
+  const { id: gameId } = router.query;
 
   const [isPlayer, setIsPlayer] = useState<boolean>(false);
-  const [startCountdown, setStartCountdown] = useState<boolean>(false);
   const [startGame, setStartGame] = useState<boolean>(false);
 
   useEffect(() => {
-    // console.log(router.query.id);
-    if (!id) return;
+    if (count === 0) {
+      stopCountdown();
+    }
+  }, [count]);
+
+  useEffect(() => resetCountdown(), []);
+
+  useEffect(() => {
+    if (!gameId) {
+      return;
+    }
 
     // TODO: For spectators, return something else if game has started
     // in order to mount the Canvas
     const sendJoinGame = () => {
       socket?.volatile.emit(
         'joinGame',
-        parseInt(id as string),
+        parseInt(gameId as string),
         (ack: { asPlayer: boolean; gameStarted: boolean }) => {
           if (ack.asPlayer && !isPlayer) setIsPlayer(true);
           else if (!ack.asPlayer) setIsPlayer(false);
@@ -49,24 +56,20 @@ const Game: NextPage = () => {
     const timer1 = setTimeout(sendJoinGame, 1000);
 
     return () => {
-      // console.log('First effect');
       clearTimeout(timer1);
     };
-  }, [socket, router, id]);
+  }, [socket, router, gameId]);
 
   useEffect(() => {
-    const handleStartCountdown = (): void => {
-      if (!startCountdown) setStartCountdown(true);
-    };
     const handleStartGame = (): void => {
       if (!startGame) setStartGame(true);
     };
 
-    socket?.once('startCountdown', handleStartCountdown);
+    socket?.once('startCountdown', startCountdown);
     socket?.once('startGame', handleStartGame);
 
     return () => {
-      socket?.off('startCountdown', handleStartCountdown);
+      socket?.off('startCountdown', startCountdown);
       socket?.off('startGame', handleStartGame);
     };
   }, [socket, router]);
@@ -80,14 +83,14 @@ const Game: NextPage = () => {
       return confirmationMessage;
     };
     const handleUnload = (e: Event) => {
-      socket?.volatile.emit('leaveGame', parseInt(id as string));
+      socket?.volatile.emit('leaveGame', parseInt(gameId as string));
     };
 
     const handleRouteChange = () => {
       if (!window.confirm('Are you sure you want to leave the game?')) {
         throw 'routeChange aborted';
       } else {
-        socket?.volatile.emit('leaveGame', parseInt(id as string));
+        socket?.volatile.emit('leaveGame', parseInt(gameId as string));
       }
     };
     const handleRejection = (e: any) => {
@@ -136,32 +139,50 @@ const Game: NextPage = () => {
       router.events.off('routeChangeStart', handleRouteChange);
       window.removeEventListener('unhandledrejection', handleRejection);
     };
-  }, [socket, router, id]);
+  }, [socket, router, gameId]);
 
   return (
     <Layout title="Game">
       <div className={gameStyles.ctn__main__game}>
         <div className={gameStyles.ctn__game}>
-          {startGame ? (
-            <Pong gameId={parseInt(id as string)} isPlayer={isPlayer} />
-          ) : (
-            <div className={gameStyles.ctn__canvas}>
-              <div
-                className={gameStyles.ctn__game__canvas}
-                style={{
-                  borderColor: primaryColor,
-                  boxShadow: `0 0 1px ${primaryColor}, 0 0 2px ${primaryColor}, 0 0 4px ${primaryColor}, 0 0 8px ${primaryColor}, 0 0 12px ${primaryColor}`,
-                }}
-              >
-                <div className={gameStyles.ctn__countdown}>
-                  {/* <Countdown timer="10" start={startCountdown} /> */}
-                  <button className={gameStyles.style__button}>
-                    {startCountdown ? 'Countdown started' : 'Countdown stopped'}
-                  </button>
-                </div>
-              </div>
+          <div className={gameStyles.ctn__canvas}>
+            <Keyframes
+              name={'neon-blink'}
+              _35={{
+                boxShadow: `0 0 1px ${primaryColor}ff, 0 0 2px ${primaryColor}ff, 0 0 4px ${primaryColor}ff, 0 0 8px ${primaryColor}ff, 0 0 12px ${primaryColor}ff`,
+              }}
+              _48={{
+                boxShadow: `0 0 1px ${primaryColor}d9, 0 0 2px ${primaryColor}d9, 0 0 4px ${primaryColor}d9, 0 0 8px ${primaryColor}d9, 0 0 12px ${primaryColor}d9`,
+              }}
+              _51={{
+                boxShadow: `0 0 1px ${primaryColor}f2, 0 0 2px ${primaryColor}f2, 0 0 4px ${primaryColor}f2, 0 0 8px ${primaryColor}f2, 0 0 12px ${primaryColor}f2`,
+              }}
+              _54={{
+                boxShadow: `0 0 1px ${primaryColor}b7, 0 0 2px ${primaryColor}b7, 0 0 4px ${primaryColor}b7, 0 0 8px ${primaryColor}b7, 0 0 12px ${primaryColor}b7`,
+              }}
+              _60={{
+                boxShadow: `0 0 1px ${primaryColor}ff, 0 0 2px ${primaryColor}ff, 0 0 4px ${primaryColor}ff, 0 0 8px ${primaryColor}ff, 0 0 12px ${primaryColor}ff`,
+              }}
+            />
+            <div
+              className={gameStyles.ctn__game__canvas}
+              style={{
+                borderColor: primaryColor,
+                boxShadow: `0 0 1px ${primaryColor}, 0 0 2px ${primaryColor}, 0 0 4px ${primaryColor}, 0 0 8px ${primaryColor}, 0 0 12px ${primaryColor}`,
+                animation: 'neon-blink 3s infinite alternate',
+              }}
+            >
+              {startGame ? (
+                <Pong
+                  gameId={parseInt(gameId as string)}
+                  isPlayer={true}
+                  isLocal={false}
+                />
+              ) : (
+                <Countdown count={count} total={10} color={primaryColor} />
+              )}
             </div>
-          )}
+          </div>
           <ThemeSwitcher />
         </div>
       </div>

@@ -105,6 +105,10 @@ export class Paddle {
     this.speed = GameService.parameters.paddle.speed;
   }
 
+  update(y: number): void {
+    this.y = y;
+  }
+
   detectCollision(ball: Ball): boolean {
     return (
       ball.x < this.x + this.width &&
@@ -122,16 +126,6 @@ export class Paddle {
   }
 }
 
-// export class Score {
-//   left = 0;
-//   right = 0;
-
-//   reset(): void {
-//     this.left = 0;
-//     this.right = 0;
-//   }
-// }
-
 export type GameInfos = Game & {
   ball: Ball;
   paddles: { left: Paddle; right: Paddle };
@@ -139,6 +133,7 @@ export type GameInfos = Game & {
 };
 
 export type GameRoom = {
+  isLocal: boolean;
   game: GameInfos;
   userIds: number[];
 };

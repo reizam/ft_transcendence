@@ -48,10 +48,6 @@ export class GameGateway {
     } else if (game.status === GameState.INGAME) {
       game.status = this.gameService.update(game);
       this.server.to(String(game.id)).volatile.emit('gameState', {
-        paddles: {
-          left: game.paddles.left.y,
-          right: game.paddles.right.y,
-        },
         ball: {
           x: game.ball.x,
           y: game.ball.y,
@@ -65,24 +61,37 @@ export class GameGateway {
     }
   }
 
+  // TODO [low priority]: paddle position value correction
   @SubscribeMessage('move')
   onMove(
     @ConnectedSocket() client: Socket,
     @MessageBody('gameId') gameId: number,
-    @MessageBody('data') data: { [key: string]: boolean },
-  ): void {
+    @MessageBody('data')
+    data: { paddleY: { left: number; right: number } },
+  ): { left: number; right: number } | void {
     const user = this.socketUserService.getSocketUser(client);
     const gameRoom: GameRoom | undefined = this.roomService.getRoom(gameId);
 
-    if (!user || !gameRoom) return;
     if (
-      user.id !== gameRoom.game.playerOneId &&
-      user.id !== gameRoom.game.playerTwoId
+      !user ||
+      !gameRoom ||
+      (!gameRoom.isLocal &&
+        user.id !== gameRoom.game.playerOneId &&
+        user.id !== gameRoom.game.playerTwoId)
     )
       return;
-    Object.entries(data).forEach(([key, value]) => {
-      gameRoom.game.keyState[key] = value;
-    });
+    if (gameRoom.isLocal) {
+      gameRoom.game.paddles.left.update(data.paddleY.left);
+      gameRoom.game.paddles.right.update(data.paddleY.right);
+    } else if (user.id === gameRoom.game.playerOneId) {
+      gameRoom.game.paddles.left.update(data.paddleY.left);
+    } else if (user.id === gameRoom.game.playerTwoId) {
+      gameRoom.game.paddles.right.update(data.paddleY.left);
+    }
+    return {
+      left: gameRoom.game.paddles.left.y,
+      right: gameRoom.game.paddles.right.y,
+    };
   }
 
   startGame(game: GameInfos): void {
