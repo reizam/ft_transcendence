@@ -18,7 +18,9 @@ interface CountdownControllers {
 export function useCountdown(
   countdownOption: CountdownOption
 ): [number, CountdownControllers] {
-  let countStart, intervalMs, isIncrement: boolean | undefined;
+  let countStart: number | undefined;
+  let intervalMs: number | undefined;
+  let isIncrement: boolean | undefined;
 
   // eslint-disable-next-line prefer-const
   ({ countStart, intervalMs, isIncrement } = countdownOption);

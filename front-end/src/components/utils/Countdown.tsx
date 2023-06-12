@@ -14,16 +14,10 @@ const Countdown = ({ count, total, color }: CountdownProps): JSX.Element => {
   return (
     <div className={styleCountdown.div}>
       <svg
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-        xmlnsXlink="http://www.w3.org/1999/xlink"
-        x="0px"
-        y="0px"
         width="22.5em"
         height="22.5em"
         viewBox="0 0 200 200"
-        enable-background="new 0 0 200 200"
-        xmlSpace="preserve"
+        enableBackground="new 0 0 200 200"
         className={styleCountdown.svg__loader}
       >
         <defs>
@@ -44,12 +38,11 @@ const Countdown = ({ count, total, color }: CountdownProps): JSX.Element => {
         </defs>
         <g>
           <circle
-            fill="none"
             cx="6.25em"
             cy="6.25em"
             r="5em"
             className={styleCountdown.circle_gray}
-            transform="scale(.8, .8) translate(13 25)"
+            transform="scale(.8, .8) translate(25 25)"
           />
           <circle
             id="seconds_circle"
@@ -59,7 +52,7 @@ const Countdown = ({ count, total, color }: CountdownProps): JSX.Element => {
             r="5em"
             className={styleCountdown.svg__loader_grow}
             role="progressbar"
-            transform="rotate(-89 100 100) scale(.8, .8) translate(25 13)"
+            transform="rotate(-89 100 100) scale(.8, .8) translate(25 25)"
             filter="url(#glow)"
             style={{
               strokeDashoffset: 500 - (count / total) * 500,
@@ -68,12 +61,12 @@ const Countdown = ({ count, total, color }: CountdownProps): JSX.Element => {
           />
           <text
             id="second_text"
-            text-align="center"
-            x="1.3em"
+            x="50%"
             y="2.4em"
-            font-family="'Open Sans', Verdana"
-            font-size="3em"
+            fontFamily="'Open Sans', Verdana"
+            fontSize="3em"
             fill="#fff"
+            textAnchor="middle" // Center the text horizontally
           >
             {zeroPad(count.toString())}
           </text>
