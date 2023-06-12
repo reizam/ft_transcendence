@@ -156,7 +156,9 @@ const Game: NextPage = () => {
               {startGame && gameId > 0 ? (
                 <Pong gameId={gameId} isPlayer={true} />
               ) : (
-                <Countdown count={count} total={10} color={primaryColor} />
+                <div className={gameStyles.ctn__countdown}>
+                  <Countdown count={count} total={10} color={primaryColor} />
+                </div>
               )}
             </div>
           </div>

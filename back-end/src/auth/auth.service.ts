@@ -5,7 +5,6 @@ import { WithRank } from '@/profile/types/profile.types';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { authenticator } from 'otplib';
-import { toDataURL } from 'qrcode';
 import type { User } from '@prisma/client';
 import axios from 'axios';
 
@@ -91,29 +90,6 @@ export class AuthService {
   }
 
   // 2FAuthenticator
-  async enable2FA(user: User): Promise<string> {
-    const secret = authenticator.generateSecret();
-    const otpauth = authenticator.keyuri(
-      user.email,
-      'ft_transcendence',
-      secret,
-    );
-
-    // Save the secret in the database
-    user = await this.prisma.user.update({
-      where: {
-        id: user.id,
-      },
-      data: {
-        twoFactorSecret: secret,
-      },
-    });
-
-    // Generate a QR Code for the user to scan
-    const dataUrl = await toDataURL(otpauth);
-    return dataUrl;
-  }
-
   async verify2FA(user: User, token: string): Promise<boolean> {
     if (!user.twoFactorSecret) {
       throw new Error(
