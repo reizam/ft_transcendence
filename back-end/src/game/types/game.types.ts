@@ -1,6 +1,14 @@
 import { Game, User } from '@prisma/client';
 import { GameService } from '../game.service';
 
+export enum Role {
+  NONE = 0x00,
+  SPECTATOR = 0x01,
+  PLAYER = 0x10,
+  PLAYER1 = 0x11,
+  PLAYER2 = 0x12,
+}
+
 export type Player = Pick<User, 'id' | 'elo'> & {
   socketId: string;
   searchGameSince: number;
@@ -26,6 +34,7 @@ export type GameParameters = {
     speed: number;
     radius: number;
   };
+  fuseCount: number;
   scoreLimit: number;
 };
 
@@ -128,7 +137,12 @@ export class Paddle {
 
 export type GameInfos = Game & {
   ball: Ball;
-  paddles: { left: Paddle; right: Paddle };
+  player: {
+    [key: number]: {
+      paddle: Paddle;
+      fuse: { count: number; isActive: boolean };
+    };
+  };
 };
 
 export type GameRoom = {

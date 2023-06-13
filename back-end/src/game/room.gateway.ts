@@ -11,7 +11,7 @@ import {
 import { Game } from '@prisma/client';
 import { Server, Socket } from 'socket.io';
 import { GameGateway } from './game.gateway';
-import { GameState, Player } from './types/game.types';
+import { GameState, Player, Role } from './types/game.types';
 
 @WebSocketGateway()
 export class RoomGateway {
@@ -75,7 +75,7 @@ export class RoomGateway {
   async onJoinGame(
     @ConnectedSocket() client: Socket,
     @MessageBody() gameId: number,
-  ): Promise<{ asPlayer: boolean; gameStarted: boolean } | WsResponse<string>> {
+  ): Promise<{ role: Role; gameStarted: boolean } | WsResponse<string>> {
     // TODO:
     // Check if game exists, otherwise gameError
     // Add client to room
@@ -120,8 +120,11 @@ export class RoomGateway {
     // Send something else if game has started in order to let the
     // spectators join and mount the right countdown or directly the game
     if (user.id === gameInDB.playerOneId || user.id === gameInDB.playerTwoId)
-      return { asPlayer: true, gameStarted };
-    return { asPlayer: false, gameStarted };
+      return {
+        role: user.id === gameInDB.playerOneId ? Role.PLAYER1 : Role.PLAYER2,
+        gameStarted,
+      };
+    return { role: Role.SPECTATOR, gameStarted };
   }
 
   @SubscribeMessage('joinLocalGame')

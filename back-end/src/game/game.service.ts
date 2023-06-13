@@ -1,4 +1,9 @@
-import { GameInfos, GameParameters, GameState } from '@/game/types/game.types';
+import {
+  GameInfos,
+  GameParameters,
+  GameState,
+  Role,
+} from '@/game/types/game.types';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -18,6 +23,7 @@ export class GameService {
       speed: 8,
       radius: 20,
     },
+    fuseCount: 3,
     scoreLimit: 10,
   };
 
@@ -28,10 +34,10 @@ export class GameService {
   updateBall(game: GameInfos): void {
     game.ball.update();
 
-    if (game.paddles.left.detectCollision(game.ball)) {
-      game.ball.updateAfterCollision(game.paddles.left);
-    } else if (game.paddles.right.detectCollision(game.ball)) {
-      game.ball.updateAfterCollision(game.paddles.right);
+    if (game.player[Role.PLAYER1].paddle.detectCollision(game.ball)) {
+      game.ball.updateAfterCollision(game.player[Role.PLAYER1].paddle);
+    } else if (game.player[Role.PLAYER2].paddle.detectCollision(game.ball)) {
+      game.ball.updateAfterCollision(game.player[Role.PLAYER2].paddle);
     } else if (
       game.ball.x - game.ball.radius < 0 ||
       game.ball.x + game.ball.radius >= GameService.parameters.dimensions.width
@@ -52,8 +58,8 @@ export class GameService {
   }
 
   reset(game: GameInfos): void {
-    game.paddles.left.reset();
-    game.paddles.right.reset();
+    game.player[Role.PLAYER1].paddle.reset();
+    game.player[Role.PLAYER2].paddle.reset();
     game.ball.reset();
   }
 

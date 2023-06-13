@@ -1,6 +1,7 @@
 import { GameService } from '@/game/game.service';
-import { GameInfos, GameRoom, GameState } from '@/game/types/game.types';
+import { GameInfos, GameRoom, GameState, Role } from '@/game/types/game.types';
 import { SocketUserService } from '@/socket/user/socket.service';
+import { Logger } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import {
   ConnectedSocket,
@@ -9,6 +10,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import e from 'express';
 import { Server, Socket } from 'socket.io';
 import { RoomService } from './room.service';
 
@@ -34,6 +36,7 @@ export class GameGateway {
           this.roomService
             .recordGame(game)
             .catch((_e: unknown) => {
+              Logger.error(e);
               this.server
                 .to(String(game.id))
                 .volatile.emit('gameError', 'The game could not be saved');
@@ -47,15 +50,38 @@ export class GameGateway {
       });
     } else if (game.status === GameState.INGAME) {
       game.status = this.gameService.update(game);
+      console.log({
+        ball: {
+          x: game.ball.x,
+          y: game.ball.y,
+          radius: game.ball.radius,
+        },
+        player: {
+          [Role.PLAYER1]: {
+            fuseCount: game.player[Role.PLAYER1].fuse.count,
+            score: game.playerOneScore,
+          },
+          [Role.PLAYER2]: {
+            fuseCount: game.player[Role.PLAYER2].fuse.count,
+            score: game.playerTwoScore,
+          },
+        },
+      });
       this.server.to(String(game.id)).volatile.emit('gameState', {
         ball: {
           x: game.ball.x,
           y: game.ball.y,
           radius: game.ball.radius,
         },
-        score: {
-          left: game.playerOneScore,
-          right: game.playerTwoScore,
+        player: {
+          [Role.PLAYER1]: {
+            fuseCount: game.player[Role.PLAYER1].fuse.count,
+            score: game.playerOneScore,
+          },
+          [Role.PLAYER2]: {
+            fuseCount: game.player[Role.PLAYER2].fuse.count,
+            score: game.playerTwoScore,
+          },
         },
       });
     }
@@ -67,8 +93,8 @@ export class GameGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody('gameId') gameId: number,
     @MessageBody('data')
-    data: { paddleY: { left: number; right: number } },
-  ): { left: number; right: number } | void {
+    data: { paddleY: { [key: number]: number } },
+  ): { paddleY: { [key: number]: number } } | void {
     const user = this.socketUserService.getSocketUser(client);
     const gameRoom: GameRoom | undefined = this.roomService.getRoom(gameId);
 
@@ -82,17 +108,27 @@ export class GameGateway {
       return;
 
     if (gameRoom.isLocal) {
-      gameRoom.game.paddles.left.update(data.paddleY.left);
-      gameRoom.game.paddles.right.update(data.paddleY.right);
+      gameRoom.game.player[Role.PLAYER1].paddle.update(
+        data.paddleY[Role.PLAYER1],
+      );
+      gameRoom.game.player[Role.PLAYER2].paddle.update(
+        data.paddleY[Role.PLAYER2],
+      );
     } else if (user.id === gameRoom.game.playerOneId) {
-      gameRoom.game.paddles.left.update(data.paddleY.left);
+      gameRoom.game.player[Role.PLAYER1].paddle.update(
+        data.paddleY[Role.PLAYER1],
+      );
     } else if (user.id === gameRoom.game.playerTwoId) {
-      gameRoom.game.paddles.right.update(data.paddleY.left);
+      gameRoom.game.player[Role.PLAYER2].paddle.update(
+        data.paddleY[Role.PLAYER2],
+      );
     }
 
     return {
-      left: gameRoom.game.paddles.left.y,
-      right: gameRoom.game.paddles.right.y,
+      paddleY: {
+        [Role.PLAYER1]: gameRoom.game.player[Role.PLAYER1].paddle.y,
+        [Role.PLAYER2]: gameRoom.game.player[Role.PLAYER2].paddle.y,
+      },
     };
   }
 
