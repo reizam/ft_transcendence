@@ -1,19 +1,19 @@
 import { NextPage } from 'next';
 import FAStyles from '@/styles/FA.module.css';
 import { GoShield } from 'react-icons/go';
-import { ReactNode, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import axios from 'axios';
-import { error } from 'console';
 import { BACKEND_URL } from '@/constants/env';
 import { getCookie } from 'cookies-next';
 import { withProtected } from '@/providers/auth/auth.routes';
 import { useRouter } from 'next/router';
+import { toast } from 'react-toastify';
 
 const check2FA: NextPage = () => {
   const router = useRouter();
   const [token, setToken] = useState('');
 
-  const handleSubmit = async (event: { preventDefault: any }) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     try {
@@ -27,6 +27,7 @@ const check2FA: NextPage = () => {
           Authorization: `Bearer ${jwtToken}`,
           'Cache-Control': 'private',
         },
+        withCredentials: true,
       };
       const response = await axios.post(
         `${BACKEND_URL}${'/auth/verify2FA'}`,
@@ -35,16 +36,21 @@ const check2FA: NextPage = () => {
       );
 
       if (response.status === 200) {
-        router.push('/index');
+        router.push('/');
       } else {
-        alert({response})
-        alert('Invalid 2FA token. Please try again.');
-        // toast error
+        toast.error(response?.data?.message ?? 'Invalid server response');
         router.push('/login');
       }
-    } catch (error) {
-      // toast error
-      console.error('2FA verification failed', error);
+    } catch (error: any) {
+      let errorMessage = '2FA verification failed';
+
+      if (Array.isArray(error?.response?.data?.message)) {
+        errorMessage = error.response.data.message[0];
+      } else if (typeof error?.response?.data?.message === 'string') {
+        errorMessage = error.response.data.message;
+      }
+      toast.error(errorMessage);
+      router.push('/login');
     }
   };
 
