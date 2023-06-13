@@ -93,7 +93,7 @@ export const useChannelMessagesGet = (
   useInfiniteQuery<IMessagePage, unknown>(
     ['CHANNEL_MESSAGES', 'GET', channelId],
     async ({ pageParam = 0 }): Promise<IMessagePage> => {
-      const data = await getWithToken(`/channel/message/page`, {
+      const data = await getWithToken('/channel/message/page', {
         params: {
           channelId,
           limit,

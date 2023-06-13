@@ -9,7 +9,6 @@ import { ChannelService } from '@/channel/channel.service';
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Post,
   Put,
@@ -89,17 +88,13 @@ export class ChannelController {
     @Body() putChannelDto: PutChannelDto,
     @DUser() user: User,
   ): Promise<boolean> {
-    try {
-      await this.channelService.updateChannel(
-        user.id,
-        putChannelDto.channelId,
-        putChannelDto.admins,
-        putChannelDto.withPassword,
-        putChannelDto.password,
-      );
-    } catch (error) {
-      console.log(error);
-    }
+    await this.channelService.updateChannel(
+      user.id,
+      putChannelDto.channelId,
+      putChannelDto.admins,
+      putChannelDto.withPassword,
+      putChannelDto.password,
+    );
 
     return true;
   }

@@ -4,6 +4,7 @@ import * as Yup from 'yup';
 import BasicInput from '@/components/app/inputs/BasicInput';
 import { IChannelUser } from '@/api/channel/channel.types';
 import AdminList from '@/components/chat/lists/AdminList';
+import { toast } from 'react-toastify';
 
 const schema = Yup.object().shape({
   password: Yup.string(),
@@ -40,6 +41,8 @@ function EditChannelForm({
   const onClick = (): void => {
     if (isValid) {
       handleSubmit();
+    } else {
+      toast.error('Veuillez corriger les erreurs dans le formulaire.');
     }
   };
 
@@ -67,7 +70,7 @@ function EditChannelForm({
             className="text-black rounded-full w-1/2 py-2 px-4 outline-0 placeholder:text-center placeholder:antialiased antialiased"
             placeholder={
               !initialValues.withPassword
-                ? 'Veuillez entrer un mot de passe '
+                ? 'Veuillez entrer un mot de passe'
                 : 'Le nouveau mot de passe du salon'
             }
             value={values.password}

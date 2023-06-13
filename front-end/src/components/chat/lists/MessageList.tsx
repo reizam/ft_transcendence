@@ -1,17 +1,17 @@
 import { IMessage } from '@/api/channel/channel.types';
 import MessageItem from '@/components/chat/items/MessageItem';
-import React, { useRef } from 'react';
+import React from 'react';
 
 interface MessageListProps {
   messages: IMessage[];
   hasMore: boolean;
-  onEndReached: () => void;
+  fetchNextPage: () => void;
 }
 
 function MessageList({
   messages,
   hasMore,
-  onEndReached,
+  fetchNextPage,
 }: MessageListProps): React.ReactElement {
   const ref = React.useRef<HTMLDivElement>(null);
 
@@ -38,6 +38,11 @@ function MessageList({
       ref={ref}
       className="flex flex-col space-y-4 overflow-y-auto w-full h-full hide-scrollbar pb-8"
     >
+      {hasMore ? (
+        <button className="underline text-sm" onClick={fetchNextPage}>
+          Charger plus
+        </button>
+      ) : null}
       {messages.map((message) => (
         <MessageItem
           {...message}
