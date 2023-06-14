@@ -9,7 +9,6 @@ import { ChannelService } from '@/channel/channel.service';
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Post,
   Put,

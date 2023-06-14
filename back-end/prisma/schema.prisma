@@ -29,6 +29,8 @@ model User {
 
   channelsOwned     Channel[]
   channels          ChannelUser[]
+  messages          Message[]
+
 
   elo               Int           @default(1000)
   wins              Int           @default(0)

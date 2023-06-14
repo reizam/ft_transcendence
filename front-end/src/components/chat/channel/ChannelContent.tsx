@@ -8,7 +8,8 @@ import {
 } from '@/api/channel/channel.api';
 import { generateChannelTitles } from '@/utils/channel.util';
 import MessageList from '@/components/chat/lists/MessageList';
-import { flatMap } from 'lodash';
+import { flatMap, uniqBy } from 'lodash';
+import { IMessage } from '@/api/channel/channel.types';
 
 interface ChannelContentProps {
   channelId: number;
@@ -22,11 +23,11 @@ function ChannelContent({
     25,
     {
       enabled: isNaN(channelId) === false && channelId !== null,
+      refetchOnWindowFocus: false,
     }
   );
-
   const messages = React.useMemo(
-    () => flatMap(data?.pages || [], 'messages').reverse(),
+    () => uniqBy(flatMap(data?.pages || [], 'messages').reverse(), 'id'),
     [data]
   );
 
@@ -66,6 +67,17 @@ function ChannelContent({
     );
   };
 
+  // ? Uncomment this to enable real-time updates
+  // React.useEffect(() => {
+  //   const timeoutId = setInterval(() => {
+  //     void refetch();
+  //   }, 1000);
+
+  //   return () => {
+  //     clearInterval(timeoutId);
+  //   };
+  // }, []);
+
   if (isLoading || !channel) {
     return <ChatLayout title="Salon" screen="create" loading />;
   }
@@ -82,7 +94,7 @@ function ChannelContent({
         <MessageList
           messages={messages}
           hasMore={!!hasNextPage}
-          onEndReached={fetchNextPage}
+          fetchNextPage={fetchNextPage}
         />
         <MessageInput loading={sendingMessage} onSend={sendMessage} />
       </div>

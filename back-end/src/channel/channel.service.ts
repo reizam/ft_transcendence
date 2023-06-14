@@ -276,8 +276,8 @@ export class ChannelService {
           users: {
             deleteMany: {},
             create: channel.users.map((user) => ({
-              admin: admins.includes(user.userId),
-              userId: user.userId,
+              admin: admins.includes(user.user.id),
+              userId: user.user.id,
             })),
           },
         },
@@ -292,8 +292,8 @@ export class ChannelService {
           users: {
             deleteMany: {},
             create: channel.users.map((user) => ({
-              admin: admins.includes(user.userId),
-              userId: user.userId,
+              admin: admins.includes(user.user.id),
+              userId: user.user.id,
             })),
           },
         },
