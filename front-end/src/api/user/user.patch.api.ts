@@ -54,7 +54,7 @@ export const useUpdateMe = (): UseMutationResult<
       context?: IContext
     ): void => {
       if (context !== undefined) {
-        if (!data) toast.dismiss();
+        if (!data) toast.dismiss('qrCodeToast');
         toast.update(context.id, {
           render: !!data
             ? createElement(
@@ -75,8 +75,9 @@ export const useUpdateMe = (): UseMutationResult<
             : 'Updated',
           type: 'success',
           autoClose: !!data ? false : 1000,
-          closeButton: true,
+          closeButton: !!data ? true : false,
           isLoading: false,
+          toastId: !!data ? 'qrCodeToast' : context.id,
         });
       } else {
         toast.dismiss();

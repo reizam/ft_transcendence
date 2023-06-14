@@ -1,11 +1,19 @@
 import { AuthService } from '@/auth/auth.service';
 import { DUser } from '@/decorators/user.decorator';
-import { Controller, Get, Res, UseGuards, Post, Body, UnauthorizedException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Res,
+  UseGuards,
+  Post,
+  Body,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from '@prisma/client';
 import { CookieOptions, Response } from 'express';
-import { TFADto } from './types/auth.types';
+import { Verify2FA } from './types/auth.types';
 
 @Controller('auth')
 export class AuthController {
@@ -51,15 +59,14 @@ export class AuthController {
     }
   }
 
-  // 2FAuthenticator
   @UseGuards(AuthGuard('jwt'))
   @Post('verify2FA')
   async verify2FA(
     @DUser() user: User,
-    @Body() TFADto: TFADto,
+    @Body() twoFactorDto: Verify2FA,
     @Res() res: Response,
   ): Promise<Response> {
-    const isValid = await this.authService.verify2FA(user, TFADto.token);
+    const isValid = await this.authService.verify2FA(user, twoFactorDto.token);
 
     if (isValid) {
       res.cookie('2FA', 'validated', this.getCookieOptions());

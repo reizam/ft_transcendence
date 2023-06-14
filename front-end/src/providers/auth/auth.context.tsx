@@ -53,13 +53,15 @@ export const useProvideAuth = (): IAuthContext => {
   useEffect(() => {
     const update = async (): Promise<void> => {
       const authToken = await getAccessToken();
-      const TFAToken = await get2FAToken();
+      const twoFactorToken = await get2FAToken();
 
       if (router.pathname === '/check2FA' && authToken) {
-        setStatus('authenticated')
+        setStatus('authenticated');
         return;
       }
-      setStatus(authToken && TFAToken ? 'authenticated' : 'unauthenticated');
+      setStatus(
+        authToken && twoFactorToken ? 'authenticated' : 'unauthenticated'
+      );
     };
 
     void update();
