@@ -1,5 +1,6 @@
 import AuthProvider from '@/providers/auth/auth.provider';
 import SocketProvider from '@/providers/socket/socket.provider';
+import ThemeProvider from '@/providers/theme/theme.provider';
 import '@/styles/globals.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -14,7 +15,9 @@ function ft_transcendence({ Component, pageProps }: AppProps): ReactElement {
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
         <SocketProvider>
-          <Component {...pageProps} />
+          <ThemeProvider>
+            <Component {...pageProps} />
+          </ThemeProvider>
           <ReactQueryDevtools />
           <ToastContainer
             position="top-center"

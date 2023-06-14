@@ -1,6 +1,75 @@
 @import url('https://fonts.cdnfonts.com/css/games');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
 
+.ctn__pre__game__blurred::before {
+  content: '';
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(2px);
+  z-index: 1;
+}
+
+.ctn__pre__game {
+  position: relative;
+  padding: 6rem;
+  width: 100%;
+  height: 100%;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.1rem;
+}
+
+.ctn__pre__game__canvas {
+  width: 100%;
+  height: 100%;
+  background-color: var(--container-background-color);
+  border-radius: var(--radius-container);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+}
+
+.ctn__pre__game__canvas__overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  height: 90%;
+  z-index: 9999;
+  opacity: 0.75;
+  background-color: var(--container-background-color);
+  border-radius: var(--radius-container);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+}
+
+.style__button {
+  background-color: var(--main-theme-color);
+  width: 30vw;
+  aspect-ratio: 6 / 1;
+  border-radius: var(--radius-container);
+}
+.style__button:hover {
+  opacity: calc(95%);
+  border: 1px solid var(--container-color);
+}
+
+.ctn__countdown {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 .ctn__main__game {
   display: flex;
   justify-content: center;
@@ -20,6 +89,25 @@
   height: 75vh;
   background-color: var(--container-background-color);
   border-radius: var(--radius-container);
+  position: relative;
+}
+
+.ctn__game__canvas {
+  aspect-ratio: 16 / 9;
+  display: block;
+  position: absolute;
+  padding: 0;
+  margin: auto;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: auto;
+  width: auto;
+  max-width: 90%;
+  max-height: 90%;
+  border: 2px solid var(--main-theme-color);
+  border-radius: var(--radius-container);
 }
 
 .ctn__select__theme {
@@ -32,47 +120,6 @@
 
 .cnt__theme__h3 {
   font-size: 1.2em;
-}
-
-.ctn__game__canvas {
-  margin-top: 5%;
-  margin-left: auto;
-  margin-right: auto;
-  width: 75%;
-  height: 70%;
-  border: 2px solid var(--main-theme-color);
-  border-radius: var(--radius-container);
-  box-shadow: 0 0 1px var(--main-theme-color), 0 0 2px var(--main-theme-color),
-    0 0 4px var(--main-theme-color), 0 0 8px var(--main-theme-color),
-    0 0 12px var(--main-theme-color);
-  animation: animate 3s infinite alternate;
-}
-
-@keyframes animate {
-  35% {
-    opacity: 1;
-  }
-  48% {
-    opacity: 0.8;
-  }
-  51% {
-    opacity: 0.9;
-  }
-  54% {
-    opacity: 0.7;
-  }
-  60% {
-    opacity: 1;
-  }
-}
-
-.ctn__game__rslt {
-  width: 80%;
-  height: 15%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 2.5%;
-  border: 1px solid green;
 }
 
 .ctn__select__theme h3 {

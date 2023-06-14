@@ -1,11 +1,15 @@
 import { GameController } from '@/game/game.controller';
+import { GameGateway } from '@/game/game.gateway';
+import { GameService } from '@/game/game.service';
+import { RoomService } from '@/game/room.service';
 import { PrismaModule } from '@/prisma/prisma.module';
+import { SocketUserService } from '@/socket/user/socket.service';
 import { Module } from '@nestjs/common';
-import { GameService } from './game.service';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
-  imports: [PrismaModule],
-  providers: [GameService],
+  imports: [PrismaModule, ScheduleModule.forRoot()],
+  providers: [SocketUserService, GameService, RoomService],
   controllers: [GameController],
 })
 export class GameModule {}

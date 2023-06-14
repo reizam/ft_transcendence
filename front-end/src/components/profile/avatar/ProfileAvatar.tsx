@@ -1,4 +1,4 @@
-import { UpdateProfile } from '@/api/user/user.type';
+import { UpdateProfile } from '@/api/user/user.types';
 import dashStyles from '@/styles/dash.module.css';
 import { UseMutateFunction } from '@tanstack/react-query';
 import { ReactElement } from 'react';

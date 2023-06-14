@@ -1,4 +1,4 @@
-import { Game, GameStats } from '@/components/profile/types/profile.type';
+import { Game } from '@/components/profile/types/profile.type';
 
 export interface IUserData {
   id: number;
@@ -9,7 +9,10 @@ export interface IUserData {
   has2FA: boolean;
   profilePicture: string;
   matchHistory: Game[];
-  statistics: GameStats;
+  elo: number;
+  wins: number;
+  draws: number;
+  losses: number;
   rank: number;
   achievements: string[];
 }

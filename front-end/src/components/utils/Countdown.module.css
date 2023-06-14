@@ -1,0 +1,29 @@
+.div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.svg__loader {
+  position: relative;
+  max-width: 100%;
+}
+
+.svg__loader_grow {
+  stroke-miterlimit: 10;
+  stroke-dasharray: 500;
+  stroke-dashoffset: 0;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  stroke: var(--main-theme-color);
+  stroke-width: 4;
+  -webkit-transition: stroke-dashoffset 1s linear;
+  transition: stroke-dashoffset 1s linear;
+  position: relative;
+}
+
+.circle_gray {
+  stroke-dashoffset: 500;
+  stroke-width: 4;
+  stroke: var(--button-background-color);
+}

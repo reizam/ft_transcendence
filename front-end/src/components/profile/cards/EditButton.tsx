@@ -1,14 +1,14 @@
-import { MouseEventHandler, ReactElement } from 'react';
-import styleButton from '@/components/app/button/Button.module.css';
+import styleButton from '@/components/profile/cards/EditButton.module.css';
+import { MouseEventHandler, ReactElement, ReactNode } from 'react';
 
 interface ButtonProps<T = MouseEventHandler<HTMLButtonElement>> {
-  name?: string;
+  children?: ReactNode;
   onClick?: T;
   isEditing?: boolean;
 }
 
 function Button({
-  name,
+  children,
   onClick,
   isEditing = false,
 }: ButtonProps): ReactElement {
@@ -20,7 +20,7 @@ function Button({
         }`}
         onClick={onClick}
       >
-        {name}
+        {children}
       </button>
     </>
   );

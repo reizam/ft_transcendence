@@ -48,13 +48,14 @@ function UserInfoSection({
             type="text"
             name="username"
             value={username}
-            onChange={(e) => {
+            onChange={(e): void => {
               wasEditing.current = isEditing;
               setUsername(e.currentTarget.value);
             }}
           />
         </form>
       ) : (
+        // <Keyframes name={neon-blink} _40={}
         <h4 className={dashStyles.dash__username}>{username || 'Username'}</h4>
       )}
     </>

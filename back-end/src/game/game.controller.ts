@@ -1,18 +1,6 @@
 import { GameService } from '@/game/game.service';
 import { PrismaService } from '@/prisma/prisma.service';
-import {
-  Body,
-  Controller,
-  InternalServerErrorException,
-  Param,
-  ParseIntPipe,
-  Patch,
-  Post,
-  Res,
-} from '@nestjs/common';
-import { User } from '@prisma/client';
-import { DUser } from '@/decorators/user.decorator';
-import { Response } from 'express';
+import { Controller } from '@nestjs/common';
 
 // Type for testing purpose
 type ResultDto = {
@@ -30,50 +18,50 @@ export class GameController {
   ) {}
 
   // Route for testing purposes
-  @Patch('finish')
-  async updateStats(@Body() resultDto: ResultDto): Promise<void> {
-    const winner = await this.prisma.statistic.findUnique({
-      where: {
-        userId: resultDto.winnerId,
-      },
-    });
-    const loser = await this.prisma.statistic.findUnique({
-      where: {
-        userId: resultDto.loserId,
-      },
-    });
-    if (winner && loser) {
-      await this.gameService.updateEloRating({
-        isDraw: resultDto.draw,
-        winner: { id: winner.userId, rating: winner.elo },
-        loser: { id: loser.userId, rating: loser.elo },
-      });
-    }
-  }
+  // @Patch('finish')
+  // async updateStats(@Body() resultDto: ResultDto): Promise<void> {
+  //   const winner = await this.prisma.statistic.findUnique({
+  //     where: {
+  //       userId: resultDto.winnerId,
+  //     },
+  //   });
+  //   const loser = await this.prisma.statistic.findUnique({
+  //     where: {
+  //       userId: resultDto.loserId,
+  //     },
+  //   });
+  //   if (winner && loser) {
+  //     await this.gameService.updateEloRating({
+  //       isDraw: resultDto.draw,
+  //       winner: { id: winner.userId, elo: winner.elo },
+  //       loser: { id: loser.userId, elo: loser.elo },
+  //     });
+  //   }
+  // }
 
-  @Post('create')
-  async createGame(
-    @DUser() user: User,
-    @Res() res: Response,
-  ): Promise<Response> {
-    const gameId = await this.gameService
-      .createGame(user.id)
-      .catch((error: any) => {
-        console.error({ error });
-        throw new InternalServerErrorException();
-      });
-    return res.status(200).json({ gameId: gameId });
-  }
+  // @Post('create')
+  // async createGame(
+  //   @DUser() user: User,
+  //   @Res() res: Response,
+  // ): Promise<Response> {
+  //   const gameId = await this.gameService
+  //     .createGame(user.id)
+  //     .catch((error: any) => {
+  //       console.error({ error });
+  //       throw new InternalServerErrorException();
+  //     });
+  //   return res.status(200).json({ gameId: gameId });
+  // }
 
-  @Patch(':id')
-  async launchGame(
-    @DUser() user: User,
-    @Param('id', ParseIntPipe) id: number,
-    @Res() res: Response,
-  ): Promise<Response> {
-    await this.gameService.joinGame(id, user.id);
-    return res.status(204).send();
-  }
+  // @Patch(':id')
+  // async launchGame(
+  //   @DUser() user: User,
+  //   @Param('id', ParseIntPipe) id: number,
+  //   @Res() res: Response,
+  // ): Promise<Response> {
+  //   await this.gameService.joinGame(id, user.id);
+  //   return res.status(204).send();
+  // }
 
   // @Patch('launch')
   // async launchGame(

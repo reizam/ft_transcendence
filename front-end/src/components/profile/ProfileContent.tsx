@@ -28,7 +28,15 @@ function ProfileContent({
         canEdit={canEdit}
       />
       <History matchHistory={userData.matchHistory} />
-      <Stats stats={userData.statistics} rank={userData.rank} />
+      <Stats
+        stats={{
+          elo: userData.elo,
+          wins: userData.wins,
+          draws: userData.draws,
+          losses: userData.draws,
+        }}
+        rank={userData.rank}
+      />
       <Achievements achievements={userData.achievements} />
     </div>
   );

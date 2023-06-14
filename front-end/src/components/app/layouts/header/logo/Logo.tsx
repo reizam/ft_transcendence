@@ -1,9 +1,10 @@
+import { useTheme } from '@/providers/theme/theme.context';
+import Link from 'next/link';
 import React from 'react';
 import logoStyles from './logo.module.css';
-import Link from 'next/link';
 
 function Logo(): React.ReactElement {
-  const borderColor = 'var(--main-theme-color)';
+  const { theme } = useTheme();
 
   return (
     <div className={logoStyles.ctn__logo}>
@@ -11,8 +12,8 @@ function Logo(): React.ReactElement {
         <h2
           className={logoStyles.h2__logo}
           style={{
-            color: borderColor,
-            textShadow: `0 0 10px ${borderColor}, 0 0 20px ${borderColor}, 0 0 40px ${borderColor}, 0 0 80px ${borderColor}, 0 0 120px ${borderColor}`,
+            color: theme.colors.primary,
+            textShadow: `0 0 10px ${theme.colors.primary}, 0 0 20px ${theme.colors.primary}, 0 0 40px ${theme.colors.primary}, 0 0 80px ${theme.colors.primary}, 0 0 120px ${theme.colors.primary}`,
           }}
         >
           Pong

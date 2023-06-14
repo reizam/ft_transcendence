@@ -1,5 +1,5 @@
 import { useUpdateMe } from '@/api/user/user.patch.api';
-import Button from '@/components/app/button/Button';
+import EditButton from '@/components/profile/cards/EditButton';
 import ToggleSwitch from '@/components/app/toggle/ToggleSwitch';
 import ProfileAvatar from '@/components/profile/avatar/ProfileAvatar';
 import UserInfo from '@/components/profile/sections/UserInfoSection';
@@ -49,13 +49,17 @@ function ProfileCard({
         </div>
       )}
       {canEdit && (
-        <Button
-          name={isEditing ? 'Save' : 'Edit'}
-          onClick={(): void => {
-            setIsEditing((prevState) => !prevState);
-          }}
-          isEditing={isEditing}
-        />
+        <>
+          <EditButton
+            onClick={(): void => {
+              setIsEditing((prevState) => !prevState);
+            }}
+            isEditing={isEditing}
+          >
+            {isEditing ? 'Save' : 'Edit'}
+          </EditButton>
+          <div style={{ marginBottom: '15%' }}></div>
+        </>
       )}
     </div>
   );

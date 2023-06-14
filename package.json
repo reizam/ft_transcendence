@@ -1,0 +1,13 @@
+{
+  "devDependencies": {
+    "@types/react": "^18.0.38",
+    "prettier": "^2.8.8"
+  },
+  "dependencies": {
+    "@nestjs/platform-socket.io": "^9.4.0",
+    "@nestjs/websockets": "^9.4.0",
+    "kill-port": "^2.0.1",
+    "next": "^13.3.1",
+    "socket.io": "^4.6.1"
+  }
+}

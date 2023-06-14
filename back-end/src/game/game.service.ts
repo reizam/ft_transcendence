@@ -1,101 +1,70 @@
-import { MatchResult } from '@/game/types/game.type';
-import { PrismaService } from '@/prisma/prisma.service';
+import { GameInfos, GameParameters, GameState } from '@/game/types/game.types';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class GameService {
-  constructor(private prisma: PrismaService) {}
+  static parameters: GameParameters = {
+    dimensions: {
+      width: 1920,
+      height: 1080,
+    },
+    paddle: {
+      width: 20,
+      height: 250,
+      offset: 10,
+      speed: 15,
+    },
+    ball: {
+      speed: 8,
+      radius: 20,
+    },
+    scoreLimit: 10,
+  };
 
-  async updateEloRating(result: MatchResult): Promise<void> {
-    const kFactor = 32;
+  static getRandomArbitrary(min: number, max: number): number {
+    return Math.random() * (max - min) + min;
+  }
 
-    const expectedOutcomeWinner =
-      1 / (1 + 10 ** ((result.loser.rating - result.winner.rating) / 400));
-    const expectedOutcomeLoser =
-      1 / (1 + 10 ** ((result.winner.rating - result.loser.rating) / 400));
+  updateBall(game: GameInfos): void {
+    game.ball.update();
 
-    const actualOutcomeWinner = result.isDraw ? 0.5 : 1;
-    const actualOutcomeLoser = result.isDraw ? 0.5 : 0;
-
-    const newRatingWinner =
-      result.winner.rating +
-      kFactor * (actualOutcomeWinner - expectedOutcomeWinner);
-    const newRatingLoser =
-      result.loser.rating +
-      kFactor * (actualOutcomeLoser - expectedOutcomeLoser);
-
-    await this.prisma.statistic.update({
-      where: {
-        userId: result.loser.id,
-      },
-      data: {
-        elo: Math.round(newRatingLoser),
-      },
-    });
-
-    try {
-      await this.prisma.statistic.update({
-        where: {
-          userId: result.winner.id,
-        },
-        data: {
-          elo: Math.round(newRatingWinner),
-        },
-      });
-    } catch (e) {
-      // update back to old value to avoid biased ranking
-      await this.prisma.statistic.update({
-        where: {
-          userId: result.loser.id,
-        },
-        data: {
-          elo: result.loser.rating,
-        },
-      });
-      throw e;
+    if (game.paddles.left.detectCollision(game.ball)) {
+      game.ball.updateAfterCollision(game.paddles.left);
+    } else if (game.paddles.right.detectCollision(game.ball)) {
+      game.ball.updateAfterCollision(game.paddles.right);
+    } else if (
+      game.ball.x - game.ball.radius < 0 ||
+      game.ball.x + game.ball.radius >= GameService.parameters.dimensions.width
+    ) {
+      game.ball.reset();
+      if (game.ball.x - game.ball.radius < 0) {
+        game.ball.dx = -game.ball.speed;
+        game.playerTwoScore += 1;
+      } else {
+        game.ball.dx = game.ball.speed;
+        game.playerOneScore += 1;
+      }
+      game.ball.dy = GameService.getRandomArbitrary(
+        -game.ball.speed,
+        game.ball.speed,
+      );
     }
   }
 
-  async createGame(userId: number): Promise<number> {
-    const game = await this.prisma.game.create({
-      data: {
-        status: 'waiting',
-        playerOneId: userId,
-        players: {
-          connect: [{ id: userId }],
-        },
-      },
-    });
-    return game.id;
+  reset(game: GameInfos): void {
+    game.paddles.left.reset();
+    game.paddles.right.reset();
+    game.ball.reset();
   }
 
-  async joinGame(gameId: number, playerTwoId: number): Promise<void> {
-    await this.prisma.game.update({
-      where: {
-        id: gameId,
-      },
-      data: {
-        playerTwoId: playerTwoId,
-        launchedAt: new Date().toISOString(),
-        players: {
-          connect: [{ id: playerTwoId }],
-        },
-      },
-    });
+  update(game: GameInfos): GameState {
+    this.updateBall(game);
+    if (
+      game.playerOneScore === GameService.parameters.scoreLimit ||
+      game.playerTwoScore === GameService.parameters.scoreLimit
+    ) {
+      this.reset(game);
+      return GameState.STOPPED;
+    } else return GameState.INGAME;
   }
-
-  // async launchGame({ gameId, playerTwoId }: LaunchGame): Promise<void> {
-  //   await this.prisma.game.update({
-  //     where: {
-  //       id: gameId,
-  //     },
-  //     data: {
-  //       playerTwoId: playerTwoId,
-  //       launchedAt: new Date().toISOString(),
-  //       players: {
-  //         connect: [{ id: playerTwoId }],
-  //       },
-  //     },
-  //   });
-  // }
 }

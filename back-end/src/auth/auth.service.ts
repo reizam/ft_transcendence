@@ -4,7 +4,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { WithRank } from '@/profile/types/profile.types';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import type { Statistic, User } from '@prisma/client';
+import type { User } from '@prisma/client';
 import axios from 'axios';
 
 @Injectable()
@@ -12,13 +12,13 @@ export class AuthService {
   constructor(private jwtService: JwtService, private prisma: PrismaService) {}
 
   //TODO: put the player stats/rank logic somewhere else
-  async getRank(stats?: Statistic | null): Promise<number> {
-    if (!stats) {
+  async getRank(user?: User | null): Promise<number> {
+    if (!user) {
       console.error('Cannot find statistics');
       return 0;
     }
-    const higherEloCount = await this.prisma.statistic.count({
-      where: { elo: { gt: stats.elo } },
+    const higherEloCount = await this.prisma.user.count({
+      where: { elo: { gt: user.elo } },
     });
     return higherEloCount + 1;
   }
@@ -44,10 +44,9 @@ export class AuthService {
           },
           take: 20,
         },
-        statistics: true,
       },
     });
-    const rank = await this.getRank(user?.statistics);
+    const rank = await this.getRank(user);
     const userWithRank = { ...(user as WithRank<User>), rank: rank };
     return userWithRank;
   }
@@ -69,13 +68,9 @@ export class AuthService {
             'data:image/jpg;base64,' +
             Buffer.from(image.data).toString('base64'),
           has2FA: false,
-          statistics: {
-            create: {},
-          },
         },
         include: {
           matchHistory: true,
-          statistics: true,
         },
       });
     }

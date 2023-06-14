@@ -6,13 +6,22 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
+import { BaseWsExceptionFilter, WsException } from '@nestjs/websockets';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 
 @Catch()
-export class AllExceptionsFilter implements ExceptionFilter {
-  constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
+export class AllExceptionsFilter extends BaseWsExceptionFilter {
+  constructor(private readonly httpAdapterHost: HttpAdapterHost) {
+    super();
+    this.handleUnhandledPromiseRejections();
+  }
 
   catch(exception: unknown, host: ArgumentsHost): void {
+    if (exception instanceof WsException) {
+      super.catch(exception, host);
+      return;
+    }
+
     const { httpAdapter } = this.httpAdapterHost;
     const ctx = host.switchToHttp();
     const httpStatus =
@@ -24,8 +33,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
       ...(exception instanceof Error
         ? {
             message: (exception as Error)?.message,
-            errorCode: (exception as PrismaClientKnownRequestError).code,
-            errorDetails: (exception as PrismaClientKnownRequestError).meta,
+            errorCode: (exception as PrismaClientKnownRequestError)?.code,
+            errorDetails: (exception as PrismaClientKnownRequestError)?.meta,
           }
         : {}),
       ...(exception instanceof HttpException
@@ -35,5 +44,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
     };
 
     httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
+  }
+
+  private handleUnhandledPromiseRejections(): void {
+    process.on('unhandledRejection', (exception: unknown): void => {
+      console.error('Unhandled Promise Rejection:', exception);
+    });
   }
 }

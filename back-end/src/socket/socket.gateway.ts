@@ -1,3 +1,4 @@
+import { RoomGateway } from '@/game/room.gateway';
 import { ISocketUser } from '@/socket/types/socket.types';
 import { SocketUserService } from '@/socket/user/socket.service';
 import {
@@ -13,7 +14,10 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   public server: Server;
 
-  constructor(private socketUserService: SocketUserService) {}
+  constructor(
+    private socketUserService: SocketUserService,
+    private roomGateway: RoomGateway,
+  ) {}
 
   handleConnection(client: Socket, ...args: any[]): void {
     const user: ISocketUser = {
@@ -22,6 +26,14 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     };
 
     this.socketUserService.addUser(user);
+
+    // TODO: does it need to be async and awaited?
+    client.on('disconnecting', () => {
+      client.rooms.forEach((roomId) => {
+        if (roomId !== client.id)
+          this.roomGateway.onLeaveGame(client, parseInt(roomId));
+      });
+    });
 
     console.log(
       'Client connected: ',
