@@ -26,6 +26,7 @@ COPY .dockerignore ./
 RUN npm install -g prisma
 RUN npm install -g @nestjs/cli
 RUN npm install
+RUN apk add xdg-utils
 
 COPY . ./
 COPY ./prisma ./prisma

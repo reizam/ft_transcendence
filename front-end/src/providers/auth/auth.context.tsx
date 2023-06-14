@@ -28,18 +28,40 @@ export const useProvideAuth = (): IAuthContext => {
     return null;
   };
 
+  const get2FAToken = async (): Promise<string | null> => {
+    const cookie = getCookie('2FA', {
+      sameSite: 'strict',
+    });
+
+    if (cookie) {
+      return cookie.toString();
+    }
+
+    return null;
+  };
+
   const logout = (): void => {
     setStatus('unauthenticated');
     deleteCookie('jwt', {
+      sameSite: 'strict',
+    });
+    deleteCookie('2FA', {
       sameSite: 'strict',
     });
   };
 
   useEffect(() => {
     const update = async (): Promise<void> => {
-      const token = await getAccessToken();
+      const authToken = await getAccessToken();
+      const twoFactorToken = await get2FAToken();
 
-      setStatus(token ? 'authenticated' : 'unauthenticated');
+      if (router.pathname === '/check2FA' && authToken) {
+        setStatus('authenticated');
+        return;
+      }
+      setStatus(
+        authToken && twoFactorToken ? 'authenticated' : 'unauthenticated'
+      );
     };
 
     void update();

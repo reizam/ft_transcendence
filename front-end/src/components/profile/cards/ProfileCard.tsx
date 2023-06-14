@@ -41,12 +41,13 @@ function ProfileCard({
             onToggle={
               isEditing
                 ? (): void => mutate({ has2FA: !profileData.has2FA })
-                : undefined
+                : undefined 
             }
             isEditing={isEditing}
           />
           Two-Factor Authentication
         </div>
+        
       )}
       {canEdit && (
         <>

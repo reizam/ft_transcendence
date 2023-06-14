@@ -20,6 +20,7 @@ model User {
   email             String
 
   has2FA            Boolean
+  twoFactorSecret   String?
 
   friends           String[]      @default([])
   blockedUsers      String[]
