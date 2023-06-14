@@ -36,11 +36,12 @@ export class GameService {
       game.ball.x - game.ball.radius < 0 ||
       game.ball.x + game.ball.radius >= GameService.parameters.dimensions.width
     ) {
-      game.ball.reset();
       if (game.ball.x - game.ball.radius < 0) {
+        game.ball.reset();
         game.ball.dx = -game.ball.speed;
         game.playerTwoScore += 1;
       } else {
+        game.ball.reset();
         game.ball.dx = game.ball.speed;
         game.playerOneScore += 1;
       }

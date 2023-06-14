@@ -149,10 +149,17 @@ const Pong = ({ gameId, isPlayer, isLocal }: PongProps): JSX.Element => {
       );
     };
 
-    socket?.on('gameState', (gameState_: typeof gameState.current) => {
-      gameState.current = { ...gameState.current, ...gameState_ };
-      ratio.current = parameters.dimensions.width / context.canvas.width;
-    });
+    socket?.on(
+      'gameState',
+      (gameState_: {
+        ball: { x: number; y: number; radius: number };
+        score: { left: number; right: number };
+      }) => {
+        console.log(gameState_);
+        gameState.current = { ...gameState.current, ...gameState_ };
+        ratio.current = parameters.dimensions.width / context.canvas.width;
+      }
+    );
 
     const draw = (): void => {
       const now = new Date().getTime();
