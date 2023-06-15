@@ -5,17 +5,18 @@ import {
   IChannelPage,
   IChannelPostParams,
   IChannelPutParams,
-  IChannelSendMessagePostParams,
   IMessage,
   IMessagePage,
 } from '@/api/channel/channel.types';
 import {
   UseInfiniteQueryOptions,
   UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   useInfiniteQuery,
   useMutation,
   useQuery,
+  useQueryClient,
 } from '@tanstack/react-query';
 
 export const useInfiniteChannelsGet = (
@@ -110,17 +111,30 @@ export const useChannelMessagesGet = (
     }
   );
 
+interface IMessagePost {
+  channelId: number;
+  message: string;
+}
+
 export const useSendMessagePost = (
-  options?: UseMutationOptions<IMessage, unknown, IChannelSendMessagePostParams>
-) =>
-  useMutation<IMessage, unknown, IChannelSendMessagePostParams>(
-    async (params): Promise<IMessage> => {
-      const data = await postWithToken('/channel/message', params);
+  channelId: number
+): UseMutationResult<IMessage, unknown, IMessagePost, unknown> => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: IMessagePost) => {
+      const data = await postWithToken('/channel/message', body);
 
       return data as IMessage;
     },
-    options
-  );
+    onSettled: () => {
+      void queryClient.invalidateQueries([
+        'CHANNEL_MESSAGES',
+        'GET',
+        channelId,
+      ]);
+    },
+  });
+};
 
 export const useChannelPost = (
   options?: UseMutationOptions<IChannel, unknown, IChannelPostParams>

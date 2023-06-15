@@ -1,25 +1,26 @@
+import { useSendMessagePost } from '@/api/channel/channel.api';
 import BasicInput from '@/components/app/inputs/BasicInput';
 import Spinner from '@/components/utils/Spinner';
 import React from 'react';
 import { FiSend } from 'react-icons/fi';
 
 interface MessageInputProps {
-  loading?: boolean;
-  onSend: (
-    message: string,
-    setMessage: React.Dispatch<React.SetStateAction<string>>
-  ) => void;
+  channelId: number;
 }
 
-function MessageInput({
-  loading = false,
-  onSend,
-}: MessageInputProps): React.ReactElement {
+function MessageInput({ channelId }: MessageInputProps): React.ReactElement {
   const [message, setMessage] = React.useState<string>('');
   const canSend = message.length > 0;
 
+  const { mutate, isLoading } = useSendMessagePost(channelId);
+
   const onSubmit = (): void => {
-    onSend(message, setMessage);
+    mutate(
+      { channelId, message },
+      {
+        onSuccess: () => setMessage(''),
+      }
+    );
   };
 
   const onKeyPress = (event: React.KeyboardEvent<HTMLInputElement>): void => {
@@ -29,7 +30,7 @@ function MessageInput({
   };
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    if (!loading) {
+    if (!isLoading) {
       setMessage(event.target.value);
     }
   };
@@ -51,7 +52,7 @@ function MessageInput({
         }}
         onClick={onSubmit}
       >
-        {loading ? <Spinner size={12} /> : <FiSend size={18} />}
+        {isLoading ? <Spinner size={12} /> : <FiSend size={18} />}
       </button>
     </div>
   );

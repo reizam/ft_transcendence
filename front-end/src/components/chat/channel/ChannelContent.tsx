@@ -1,29 +1,30 @@
-import React from 'react';
-import ChatLayout from '@/components/chat/layouts/ChatLayout';
-import MessageInput from '@/components/chat/inputs/MessageInput';
 import {
   useChannelGet,
   useChannelMessagesGet,
-  useSendMessagePost,
 } from '@/api/channel/channel.api';
-import { generateChannelTitles } from '@/utils/channel.util';
+import MessageInput from '@/components/chat/inputs/MessageInput';
+import ChatLayout from '@/components/chat/layouts/ChatLayout';
 import MessageList from '@/components/chat/lists/MessageList';
+import { generateChannelTitles } from '@/utils/channel.util';
 import { flatMap, uniqBy } from 'lodash';
-import { IMessage } from '@/api/channel/channel.types';
+import React from 'react';
 
 interface ChannelContentProps {
   channelId: number;
 }
 
+//? refetch on event 'newMessage'
 function ChannelContent({
   channelId,
 }: ChannelContentProps): React.ReactElement {
-  const { data, hasNextPage, fetchNextPage, refetch } = useChannelMessagesGet(
+  const { data, hasNextPage, fetchNextPage } = useChannelMessagesGet(
     channelId,
     25,
     {
       enabled: isNaN(channelId) === false && channelId !== null,
       refetchOnWindowFocus: false,
+      refetchInterval: 1000 * 5,
+      staleTime: Infinity,
     }
   );
   const messages = React.useMemo(
@@ -46,38 +47,6 @@ function ChannelContent({
     [channel]
   );
 
-  const { mutate: mutatePostMessage, isLoading: sendingMessage } =
-    useSendMessagePost();
-
-  const sendMessage = (
-    message: string,
-    setMessage: React.Dispatch<string>
-  ): void => {
-    mutatePostMessage(
-      {
-        channelId,
-        message,
-      },
-      {
-        onSuccess: () => {
-          setMessage('');
-          void refetch();
-        },
-      }
-    );
-  };
-
-  // ? Uncomment this to enable real-time updates
-  // React.useEffect(() => {
-  //   const timeoutId = setInterval(() => {
-  //     void refetch();
-  //   }, 1000);
-
-  //   return () => {
-  //     clearInterval(timeoutId);
-  //   };
-  // }, []);
-
   if (isLoading || !channel) {
     return <ChatLayout title="Salon" screen="create" loading />;
   }
@@ -96,7 +65,7 @@ function ChannelContent({
           hasMore={!!hasNextPage}
           fetchNextPage={fetchNextPage}
         />
-        <MessageInput loading={sendingMessage} onSend={sendMessage} />
+        <MessageInput channelId={channelId} />
       </div>
     </ChatLayout>
   );
