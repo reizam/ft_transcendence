@@ -1,6 +1,7 @@
 import Layout from '@/components/app/layouts/Layout';
 import ThemeSwitcher from '@/components/app/theme/ThemeSwitcher';
 import Pong from '@/components/game/Pong';
+import { Role } from '@/components/game/game.types';
 import Countdown from '@/components/utils/Countdown';
 import { Keyframes } from '@/components/utils/Keyframes';
 import useColors from '@/hooks/useColors';
@@ -24,7 +25,7 @@ const Game: NextPage = () => {
   const router = useRouter();
   const { id: gameId } = router.query;
 
-  const [isPlayer, setIsPlayer] = useState<boolean>(false);
+  const [role, setRole] = useState<Role>(Role.NONE);
   const [startGame, setStartGame] = useState<boolean>(false);
 
   useEffect(() => {
@@ -46,9 +47,8 @@ const Game: NextPage = () => {
       socket?.volatile.emit(
         'joinGame',
         parseInt(gameId as string),
-        (ack: { asPlayer: boolean; gameStarted: boolean }) => {
-          if (ack.asPlayer && !isPlayer) setIsPlayer(true);
-          else if (!ack.asPlayer) setIsPlayer(false);
+        (ack: { role: Role; gameStarted: boolean }) => {
+          setRole(ack.role);
           if (ack.gameStarted && !startGame) setStartGame(true);
         }
       );
@@ -175,7 +175,7 @@ const Game: NextPage = () => {
               {startGame ? (
                 <Pong
                   gameId={parseInt(gameId as string)}
-                  isPlayer={true}
+                  role={role}
                   isLocal={false}
                 />
               ) : (

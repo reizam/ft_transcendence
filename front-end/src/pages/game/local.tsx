@@ -154,7 +154,7 @@ const Game: NextPage = () => {
               }}
             >
               {startGame && gameId > 0 ? (
-                <Pong gameId={gameId} isPlayer={true} isLocal={true} />
+                <Pong gameId={gameId} isLocal={true} />
               ) : (
                 <Countdown count={count} total={10} color={primaryColor} />
               )}
