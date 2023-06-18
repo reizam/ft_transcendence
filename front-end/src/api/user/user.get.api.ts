@@ -23,11 +23,11 @@ const defaultUserFetchConfig = {
 };
 
 export const useGetMe = (
-  watched?: string,
+  additionalQueryId: string[] = [],
   options: UseQueryOptions<IUserData, Error> = {}
 ): UseQueryResult<IUserData, Error> =>
   useQuery<IUserData, Error>(
-    ['PROFILE', 'GET', 'ME', watched],
+    ['PROFILE', 'GET', 'ME', ...additionalQueryId],
     async () => {
       const data = await getWithToken('/profile');
 

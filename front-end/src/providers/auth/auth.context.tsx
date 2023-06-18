@@ -8,6 +8,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 export const AuthContext = createContext<IAuthContext>({
   logout: () => Promise.resolve(),
   getAccessToken: () => Promise.resolve(null),
+  get2FAToken: () => Promise.resolve(null),
   status: 'loading',
   user: null,
 });
@@ -16,9 +17,8 @@ export const useAuth = (): IAuthContext => useContext(AuthContext);
 
 export const useProvideAuth = (): IAuthContext => {
   const router = useRouter();
-
   const [status, setStatus] = useState<AuthStatus>('loading');
-  const { data: user } = useGetMe(status, {
+  const { data: user } = useGetMe(undefined, {
     enabled: status === 'authenticated',
   });
 
@@ -30,7 +30,6 @@ export const useProvideAuth = (): IAuthContext => {
     if (cookie) {
       return cookie.toString();
     }
-
     return null;
   };
 
@@ -42,7 +41,6 @@ export const useProvideAuth = (): IAuthContext => {
     if (cookie) {
       return cookie.toString();
     }
-
     return null;
   };
 
@@ -75,6 +73,7 @@ export const useProvideAuth = (): IAuthContext => {
 
   return {
     getAccessToken,
+    get2FAToken,
     logout,
     status,
     user: user ? (user as IUserData) : null,

@@ -8,10 +8,12 @@ import { getCookie } from 'cookies-next';
 import { withProtected } from '@/providers/auth/auth.routes';
 import { useRouter } from 'next/router';
 import { Id, toast } from 'react-toastify';
+import { useAuth } from '@/providers/auth/auth.context';
 
 const check2FA: NextPage = () => {
   const router = useRouter();
   const [token, setToken] = useState('');
+  const { user } = useAuth();
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -40,7 +42,7 @@ const check2FA: NextPage = () => {
 
       if (response.status === 200) {
         toast.update(id, {
-          render: 'Welcome home!',
+          render: `Welcome home${user ? ' ' + user.username : ''}!`,
           type: 'success',
           autoClose: 2000,
           isLoading: false,
