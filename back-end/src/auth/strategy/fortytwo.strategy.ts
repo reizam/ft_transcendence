@@ -1,5 +1,6 @@
 import { AuthService } from '@/auth/auth.service';
 import { FortytwoUser } from '@/auth/types/fortytwo.types';
+import { WithWasJustCreated } from '@/profile/types/profile.types';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
@@ -23,15 +24,16 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy42, '42') {
     accessToken: string,
     refreshToken: string,
     { _json: profile }: { _json: FortytwoUser },
-  ): Promise<User> {
-    const user = await this.authService.validateOrCreateUser({
-      fortytwoId: profile.id as number,
-      username: profile.login as string,
-      firstName: profile.first_name as string,
-      lastName: profile.last_name as string,
-      profilePicture: profile.image.link as string,
-      email: profile.email as string,
-    });
+  ): Promise<WithWasJustCreated<User>> {
+    const user: WithWasJustCreated<User> =
+      await this.authService.validateOrCreateUser({
+        fortytwoId: profile.id as number,
+        username: profile.login as string,
+        firstName: profile.first_name as string,
+        lastName: profile.last_name as string,
+        profilePicture: profile.image.link as string,
+        email: profile.email as string,
+      });
     return user;
   }
 }

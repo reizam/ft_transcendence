@@ -18,13 +18,17 @@ export class UpdateProfile {
   profilePicture: string;
 
   @IsOptional()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Username cannot be empty' })
   @IsString()
-  @IsAscii()
+  @IsAscii({ message: 'Username can only contain ASCII characters' })
   @MaxLength(15, { message: 'Username cannot exceed 15 characters' })
   username: string;
 }
 
 export type WithRank<T> = T & {
   rank?: number;
+};
+
+export type WithWasJustCreated<T> = T & {
+  wasJustCreated?: boolean;
 };

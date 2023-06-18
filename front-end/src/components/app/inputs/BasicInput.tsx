@@ -3,6 +3,9 @@ import React, { ReactElement } from 'react';
 interface BasicInputProps {
   disabled?: boolean;
   type?: string;
+  pattern?: string;
+  minLength?: number;
+  maxLength?: number;
   name?: string;
   placeholder?: string;
   value?: string;
@@ -17,6 +20,9 @@ function BasicInput({
   disabled,
   accept,
   type,
+  pattern,
+  minLength,
+  maxLength,
   name,
   placeholder,
   value,
@@ -27,9 +33,12 @@ function BasicInput({
 }: BasicInputProps): ReactElement {
   return (
     <input
-      onKeyPress={onKeyPress}
+      onKeyDown={onKeyPress}
       disabled={disabled}
       type={type}
+      pattern={pattern}
+      minLength={minLength}
+      maxLength={maxLength}
       name={name}
       placeholder={placeholder}
       value={value}

@@ -1,7 +1,7 @@
 import { IUser } from '@/auth/types/auth.types';
 import { IJWTPayload } from '@/auth/types/jwt.types';
 import { PrismaService } from '@/prisma/prisma.service';
-import { WithRank } from '@/profile/types/profile.types';
+import { WithRank, WithWasJustCreated } from '@/profile/types/profile.types';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { authenticator } from 'otplib';
@@ -52,16 +52,21 @@ export class AuthService {
     return userWithRank;
   }
 
-  async validateOrCreateUser(profile: IUser): Promise<User> {
+  async validateOrCreateUser(
+    profile: IUser,
+  ): Promise<WithWasJustCreated<User>> {
+    let wasJustCreated: boolean = false;
     let user = await this.prisma.user.findFirst({
       where: {
         fortytwoId: profile.fortytwoId,
       },
     });
+
     if (!user) {
       const image = await axios.get(profile.profilePicture, {
         responseType: 'arraybuffer',
       });
+      // TODO: Handle case where prisma fails
       user = await this.prisma.user.create({
         data: {
           ...profile,
@@ -74,8 +79,10 @@ export class AuthService {
           matchHistory: true,
         },
       });
+      wasJustCreated = true;
     }
-    return user;
+    const userWithWasJustCreated = { ...user, wasJustCreated };
+    return userWithWasJustCreated;
   }
 
   async validateToken(token: string): Promise<User | null> {
@@ -89,7 +96,6 @@ export class AuthService {
     return user;
   }
 
-  // 2FAuthenticator
   async verify2FA(user: User, token: string): Promise<boolean> {
     if (!user.twoFactorSecret) {
       throw new Error(

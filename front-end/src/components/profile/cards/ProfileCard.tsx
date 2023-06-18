@@ -5,7 +5,9 @@ import ProfileAvatar from '@/components/profile/avatar/ProfileAvatar';
 import UserInfo from '@/components/profile/sections/UserInfoSection';
 import { ProfileData } from '@/components/profile/types/profile.type';
 import dashStyles from '@/styles/dash.module.css';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import { deleteCookie, getCookie } from 'cookies-next';
 
 interface ProfileDataProps {
   profileData: ProfileData;
@@ -19,6 +21,37 @@ function ProfileCard({
   const [isEditing, setIsEditing] = useState(false);
   const { mutate } = useUpdateMe();
 
+  useEffect(() => {
+    const toastId: string = 'newUserPrompt';
+    const promptUser = () => {
+      toast.info(
+        <div>
+          Welcome dear friend!
+          <br />
+          Start by choosing your username and avatar here, or just go with the
+          default one ;)
+        </div>,
+        { autoClose: false, toastId: toastId }
+      );
+      setIsEditing(true);
+      deleteCookie('newUser', {
+        sameSite: 'strict',
+      });
+    };
+    let timer: NodeJS.Timeout = 0 as any;
+    const isNewUserCookie = getCookie('newUser', {
+      sameSite: 'strict',
+    });
+
+    if (isNewUserCookie) {
+      timer = setTimeout(promptUser, 500);
+    }
+    return () => {
+      clearTimeout(timer);
+      toast.dismiss(toastId);
+    };
+  }, []);
+
   return (
     <div className={dashStyles.dash__profile}>
       <ProfileAvatar
@@ -27,7 +60,6 @@ function ProfileCard({
         mutate={mutate}
       />
       <UserInfo
-        // TODO: Show the username update constraints in the input field
         firstName={profileData.firstName}
         lastName={profileData.lastName}
         username_={profileData.username}
@@ -41,13 +73,12 @@ function ProfileCard({
             onToggle={
               isEditing
                 ? (): void => mutate({ has2FA: !profileData.has2FA })
-                : undefined 
+                : undefined
             }
             isEditing={isEditing}
           />
           Two-Factor Authentication
         </div>
-        
       )}
       {canEdit && (
         <>

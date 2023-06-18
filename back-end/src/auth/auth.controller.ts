@@ -14,6 +14,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { User } from '@prisma/client';
 import { CookieOptions, Response } from 'express';
 import { Verify2FA } from './types/auth.types';
+import { WithWasJustCreated } from '@/profile/types/profile.types';
 
 @Controller('auth')
 export class AuthController {
@@ -39,19 +40,20 @@ export class AuthController {
   @UseGuards(AuthGuard('42'))
   @Get('42/callback')
   async loginWithFortyTwoCallback(
-    @DUser() user: User,
+    @DUser() user: WithWasJustCreated<User>,
     @Res() res: Response,
   ): Promise<void> {
     const jwt = this.authService.login(user);
 
     res.cookie('jwt', jwt.accessToken, this.getCookieOptions());
-
     if (user.has2FA) {
       res.redirect(
         this.configService.get<string>('FRONTEND_URL', 'localhost:4000') +
           '/check2FA',
       );
     } else {
+      if (user.wasJustCreated)
+        res.cookie('newUser', 'true', this.getCookieOptions());
       res.cookie('2FA', 'disabled', this.getCookieOptions());
       res.redirect(
         this.configService.get<string>('FRONTEND_URL', 'localhost:4000'),

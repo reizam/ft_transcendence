@@ -46,6 +46,9 @@ function UserInfoSection({
           <BasicInput
             className={`${dashStyles.dash__username} ${dashStyles.dash__text__input}`}
             type="text"
+            pattern="^[\x00-\x7F]*$"
+            minLength={1}
+            maxLength={15}
             name="username"
             value={username}
             onChange={(e): void => {
