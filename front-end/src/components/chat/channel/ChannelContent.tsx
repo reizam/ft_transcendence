@@ -55,7 +55,7 @@ function ChannelContent({
     <ChatLayout
       title={titles.title}
       screen="create"
-      topLeft={{
+      topRight={{
         href: `/chat/channel/${channelId}/settings`,
       }}
     >
