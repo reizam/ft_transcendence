@@ -1,5 +1,5 @@
 import { updateWithToken } from '@/api';
-import { UpdateProfile, IUserData } from '@/api/user/user.types';
+import { IUserData, UpdateProfile } from '@/api/user/user.types';
 import {
   UseMutationResult,
   useMutation,
@@ -17,6 +17,29 @@ interface IContext {
   previousData?: IUserData;
   id: Id;
 }
+
+export const useBlockUser = (): UseMutationResult<
+  unknown,
+  unknown,
+  { id: number; toggleBlock: boolean },
+  unknown
+> => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: { id: number; toggleBlock: boolean }) => {
+      const data = await updateWithToken('/channel/block', body, {
+        headers: { 'Content-Type': 'application/json' },
+      });
+      return data;
+    },
+    // onError: (err: unknown) => {
+    //   console.error((err as AxiosError)?.response);
+    // },
+    onSettled: () => {
+      void queryClient.invalidateQueries(['PROFILE', 'GET', 'ME']);
+    },
+  });
+};
 
 export const useUpdateMe = (): UseMutationResult<
   IMutationResult,
@@ -56,7 +79,7 @@ export const useUpdateMe = (): UseMutationResult<
       if (context !== undefined) {
         if (!data) toast.dismiss('qrCodeToast');
         toast.update(context.id, {
-          render: !!data
+          render: data
             ? createElement(
                 'div',
                 {
@@ -74,10 +97,10 @@ export const useUpdateMe = (): UseMutationResult<
               )
             : 'Updated',
           type: 'success',
-          autoClose: !!data ? false : 1000,
-          closeButton: !!data ? true : false,
+          autoClose: data ? false : 1000,
+          closeButton: data ? true : false,
           isLoading: false,
-          toastId: !!data ? 'qrCodeToast' : context.id,
+          toastId: data ? 'qrCodeToast' : context.id,
         });
       } else {
         toast.dismiss();
