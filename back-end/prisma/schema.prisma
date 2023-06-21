@@ -23,7 +23,9 @@ model User {
   twoFactorSecret   String?
 
   friends           String[]      @default([])
-  blockedUsers      String[]
+
+  blockedUsers      User[]        @relation("UserBlocks")
+  blockedBy         User[]        @relation("UserBlocks")
 
   createdAt         DateTime      @default(now())
 
