@@ -19,6 +19,7 @@ function ProfileContent({
     <div className={dashStyles.ctn__dash}>
       <ProfileCard
         profileData={{
+          id: userData.id,
           username: userData.username,
           firstName: userData.firstName,
           lastName: userData.lastName,

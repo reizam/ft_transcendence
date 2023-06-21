@@ -4,9 +4,9 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { WithRank } from '@/profile/types/profile.types';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { authenticator } from 'otplib';
 import type { User } from '@prisma/client';
 import axios from 'axios';
+import { authenticator } from 'otplib';
 
 @Injectable()
 export class AuthService {
@@ -44,6 +44,11 @@ export class AuthService {
             players: true,
           },
           take: 20,
+        },
+        blockedUsers: {
+          select: {
+            id: true,
+          },
         },
       },
     });
