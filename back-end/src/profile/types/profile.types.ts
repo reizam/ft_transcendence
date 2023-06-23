@@ -28,3 +28,7 @@ export class UpdateProfile {
 export type WithRank<T> = T & {
   rank?: number;
 };
+
+export type WithBlockedUsers<T> = T & {
+  blockedUsers?: number[];
+};

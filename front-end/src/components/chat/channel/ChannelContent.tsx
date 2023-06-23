@@ -2,11 +2,13 @@ import {
   useChannelGet,
   useChannelMessagesGet,
 } from '@/api/channel/channel.api';
+import { IMessage } from '@/api/channel/channel.types';
+import { useGetMe } from '@/api/user/user.get.api';
 import MessageInput from '@/components/chat/inputs/MessageInput';
 import ChatLayout from '@/components/chat/layouts/ChatLayout';
 import MessageList from '@/components/chat/lists/MessageList';
 import { generateChannelTitles } from '@/utils/channel.util';
-import { flatMap, uniqBy } from 'lodash';
+import { filter, flatMap, uniqBy } from 'lodash';
 import React from 'react';
 
 interface ChannelContentProps {
@@ -17,6 +19,9 @@ interface ChannelContentProps {
 function ChannelContent({
   channelId,
 }: ChannelContentProps): React.ReactElement {
+  const { data: user } = useGetMe('', {
+    refetchOnWindowFocus: true,
+  });
   const { data, hasNextPage, fetchNextPage } = useChannelMessagesGet(
     channelId,
     25,
@@ -28,8 +33,16 @@ function ChannelContent({
     }
   );
   const messages = React.useMemo(
-    () => uniqBy(flatMap(data?.pages || [], 'messages').reverse(), 'id'),
-    [data]
+    () =>
+      uniqBy(
+        filter(
+          flatMap(data?.pages || [], 'messages'),
+          (message: IMessage) =>
+            !user?.blockedUsers.some(({ id }) => message.userId === id)
+        ).reverse(),
+        'id'
+      ),
+    [data, user?.blockedUsers]
   );
 
   const { data: channel, isLoading } = useChannelGet(channelId, {

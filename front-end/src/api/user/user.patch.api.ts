@@ -32,9 +32,6 @@ export const useBlockUser = (): UseMutationResult<
       });
       return data;
     },
-    // onError: (err: unknown) => {
-    //   console.error((err as AxiosError)?.response);
-    // },
     onSettled: () => {
       void queryClient.invalidateQueries(['PROFILE', 'GET', 'ME']);
     },

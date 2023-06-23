@@ -77,6 +77,11 @@ export class AuthService {
         },
         include: {
           matchHistory: true,
+          blockedUsers: {
+            select: {
+              id: true,
+            },
+          },
         },
       });
     }
