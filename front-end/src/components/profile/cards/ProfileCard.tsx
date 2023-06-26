@@ -56,7 +56,7 @@ function ProfileCard({
     }
     return () => {
       clearTimeout(timer);
-      toast.dismiss(toastId);
+      toast.dismiss();
     };
   }, []);
 

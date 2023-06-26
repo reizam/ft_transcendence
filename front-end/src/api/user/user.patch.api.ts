@@ -90,7 +90,12 @@ export const useUpdateMe = (): UseMutationResult<
                   src: data.qrCodeDataUrl,
                   alt: 'Scan this QR code with your 2FA app',
                 }),
-                createElement('p', {}, 'Scan this QR code with your 2FA app')
+                createElement(
+                  'p',
+                  {},
+                  'Scan this QR code with your 2FA app before leaving, ',
+                  "or you won't be able to log anymore!"
+                )
               )
             : 'Updated',
           type: 'success',
