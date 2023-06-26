@@ -4,9 +4,9 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { WithRank, WithWasJustCreated } from '@/profile/types/profile.types';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { authenticator } from 'otplib';
 import type { User } from '@prisma/client';
 import axios from 'axios';
+import { authenticator } from 'otplib';
 
 @Injectable()
 export class AuthService {
@@ -45,6 +45,11 @@ export class AuthService {
           },
           take: 20,
         },
+        blockedUsers: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
     const rank = await this.getRank(user);
@@ -77,6 +82,11 @@ export class AuthService {
         },
         include: {
           matchHistory: true,
+          blockedUsers: {
+            select: {
+              id: true,
+            },
+          },
         },
       });
       wasJustCreated = true;

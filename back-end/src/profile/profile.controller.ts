@@ -1,5 +1,6 @@
 import { DUser } from '@/decorators/user.decorator';
 import { PrismaService } from '@/prisma/prisma.service';
+import { ProfileService } from '@/profile/profile.service';
 import { UpdateProfile, WithRank } from '@/profile/types/profile.types';
 import {
   Body,
@@ -17,7 +18,6 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import type { User } from '@prisma/client';
 import { Response } from 'express';
-import { ProfileService } from '@/profile/profile.service';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('profile')
@@ -42,7 +42,7 @@ export class ProfileController {
   ): Promise<Response> {
     const user = await this.prisma.user.findFirst({
       where: {
-        fortytwoId: id,
+        id: id,
       },
       include: {
         matchHistory: true,
@@ -65,7 +65,7 @@ export class ProfileController {
           console.error({ error });
           throw new InternalServerErrorException();
         });
-      return !!qrCodeDataUrl
+      return qrCodeDataUrl
         ? res.send({ qrCodeDataUrl })
         : res.status(204).send();
     }

@@ -15,6 +15,7 @@ export interface IUserData {
   losses: number;
   rank: number;
   achievements: string[];
+  blockedUsers: { id: number }[];
 }
 
 export type UpdateProfile = Partial<

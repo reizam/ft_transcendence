@@ -25,10 +25,14 @@ export class UpdateProfile {
   username: string;
 }
 
+export type WithWasJustCreated<T> = T & {
+  wasJustCreated?: boolean;
+};
+
 export type WithRank<T> = T & {
   rank?: number;
 };
 
-export type WithWasJustCreated<T> = T & {
-  wasJustCreated?: boolean;
+export type WithBlockedUsers<T> = T & {
+  blockedUsers?: number[];
 };

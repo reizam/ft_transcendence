@@ -42,7 +42,7 @@ export const useGetUser = (id?: string): UseQueryResult<IUserData, Error> =>
     async () => {
       const data = await getWithToken(`/profile/${id}`);
 
-      return data;
+      return data as IUserData;
     },
     { ...defaultUserFetchConfig, enabled: !!id }
   );

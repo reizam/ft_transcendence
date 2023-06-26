@@ -383,4 +383,34 @@ export class ChannelService {
       hasNextPage: (page + 1) * limit < totalCount,
     };
   }
+
+  async setBlockUser(
+    userId: number,
+    targetId: number,
+    toggleBlock: boolean,
+  ): Promise<void> {
+    if (toggleBlock === true) {
+      await this.prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          blockedUsers: {
+            connect: { id: targetId },
+          },
+        },
+      });
+    } else {
+      await this.prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          blockedUsers: {
+            disconnect: { id: targetId },
+          },
+        },
+      });
+    }
+  }
 }

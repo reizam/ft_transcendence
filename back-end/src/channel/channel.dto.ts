@@ -83,3 +83,13 @@ export class GetChannelsDto {
   @Type(() => Number)
   readonly limit: number;
 }
+
+export class BlockUserDto {
+  @IsInt()
+  @Min(1)
+  @Type(() => Number)
+  readonly id: number;
+
+  @IsBoolean()
+  readonly toggleBlock: boolean;
+}

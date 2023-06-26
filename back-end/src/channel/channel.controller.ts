@@ -1,4 +1,5 @@
 import {
+  BlockUserDto,
   CreateChannelDto,
   GetChannelMessagesDto,
   GetChannelsDto,
@@ -7,22 +8,23 @@ import {
 } from '@/channel/channel.dto';
 import { ChannelService } from '@/channel/channel.service';
 import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Put,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import {
   IChannel,
   IChannelPage,
   IMessage,
   IMessagePage,
 } from '@/channel/types/channel.types';
 import { DUser } from '@/decorators/user.decorator';
+import {
+  Body,
+  Controller,
+  Get,
+  Patch,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { User } from '@prisma/client';
 
 @Controller('channel')
@@ -128,5 +130,22 @@ export class ChannelController {
     );
 
     return channelPage;
+  }
+
+  @Patch('block')
+  @UseGuards(AuthGuard('jwt'))
+  async blockUser(
+    @Body() blockUserDto: BlockUserDto,
+    @DUser() user: User,
+  ): Promise<boolean> {
+    if (blockUserDto.id === user.id) return false;
+
+    await this.channelService.setBlockUser(
+      user.id,
+      blockUserDto.id,
+      blockUserDto.toggleBlock,
+    );
+
+    return true;
   }
 }

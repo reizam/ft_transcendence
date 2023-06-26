@@ -1,10 +1,10 @@
-import React from 'react';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import BasicInput from '@/components/app/inputs/BasicInput';
 import { IChannelUser } from '@/api/channel/channel.types';
+import BasicInput from '@/components/app/inputs/BasicInput';
 import AdminList from '@/components/chat/lists/AdminList';
+import { useFormik } from 'formik';
+import React from 'react';
 import { toast } from 'react-toastify';
+import * as Yup from 'yup';
 
 const schema = Yup.object().shape({
   password: Yup.string(),
@@ -46,14 +46,8 @@ function EditChannelForm({
     }
   };
 
-  const _onLeave = (): void => {
-    if (confirm('Êtes-vous sûr de vouloir quitter ce salon ?')) {
-      onLeave();
-    }
-  };
-
   return (
-    <div className="flex flex-col space-y-8 items-center justify-between w-full h-full px-4 py-8">
+    <div className="flex flex-col items-center justify-between w-full h-full px-4 py-8 overflow-y-auto hide-scrollbar">
       <div className="flex flex-col items-center space-y-8 w-full">
         <div className="flex flex-row space-x-4 items-center">
           <input
@@ -83,9 +77,9 @@ function EditChannelForm({
           onChange={(admins): void => void setFieldValue('admins', admins)}
         />
       </div>
-      <div className="flex flex-row space-x-4">
+      <div className="flex flex-row space-x-4 items-center">
         <button
-          onClick={_onLeave}
+          onClick={onLeave}
           className="bg-purple ring-1 ring-white hover:ring-2 hover:ring-offset-1 active:opacity-75 rounded-full text-white font-medium text-sm transition ease-in-out duration-200 px-4 py-2"
         >
           Quitter le salon

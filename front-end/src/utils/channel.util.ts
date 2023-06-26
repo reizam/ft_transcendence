@@ -13,15 +13,12 @@ export const generateChannelTitles = (
 } => {
   const users: string[] = [];
 
-  users.push(
-    channel.owner.username ||
-      `${channel.owner.firstName} ${channel.owner.lastName}`
-  );
+  users.push(channel.owner.username);
 
   users.push(
-    ...channel.users.map(
-      ({ user }) => user.username || `${user.firstName} ${user.lastName}`
-    )
+    ...channel.users
+      .filter(({ user }) => user.username !== channel.owner.username)
+      .map(({ user }) => user.username)
   );
 
   return {

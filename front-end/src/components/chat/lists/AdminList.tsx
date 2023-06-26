@@ -1,6 +1,6 @@
-import React from 'react';
 import { IChannelUser } from '@/api/channel/channel.types';
 import ChannelUserItem from '@/components/chat/items/ChannelUserItem';
+import React from 'react';
 
 interface AdminListProps {
   users: IChannelUser[];
@@ -22,19 +22,32 @@ function AdminList({
   };
 
   return (
-    <div
-      className={`relative flex flex-col space-y-4 bg-purple/25  rounded-lg p-4 w-full`}
-    >
-      <p className="text-xs">Admins</p>
-      <div className="flex flex-row items-start flex-wrap gap-1 w-full h-36 overflow-y-auto">
-        {users.map((user) => (
-          <ChannelUserItem
-            key={user.user.id}
-            channelUser={user}
-            selected={admins.includes(user.user.id)}
-            onClick={(): void => handleChange(user.user.id)}
-          />
-        ))}
+    <div className="flex flex-col space-y-4 w-full">
+      <div className="relative flex flex-col space-y-4 bg-purple/10 rounded-lg p-4 w-full">
+        <p className="text-m">Users</p>
+        <div className="relative flex flex-col space-y-4 bg-purple/25 rounded-lg p-4 w-full">
+          <p className="text-s">Admins</p>
+          <div className="flex flex-row items-start flex-wrap gap-1 w-full overflow-y-auto">
+            {users.map((user) => (
+              <ChannelUserItem
+                key={user.user.id}
+                channelUser={user}
+                selected={admins.includes(user.user.id)}
+                onClick={(): void => handleChange(user.user.id)}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="flex flex-row items-start flex-wrap gap-1 w-full overflow-y-auto">
+          {users.map((user) => (
+            <ChannelUserItem
+              key={user.user.id}
+              channelUser={user}
+              selected={admins.includes(user.user.id)}
+              onClick={(): void => handleChange(user.user.id)}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -10,7 +10,7 @@ interface ChatLayoutProps {
   title?: string;
   children?: React.ReactElement;
   screen: ChatScreen;
-  topLeft?: {
+  topRight?: {
     icon?: React.ReactNode;
     href: string;
   };
@@ -21,12 +21,12 @@ function ChatLayout({
   title,
   children,
   screen,
-  topLeft,
+  topRight,
 }: ChatLayoutProps): React.ReactElement {
   return (
     <div className="flex flex-row space-x-8 w-full h-full p-24">
       <ChatSidebar screen={screen} />
-      <ChatPage title={title} topLeft={topLeft}>
+      <ChatPage title={title} topRight={topRight}>
         {loading ? (
           <Spinner
             size={12}

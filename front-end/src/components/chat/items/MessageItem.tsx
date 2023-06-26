@@ -1,9 +1,9 @@
-import React from 'react';
 import { IMessage } from '@/api/channel/channel.types';
 import EntityAvatar from '@/components/app/image/EntityAvatar';
+import { preventDefault } from '@/utils/react.util';
 import { generateAcronymFromList } from '@/utils/string.util';
 import Link from 'next/link';
-import { preventDefault } from '@/utils/react.util';
+import React from 'react';
 
 function MessageItem(
   message: IMessage & {
