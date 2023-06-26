@@ -93,8 +93,8 @@ export const useUpdateMe = (): UseMutationResult<
                 createElement(
                   'p',
                   {},
-                  'Scan this QR code with your 2FA app before leaving, ',
-                  "or you won't be able to log anymore!"
+                  'Scan this QR code with your 2FA app before leaving,',
+                  " or you won't be able to log in anymore!"
                 )
               )
             : 'Updated',
