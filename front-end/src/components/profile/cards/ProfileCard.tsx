@@ -1,7 +1,7 @@
 import { useBlockUser, useUpdateMe } from '@/api/user/user.patch.api';
 import ToggleSwitch from '@/components/app/toggle/ToggleSwitch';
 import ProfileAvatar from '@/components/profile/avatar/ProfileAvatar';
-import EditButton from '@/components/profile/cards/EditButton';
+import { default as EditButton } from '@/components/profile/cards/EditButton';
 import UserInfo from '@/components/profile/sections/UserInfoSection';
 import { ProfileData } from '@/components/profile/types/profile.type';
 import { useAuth } from '@/providers/auth/auth.context';
@@ -57,27 +57,23 @@ function ProfileCard({
         </div>
       )}
       {canEdit ? (
-        <>
-          <EditButton
-            onClick={(): void => {
-              setIsEditing((prevState) => !prevState);
-            }}
-            isEditing={isEditing}
-          >
-            {isEditing ? 'Save' : 'Edit'}
-          </EditButton>
-          <div style={{ marginBottom: '15%' }}></div>
-        </>
+        <EditButton
+          onClick={(): void => {
+            setIsEditing((prevState) => !prevState);
+          }}
+          isEditing={isEditing}
+        >
+          {isEditing ? 'Save' : 'Edit'}
+        </EditButton>
       ) : (
         profileData.id !== user?.id && (
-          <button
+          <EditButton
             onClick={(): void =>
               blockUser({ id: profileData.id, toggleBlock: !isBlocked })
             }
-            className="bg-purple ring-1 ring-white hover:ring-2 hover:ring-offset-1 active:opacity-75 rounded-full text-white font-medium text-sm transition ease-in-out duration-200 px-4 py-2"
           >
             {isBlocked ? 'Unblock' : 'Block'}
-          </button>
+          </EditButton>
         )
       )}
     </div>

@@ -330,6 +330,9 @@ export class ChannelService {
         {
           ownerId: userId,
         },
+        {
+          private: false,
+        },
       ],
     } as Prisma.ChannelWhereInput;
 

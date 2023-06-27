@@ -19,7 +19,7 @@ interface ChannelContentProps {
 function ChannelContent({
   channelId,
 }: ChannelContentProps): React.ReactElement {
-  const { data: user } = useGetMe('', {
+  const { data: user } = useGetMe(undefined, {
     refetchOnWindowFocus: true,
   });
   const { data, hasNextPage, fetchNextPage } = useChannelMessagesGet(
@@ -71,6 +71,7 @@ function ChannelContent({
       topRight={{
         href: `/chat/channel/${channelId}/settings`,
       }}
+      channel={channel}
     >
       <div className="flex flex-col space-y-4 justify-between w-full h-full px-4 py-8">
         <MessageList

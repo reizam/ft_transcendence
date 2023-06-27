@@ -1,7 +1,7 @@
-import React from 'react';
-import EntityAvatar from '@/components/app/image/EntityAvatar';
 import { IChannelUser } from '@/api/channel/channel.types';
+import EntityAvatar from '@/components/app/image/EntityAvatar';
 import { generateAcronymFromList } from '@/utils/string.util';
+import React from 'react';
 
 interface ChannelUserItemProps {
   channelUser: IChannelUser;

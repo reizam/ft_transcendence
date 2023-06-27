@@ -67,7 +67,7 @@ export interface IChannelPutParams {
   channelId: number;
   withPassword: boolean;
   password?: string;
-  admins: number[];
+  admins?: number[];
 }
 
 export interface IChannelPostParams {
