@@ -28,14 +28,31 @@ export class ChannelService {
           },
         });
       } else {
-        await this.prisma.channel.update({
-          where: {
-            id: channelId,
-          },
-          data: {
-            ownerId: channel.users[0].userId,
-          },
-        });
+        await this.prisma.$transaction([
+          this.prisma.channel.update({
+            where: {
+              id: channelId,
+            },
+            data: {
+              users: {
+                delete: {
+                  channelId_userId: {
+                    channelId,
+                    userId,
+                  },
+                },
+              },
+            },
+          }),
+          this.prisma.channel.update({
+            where: {
+              id: channelId,
+            },
+            data: {
+              ownerId: channel.users[0].userId,
+            },
+          }),
+        ]);
       }
     } else {
       await this.prisma.channel.update({
@@ -243,6 +260,13 @@ export class ChannelService {
         private: _private,
         ownerId: ownerUserId,
         password: password ? hashSync(password, 10) : null,
+      },
+    });
+    await this.prisma.channelUser.create({
+      data: {
+        channelId: channel.id,
+        userId: ownerUserId,
+        admin: true,
       },
     });
 

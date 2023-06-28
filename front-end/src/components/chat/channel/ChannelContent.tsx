@@ -22,6 +22,9 @@ function ChannelContent({
   const { data: user } = useGetMe(undefined, {
     refetchOnWindowFocus: true,
   });
+  const { data: channel, isLoading } = useChannelGet(channelId, {
+    enabled: isNaN(channelId) === false && channelId !== null,
+  });
   const { data, hasNextPage, fetchNextPage } = useChannelMessagesGet(
     channelId,
     25,
@@ -44,10 +47,6 @@ function ChannelContent({
       ),
     [data, user?.blockedUsers]
   );
-
-  const { data: channel, isLoading } = useChannelGet(channelId, {
-    enabled: isNaN(channelId) === false && channelId !== null,
-  });
 
   const titles = React.useMemo(
     () =>

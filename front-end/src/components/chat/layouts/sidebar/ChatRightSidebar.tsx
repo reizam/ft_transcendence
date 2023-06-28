@@ -15,6 +15,7 @@ function ChatRightSidebar({
   screen,
   channel,
 }: ChatRightSidebarProps): React.ReactElement {
+  const owner = channel.users.find((user) => user.user.id === channel.ownerId);
   return (
     <div className="flex flex-col bg-dark-purple h-full w-1/3 rounded-xl overflow-hidden p-6">
       {screen === 'chat' && (
@@ -27,12 +28,7 @@ function ChatRightSidebar({
           </Link>
         </>
       )}
-      <UserList
-        owner={channel.users.find((user) => {
-          user.user.userId === channel.ownerId;
-        })}
-        users={channel.users}
-      />
+      <UserList owner={owner} users={channel.users} />
     </div>
   );
 }
