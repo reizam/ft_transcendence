@@ -8,12 +8,12 @@ import {
 import { toast } from 'react-toastify';
 
 const onFetchError = (err: Error): void => {
-  console.error(err);
+  // console.error(err);
   toast.error('Failed to fetch');
 };
 
 const onFetchSuccess = (data: IUserData): void => {
-  console.log(data);
+  // console.log(data);
 };
 
 const defaultUserFetchConfig = {

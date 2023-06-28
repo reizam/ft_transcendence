@@ -11,11 +11,12 @@ import ChannelUserItem from '@/components/chat/items/ChannelUserItem';
 
 interface UserListProps {
   owner?: IChannelUser;
+  admins?: IChannelUser[];
   users: IChannelUser[];
   // onSubmit: (values: EditAdminList) => void;
 }
 
-function UserList({ owner, users }: UserListProps): React.ReactElement {
+function UserList({ owner, admins, users }: UserListProps): React.ReactElement {
   return (
     <div className="flex flex-col space-y-4 w-full">
       <div className="relative flex flex-col space-y-4 bg-purple/25 rounded-lg p-4 w-full">
@@ -27,9 +28,8 @@ function UserList({ owner, users }: UserListProps): React.ReactElement {
       <div className="relative flex flex-col space-y-4 bg-purple/10 rounded-lg p-4 w-full">
         <p className="text-s">Admins</p>
         <div className="flex flex-row items-start flex-wrap gap-1 w-full overflow-y-auto">
-          {users
-            .filter((user) => user.admin && user.user.id !== owner?.user.id)
-            .map((admin) => (
+          {admins &&
+            admins.map((admin) => (
               <ChannelUserItem key={admin.userId} channelUser={admin} />
             ))}
         </div>

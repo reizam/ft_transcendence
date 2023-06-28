@@ -21,13 +21,30 @@ export class ChannelService {
     }
 
     if (channel.ownerId === userId) {
-      if (channel.users.length === 0) {
-        await this.prisma.channel.delete({
-          where: {
-            id: channelId,
-          },
-        });
-      } else {
+      if (channel.users.length === 1) {
+        await this.prisma.$transaction([
+          this.prisma.channel.update({
+            where: {
+              id: channelId,
+            },
+            data: {
+              users: {
+                delete: {
+                  channelId_userId: {
+                    channelId,
+                    userId,
+                  },
+                },
+              },
+            },
+          }),
+          this.prisma.channel.delete({
+            where: {
+              id: channelId,
+            },
+          }),
+        ]);
+      } else if (userId === channel.ownerId) {
         await this.prisma.$transaction([
           this.prisma.channel.update({
             where: {
@@ -49,7 +66,11 @@ export class ChannelService {
               id: channelId,
             },
             data: {
-              ownerId: channel.users[0].userId,
+              owner: {
+                connect: {
+                  id: channel.users[0].user.id,
+                },
+              },
             },
           }),
         ]);

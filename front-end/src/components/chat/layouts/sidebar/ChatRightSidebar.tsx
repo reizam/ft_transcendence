@@ -3,6 +3,7 @@ import { ChatScreen } from '@/components/chat/layouts/ChatLayout';
 import UserList from '@/components/chat/lists/UserList';
 import { preventDefault } from '@/utils/react.util';
 import Link from 'next/link';
+import { useMemo } from 'react';
 import { BsPlusCircle } from 'react-icons/bs';
 import { FaUserFriends } from 'react-icons/fa';
 
@@ -15,7 +16,17 @@ function ChatRightSidebar({
   screen,
   channel,
 }: ChatRightSidebarProps): React.ReactElement {
-  const owner = channel.users.find((user) => user.user.id === channel.ownerId);
+  const owner = useMemo(
+    () => channel.users.find((user) => user.user.id === channel.ownerId),
+    [channel]
+  );
+  const admins = useMemo(
+    () =>
+      channel.users.filter(
+        (user) => user.admin && user.user.id !== channel.ownerId
+      ),
+    [channel]
+  );
   return (
     <div className="flex flex-col bg-dark-purple h-full w-1/3 rounded-xl overflow-hidden p-6">
       {screen === 'chat' && (
@@ -28,7 +39,7 @@ function ChatRightSidebar({
           </Link>
         </>
       )}
-      <UserList owner={owner} users={channel.users} />
+      <UserList owner={owner} admins={admins} users={channel.users} />
     </div>
   );
 }
