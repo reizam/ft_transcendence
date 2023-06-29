@@ -90,15 +90,16 @@ function ProfileCard({
       )}
       {canEdit ? (
         <>
-          <EditButton
-            onClick={(): void => {
-              setIsEditing((prevState) => !prevState);
-            }}
-            isEditing={isEditing}
-          >
-            {isEditing ? 'Save' : 'Edit'}
-          </EditButton>
-          <div style={{ marginBottom: '15%' }}></div>
+          <div className={dashStyles.dash__ctn__button}>
+            <EditButton
+              onClick={(): void => {
+                setIsEditing((prevState) => !prevState);
+              }}
+              isEditing={isEditing}
+            >
+              {isEditing ? 'Save' : 'Edit'}
+            </EditButton>
+          </div>
         </>
       ) : (
         profileData.id !== user?.id && (
@@ -108,7 +109,7 @@ function ProfileCard({
             }
             className="bg-purple ring-1 ring-white hover:ring-2 hover:ring-offset-1 active:opacity-75 rounded-full text-white font-medium text-sm transition ease-in-out duration-200 px-4 py-2"
           >
-            {isBlocked ? 'Unblock' : 'Block'}
+          {isBlocked ? 'Unblock' : 'Block'}
           </button>
         )
       )}

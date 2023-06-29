@@ -1,4 +1,5 @@
 import styleButton from '@/components/profile/cards/EditButton.module.css';
+import dashStyles from '@/styles/dash.module.css';
 import { MouseEventHandler, ReactElement, ReactNode } from 'react';
 
 interface ButtonProps<T = MouseEventHandler<HTMLButtonElement>> {

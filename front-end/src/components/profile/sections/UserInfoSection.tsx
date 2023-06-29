@@ -37,6 +37,7 @@ function UserInfoSection({
       <h3 className={dashStyles.dash__h3}>{lastName || 'Last name'}</h3>
       <p className={dashStyles.dash__p}>as</p>
       {isEditing ? (
+        <div className={dashStyles.dash__input__ctn}>
         <form
           onSubmit={(e): void => {
             e.preventDefault();
@@ -57,6 +58,7 @@ function UserInfoSection({
             }}
           />
         </form>
+        </div>
       ) : (
         // <Keyframes name={neon-blink} _40={}
         <h4 className={dashStyles.dash__username}>{username || 'Username'}</h4>
