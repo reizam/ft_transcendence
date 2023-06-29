@@ -1,6 +1,6 @@
 .style__button {
   background-color: var(--main-theme-color);
-  width: 10vw;
+  width: 15vw;
   aspect-ratio: 4 / 1;
   border-radius: var(--radius-container);
 }

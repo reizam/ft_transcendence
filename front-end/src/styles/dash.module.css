@@ -237,7 +237,6 @@
 }
 
 .pict__player {
-  border: 1pox solid salmon;
   height: 80%;
   aspect-ratio: 1 / 1;
   margin-left: 5%;
@@ -304,7 +303,7 @@
   display: inline-flex;
   flex-wrap: wrap;
   justify-content: center;
-  
+
   height: 60%;
 }
 
@@ -324,35 +323,109 @@
     padding-top: 3rem;
     padding-left: 3rem;
     padding-right: 3rem;
-    grid-template-columns: 20% 20% 20% 20%;
-    grid-template-rows: 35% 20% 10%;
+    grid-template-columns: 38vw 38vw;
+    grid-template-rows: 35vh 25vh 17vh;
   }
   
   .dash__profile {
     grid-column-start: 1;
-    grid-column-end: 6;
+    grid-column-end: 3;
     grid-row-start: 1;
     grid-row-end: 2;
+    grid-template-columns: 1fr 1fr ;
+    grid-template-rows: 20% 10% 12% 15% 18% 18%;
+  }
+
+  .pict__prof {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 1;
+    grid-row-end: 5;
+    margin-top: 10%;
+  }
+
+  .dash__2FA {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 5;
+    grid-row-end: 7;
+  }
+
+  .dash__h2 {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    grid-row-end: 3;
+  }
+
+  .dash__h3 {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 3;
+    grid-row-end: 4;
+  }
+
+  .dash__p {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 4;
+    grid-row-end: 5;
+  }
+
+  .dash__username {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 5;
+    grid-row-end: 6;
+  }
+
+  .dash__input__ctn {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 5;
+    grid-row-end: 6;
+  }
+
+  .dash__ctn__button {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 6;
+    grid-row-end: 7;
+  }
+
+  .dash__title {
+    font-size: large;
+  }
+
+  .stats__info__title {
+    font-size: 1rem;
+  }
+
+  .ctn__stats__info {
+    margin-top: 5%;
+  }
+
+  .ctn__stats {
+    margin-bottom: 1%;
   }
 
   .dash__data {
     grid-column-start: 1;
-    grid-column-end: 3;
+    grid-column-end: 2;
     grid-row-start: 2;
     grid-row-end: 3;
-
   }
 
   .dash__statistiques {
-    grid-column-start: 3;
-    grid-column-end: 6;
+    grid-column-start: 2;
+    grid-column-end: 3;
     grid-row-start: 2;
     grid-row-end: 3;
   }
   
   .dash__achievements {
     grid-column-start: 1;
-    grid-column-end: 6;
+    grid-column-end: 3;
     grid-row-start: 3;
     grid-row-end: 3;
   }
