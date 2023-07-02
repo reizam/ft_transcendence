@@ -1,5 +1,7 @@
+import { IChannel } from '@/api/channel/channel.types';
 import ChatPage from '@/components/chat/layouts/ChatPage';
-import ChatSidebar from '@/components/chat/layouts/sidebar/ChatSidebar';
+import ChatLeftSidebar from '@/components/chat/layouts/sidebar/ChatLeftSidebar';
+import ChatRightSidebar from '@/components/chat/layouts/sidebar/ChatRightSidebar';
 import Spinner from '@/components/utils/Spinner';
 import React from 'react';
 
@@ -14,6 +16,7 @@ interface ChatLayoutProps {
     icon?: React.ReactNode;
     href: string;
   };
+  channel?: IChannel;
 }
 
 function ChatLayout({
@@ -22,10 +25,11 @@ function ChatLayout({
   children,
   screen,
   topRight,
+  channel,
 }: ChatLayoutProps): React.ReactElement {
   return (
     <div className="flex flex-row space-x-8 w-full h-full p-24">
-      <ChatSidebar screen={screen} />
+      <ChatLeftSidebar screen={screen} />
       <ChatPage title={title} topRight={topRight}>
         {loading ? (
           <Spinner
@@ -36,6 +40,7 @@ function ChatLayout({
           children
         )}
       </ChatPage>
+      {channel ? <ChatRightSidebar screen={screen} channel={channel} /> : <></>}
     </div>
   );
 }

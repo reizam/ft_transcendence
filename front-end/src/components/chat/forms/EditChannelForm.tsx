@@ -1,6 +1,4 @@
-import { IChannelUser } from '@/api/channel/channel.types';
 import BasicInput from '@/components/app/inputs/BasicInput';
-import AdminList from '@/components/chat/lists/AdminList';
 import { useFormik } from 'formik';
 import React from 'react';
 import { toast } from 'react-toastify';
@@ -9,27 +7,23 @@ import * as Yup from 'yup';
 const schema = Yup.object().shape({
   password: Yup.string(),
   withPassword: Yup.boolean().required(),
-  admins: Yup.array().of(Yup.number()).required(),
 });
 
 export type EditChannelFormValues = {
   withPassword: boolean;
   password: string;
-  admins: number[];
 };
 
 interface EditChannelFormProps {
   initialValues: EditChannelFormValues;
   onSubmit: (values: EditChannelFormValues) => void;
   onLeave: () => void;
-  users: IChannelUser[];
 }
 
 function EditChannelForm({
   initialValues,
   onSubmit,
   onLeave,
-  users,
 }: EditChannelFormProps): React.ReactElement {
   const { handleSubmit, values, handleChange, isValid, setFieldValue } =
     useFormik({
@@ -71,11 +65,6 @@ function EditChannelForm({
             onChange={handleChange('password')}
           />
         )}
-        <AdminList
-          admins={values.admins}
-          users={users}
-          onChange={(admins): void => void setFieldValue('admins', admins)}
-        />
       </div>
       <div className="flex flex-row space-x-4 items-center">
         <button

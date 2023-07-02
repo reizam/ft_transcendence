@@ -21,21 +21,59 @@ export class ChannelService {
     }
 
     if (channel.ownerId === userId) {
-      if (channel.users.length === 0) {
-        await this.prisma.channel.delete({
-          where: {
-            id: channelId,
-          },
-        });
-      } else {
-        await this.prisma.channel.update({
-          where: {
-            id: channelId,
-          },
-          data: {
-            ownerId: channel.users[0].userId,
-          },
-        });
+      if (channel.users.length === 1) {
+        await this.prisma.$transaction([
+          this.prisma.channel.update({
+            where: {
+              id: channelId,
+            },
+            data: {
+              users: {
+                delete: {
+                  channelId_userId: {
+                    channelId,
+                    userId,
+                  },
+                },
+              },
+            },
+          }),
+          this.prisma.channel.delete({
+            where: {
+              id: channelId,
+            },
+          }),
+        ]);
+      } else if (userId === channel.ownerId) {
+        await this.prisma.$transaction([
+          this.prisma.channel.update({
+            where: {
+              id: channelId,
+            },
+            data: {
+              users: {
+                delete: {
+                  channelId_userId: {
+                    channelId,
+                    userId,
+                  },
+                },
+              },
+            },
+          }),
+          this.prisma.channel.update({
+            where: {
+              id: channelId,
+            },
+            data: {
+              owner: {
+                connect: {
+                  id: channel.users[0].user.id,
+                },
+              },
+            },
+          }),
+        ]);
       }
     } else {
       await this.prisma.channel.update({
@@ -245,6 +283,13 @@ export class ChannelService {
         password: password ? hashSync(password, 10) : null,
       },
     });
+    await this.prisma.channelUser.create({
+      data: {
+        channelId: channel.id,
+        userId: ownerUserId,
+        admin: true,
+      },
+    });
 
     return channel as IChannel;
   }
@@ -329,6 +374,9 @@ export class ChannelService {
         },
         {
           ownerId: userId,
+        },
+        {
+          private: false,
         },
       ],
     } as Prisma.ChannelWhereInput;

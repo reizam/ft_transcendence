@@ -100,20 +100,20 @@ const Pong = ({ gameId, isPlayer, isLocal }: PongProps): JSX.Element => {
       // Draw the paddle on the left
       context.fillStyle = primaryColor;
       context.fillRect(
-        parameters.paddle.offset / ratio.current,
-        gameState.current.paddleY.left / ratio.current,
-        parameters.paddle.width / ratio.current,
-        parameters.paddle.height / ratio.current
+        parameters.paddle.offset * ratio.current,
+        gameState.current.paddleY.left * ratio.current,
+        parameters.paddle.width * ratio.current,
+        parameters.paddle.height * ratio.current
       );
 
       context.fillRect(
         (parameters.dimensions.width -
           parameters.paddle.offset -
-          parameters.paddle.width) /
+          parameters.paddle.width) *
           ratio.current,
-        gameState.current.paddleY.right / ratio.current,
-        parameters.paddle.width / ratio.current,
-        parameters.paddle.height / ratio.current
+        gameState.current.paddleY.right * ratio.current,
+        parameters.paddle.width * ratio.current,
+        parameters.paddle.height * ratio.current
       );
     };
 
@@ -123,9 +123,9 @@ const Pong = ({ gameId, isPlayer, isLocal }: PongProps): JSX.Element => {
         return;
       context.beginPath();
       context.arc(
-        gameState.current.ball.x / ratio.current,
-        gameState.current.ball.y / ratio.current,
-        parameters.ball.radius / ratio.current,
+        gameState.current.ball.x * ratio.current,
+        gameState.current.ball.y * ratio.current,
+        parameters.ball.radius * ratio.current,
         0,
         Math.PI * 2
       );
@@ -157,7 +157,7 @@ const Pong = ({ gameId, isPlayer, isLocal }: PongProps): JSX.Element => {
       }) => {
         console.log(gameState_);
         gameState.current = { ...gameState.current, ...gameState_ };
-        ratio.current = parameters.dimensions.width / context.canvas.width;
+        ratio.current = context.canvas.width / parameters.dimensions.width;
       }
     );
 
@@ -187,12 +187,14 @@ const Pong = ({ gameId, isPlayer, isLocal }: PongProps): JSX.Element => {
     if (!isPlayer) return;
 
     const handleKeyDown = (e: KeyboardEvent): void => {
+      e.preventDefault();
       if (parameters.keys.includes(e.key)) {
         keyState.current[e.key] = true;
       }
     };
 
     const handleKeyUp = (e: KeyboardEvent): void => {
+      e.preventDefault();
       if (parameters.keys.includes(e.key)) {
         keyState.current[e.key] = false;
       }

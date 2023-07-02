@@ -61,7 +61,6 @@ function ChannelSettingsContent({
   const onSubmit = (values: EditChannelFormValues): void => {
     updateChannel({
       channelId,
-      admins: values.admins,
       password: values.withPassword ? values.password : undefined,
       withPassword: values.withPassword,
     });
@@ -115,13 +114,9 @@ function ChannelSettingsContent({
       }}
     >
       <EditChannelForm
-        users={channel.users}
         onLeave={onLeave}
         onSubmit={onSubmit}
         initialValues={{
-          admins: channel.users
-            .filter((item) => item.admin)
-            .map((item) => item.user.id),
           password: '',
           withPassword:
             channel.password && channel.password.length > 0 ? true : false,
