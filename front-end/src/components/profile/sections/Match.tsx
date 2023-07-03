@@ -16,18 +16,26 @@ function showScore(game: Game): ReactElement {
   return (
     <p className={dashStyles.rst__match}>
       {(isWinner(1, game) && <b>{game.playerOneScore}</b>) ||
-        (isWinner(2, game) && <small>{game.playerOneScore}</small>) ||
+        (isWinner(2, game) && (
+          <small>
+            {game.playerOneScore !== -1 ? game.playerOneScore : '><'}
+          </small>
+        )) ||
         game.playerOneScore}
       {' - '}
       {(isWinner(2, game) && <b>{game.playerTwoScore}</b>) ||
-        (isWinner(1, game) && <small>{game.playerTwoScore}</small>) ||
+        (isWinner(1, game) && (
+          <small>
+            {game.playerTwoScore !== -1 ? game.playerTwoScore : '><'}
+          </small>
+        )) ||
         game.playerTwoScore}
     </p>
   );
 }
 
 function Match({ game }: GameProps): ReactElement {
-  if (game.status.toLowerCase() !== 'finished' || game.players.length != 2)
+  if (game?.status.toLowerCase() !== 'finished' || game?.players?.length != 2)
     return <></>;
 
   return (

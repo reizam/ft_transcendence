@@ -46,7 +46,8 @@ function UserInfoSection({
           <BasicInput
             className={`${dashStyles.dash__username} ${dashStyles.dash__text__input}`}
             type="text"
-            pattern="^[\x00-\x7F]*$"
+            title="Between 1-15 characters, without space"
+            pattern="^[\x21-\x7E]*$"
             minLength={1}
             maxLength={15}
             name="username"

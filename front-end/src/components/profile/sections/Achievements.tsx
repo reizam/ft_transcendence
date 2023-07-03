@@ -4,8 +4,8 @@ import { IconContext } from 'react-icons';
 import { AiOutlineAim } from 'react-icons/ai';
 import { FaQuestion } from 'react-icons/fa';
 import { TbPingPong } from 'react-icons/tb';
+import { IoSpeedometerOutline } from 'react-icons/io5';
 import {
-  GiGoalKeeper,
   GiLightningMask,
   GiRobotGolem,
   GiStrongMan,
@@ -26,7 +26,6 @@ function loadAchievements(
   achievementsMap: Map<string, achievementPair>
 ): ReactElement[] {
   const achievementsArray: ReactElement[] = [];
-  // let uniqueKey: number = 0;
 
   achievementsMap.forEach((value, key) => {
     if (
@@ -58,14 +57,17 @@ function Achievements({ achievements }: AchievementsProps): ReactElement {
     achievementPair
   >([
     ['Master', { infos: 'Win 42 matches', icon: <GiStrongMan /> }],
-    ['Purist', { infos: 'Win a match without fuses', icon: <TbPingPong /> }],
+    // ['Purist', { infos: 'Win a match without fuses', icon: <TbPingPong /> }],
+    // [
+    //   'Deceiver',
+    //   { infos: 'Win a match using all 3 fuses', icon: <GiLightningMask /> },
+    // ],
     [
-      'Deceiver',
-      { infos: 'Win a match using all 3 fuses', icon: <GiLightningMask /> },
-    ],
-    [
-      'Scorer',
-      { infos: 'Win a match with more than 21 points', icon: <GiGoalKeeper /> },
+      'Ninja',
+      {
+        infos: 'Win a match in less than a minute',
+        icon: <IoSpeedometerOutline />,
+      },
     ],
     [
       'Professional',

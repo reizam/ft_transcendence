@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsString,
   MaxLength,
+  NotContains,
 } from 'class-validator';
 
 export class UpdateProfile {
@@ -22,6 +23,7 @@ export class UpdateProfile {
   @IsString()
   @IsAscii({ message: 'Username can only contain ASCII characters' })
   @MaxLength(15, { message: 'Username cannot exceed 15 characters' })
+  @NotContains(' ', { message: 'Username cannot contain spaces' })
   username: string;
 }
 
