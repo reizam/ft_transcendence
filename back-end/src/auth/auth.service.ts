@@ -1,7 +1,7 @@
 import { IUser } from '@/auth/types/auth.types';
 import { IJWTPayload } from '@/auth/types/jwt.types';
 import { PrismaService } from '@/prisma/prisma.service';
-import { WithRank, WithWasJustCreated } from '@/profile/types/profile.types';
+import { WithWasJustCreated } from '@/profile/types/profile.types';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import type { User } from '@prisma/client';
@@ -12,19 +12,7 @@ import { authenticator } from 'otplib';
 export class AuthService {
   constructor(private jwtService: JwtService, private prisma: PrismaService) {}
 
-  //TODO: put the player stats/rank logic somewhere else
-  async getRank(user?: User | null): Promise<number> {
-    if (!user) {
-      console.error('Cannot find statistics');
-      return 0;
-    }
-    const higherEloCount = await this.prisma.user.count({
-      where: { elo: { gt: user.elo } },
-    });
-    return higherEloCount + 1;
-  }
-
-  async validateUser(profile: IJWTPayload): Promise<WithRank<User> | null> {
+  async validateUser(profile: IJWTPayload): Promise<User | null> {
     const user = await this.prisma.user.findFirst({
       where: {
         id: profile.sub,
@@ -41,7 +29,13 @@ export class AuthService {
             finishedAt: 'desc',
           },
           include: {
-            players: true,
+            players: {
+              select: {
+                id: true,
+                username: true,
+                profilePicture: true,
+              },
+            },
           },
           take: 20,
         },
@@ -52,9 +46,8 @@ export class AuthService {
         },
       },
     });
-    const rank = await this.getRank(user);
-    const userWithRank = { ...(user as WithRank<User>), rank: rank };
-    return userWithRank;
+
+    return user;
   }
 
   async validateOrCreateUser(

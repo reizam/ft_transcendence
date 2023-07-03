@@ -1,7 +1,9 @@
+import { AuthService } from '@/auth/auth.service';
 import { DUser } from '@/decorators/user.decorator';
 import { PrismaService } from '@/prisma/prisma.service';
 import { ProfileService } from '@/profile/profile.service';
-import { UpdateProfile, WithRank } from '@/profile/types/profile.types';
+import { UpdateProfile } from '@/profile/types/profile.types';
+import { exclude } from '@/utils/exclude';
 import {
   Body,
   ConflictException,
@@ -25,14 +27,19 @@ export class ProfileController {
   constructor(
     private profileService: ProfileService,
     private prisma: PrismaService,
+    private authService: AuthService,
   ) {}
 
   @Get()
   async getDashboard(
-    @DUser() user: WithRank<User>,
+    @DUser() user: User,
     @Res() res: Response,
   ): Promise<Response> {
-    return res.status(200).json(user);
+    const rank = await this.profileService.getRank(user);
+    const filteredUser = exclude(user, ['twoFactorSecret']);
+    const userWithRank = { ...filteredUser, rank: rank };
+
+    return res.status(200).json(userWithRank);
   }
 
   @Get(':id')
@@ -40,16 +47,15 @@ export class ProfileController {
     @Param('id', ParseIntPipe) id: number,
     @Res() res: Response,
   ): Promise<Response> {
-    const user = await this.prisma.user.findFirst({
-      where: {
-        id: id,
-      },
-      include: {
-        matchHistory: true,
-      },
-    });
+    const user = await this.authService.validateUser({ sub: id });
 
-    return res.status(200).json(user);
+    if (!user) return res.status(200).json(user);
+
+    const rank = await this.profileService.getRank(user);
+    const filteredUser = exclude(user, ['twoFactorSecret']);
+    const userWithRank = { ...filteredUser, rank: rank };
+
+    return res.status(200).json(userWithRank);
   }
 
   @Patch()

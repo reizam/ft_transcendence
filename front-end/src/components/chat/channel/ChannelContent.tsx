@@ -15,7 +15,7 @@ interface ChannelContentProps {
   channelId: number;
 }
 
-//? refetch on event 'newMessage'
+// TODO: refetch on event 'newMessage'
 function ChannelContent({
   channelId,
 }: ChannelContentProps): React.ReactElement {
