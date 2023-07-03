@@ -124,7 +124,7 @@ function ProfileCard({
         )}
       </div>
       {canEdit ? (
-        <>
+        <div className={dashStyles.dash__ctn__button}>
           <EditButton
             onClick={(): void => {
               setIsEditing((prevState) => !prevState);
@@ -133,18 +133,17 @@ function ProfileCard({
           >
             {isEditing ? 'Save' : 'Edit'}
           </EditButton>
-          <div style={{ marginBottom: '15%' }}></div>
-        </>
+        </div>
       ) : (
         profileData.id !== user?.id && (
-          <>
+          <div className={dashStyles.dash__profile__btns}>
             <div>
               <button
                 onClick={(): void =>
                   blockUser({ id: profileData.id, toggleBlock: !isBlocked })
                 }
                 className="bg-[var(--main-theme-color)] ring-[var(--container-color)] hover:ring-1 active:opacity-75
-                  rounded-full min-w-[10vw] aspect-[7/2] px-4 mt-1"
+                  rounded-full min-w-[10vw] aspect-[7/2] mt-1"
               >
                 {isBlocked ? 'Unblock' : 'Block'}
               </button>
@@ -158,7 +157,7 @@ function ProfileCard({
                   })
                 }
                 className="bg-[var(--main-theme-color)] ring-[var(--container-color)] hover:ring-1 active:opacity-75
-                  rounded-full min-w-[10vw] aspect-[7/2] px-4 mt-10 disabled:opacity-75"
+                  rounded-full min-w-[10vw] aspect-[7/2] mt-10 disabled:opacity-75"
                 disabled={hasChallenged}
               >
                 Challenge
@@ -173,12 +172,12 @@ function ProfileCard({
                   })
                 }
                 className="bg-[var(--main-theme-color)] ring-[var(--container-color)] hover:ring-1 active:opacity-75
-                  rounded-full min-w-[10vw] aspect-[7/2] px-4 mt-10"
+                  rounded-full min-w-[10vw] aspect-[7/2] mt-10"
               >
                 Watch
               </button>
             </div>
-          </>
+          </div>
         )
       )}
     </div>

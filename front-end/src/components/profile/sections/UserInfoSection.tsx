@@ -37,27 +37,29 @@ function UserInfoSection({
       <h3 className={dashStyles.dash__h3}>{lastName || 'Last name'}</h3>
       <p className={dashStyles.dash__p}>as</p>
       {isEditing ? (
-        <form
-          onSubmit={(e): void => {
-            e.preventDefault();
-            updateUsername();
-          }}
-        >
-          <BasicInput
-            className={`${dashStyles.dash__username} ${dashStyles.dash__text__input}`}
-            type="text"
-            title="Between 1-15 characters, without space"
-            pattern="^[\x21-\x7E]*$"
-            minLength={1}
-            maxLength={15}
-            name="username"
-            value={username}
-            onChange={(e): void => {
-              wasEditing.current = isEditing;
-              setUsername(e.currentTarget.value);
+        <div className={dashStyles.dash__input__ctn}>
+          <form
+            onSubmit={(e): void => {
+              e.preventDefault();
+              updateUsername();
             }}
-          />
-        </form>
+          >
+            <BasicInput
+              className={`${dashStyles.dash__username} ${dashStyles.dash__text__input}`}
+              type="text"
+              title="Between 1-15 characters, without space"
+              pattern="^[\x21-\x7E]*$"
+              minLength={1}
+              maxLength={15}
+              name="username"
+              value={username}
+              onChange={(e): void => {
+                wasEditing.current = isEditing;
+                setUsername(e.currentTarget.value);
+              }}
+            />
+          </form>
+        </div>
       ) : (
         // <Keyframes name={neon-blink} _40={}
         <h4 className={dashStyles.dash__username}>{username || 'Username'}</h4>

@@ -2,8 +2,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
 
 .ctn__dash {
-  padding-top: 6rem;
-  padding-left: 6rem;
+  padding-top: 5rem;
+  padding-left: 5rem;
+  padding-right: 5rem;
+  padding-bottom: 5rem;
   display: grid;
   grid-template-columns: 26vw 26vw 26vw;
   grid-template-rows: 24vh 24vh 24vh;
@@ -17,6 +19,9 @@
   grid-column-end: 2;
   grid-row-start: 1;
   grid-row-end: 4;
+  display: grid;
+  grid-template-columns: 20% 60% 20%;
+  grid-template-rows: 35% 4% 8% 4% 10% 19% 20%;
   background-color: var(--container-background-color);
   border-radius: var(--radius-container);
   text-align: center;
@@ -32,6 +37,9 @@
   border-radius: var(--radius-container);
   text-align: center;
   overflow-y: auto;
+  display: grid;
+  grid-template-columns: 10% 80% 10%;
+  grid-template-rows: 15% 85%;
 }
 
 .dash__achievements {
@@ -46,10 +54,16 @@
 }
 
 .pict__prof {
-  width: 50%;
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 1;
+  grid-row-end: 2;
   aspect-ratio: 1 / 1;
   margin: auto;
-  margin-top: 5vh;
+  width: 70%;
+  min-width: 175px;
+  height: auto;
+  min-height: 35%;
 }
 
 .img__prof {
@@ -58,6 +72,7 @@
   object-fit: cover;
   border-radius: 50%;
   display: block;
+  aspect-ratio: 1 / 1;
   border: 1px solid aliceblue;
 }
 
@@ -70,6 +85,10 @@
 }
 
 .dash__title {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 1;
+  grid-row-end: 2;
   margin-top: 3vh;
   margin-bottom: 3vh;
   font-family: var(--title-font);
@@ -77,27 +96,43 @@
 }
 
 .dash__h2 {
-  margin-top: 3vh;
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 2;
+  grid-row-end: 3;
+  width: 100%;
+  min-height: 4%;
 }
 
 .dash__h3 {
-  margin-top: 5;
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 3;
+  grid-row-end: 4;
   font-family: var(--title-font);
   font-size: 30px;
+  width: 100%;
+  min-height: 8%;
 }
 
 .dash__p {
-  margin-top: 10;
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 4;
+  grid-row-end: 5;
   font-style: italic;
   color: grey;
   font-size: 15px;
 }
 
 .dash__username {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 5;
+  grid-row-end: 6;
   font-style: bold;
   font-size: 2rem;
   color: var(--main-theme-color);
-  margin-top: 0.75rem;
   letter-spacing: 0.1em;
   text-shadow: 0 0 10px var(--main-theme-color),
     0 0 20px var(--main-theme-color), 0 0 40px var(--main-theme-color),
@@ -105,11 +140,28 @@
   animation: animate 3s infinite alternate;
 }
 
+.dash__profile__btns {
+  grid-column-start: 2;
+  grid-row-start: 6;
+  grid-row-end: 7;
+}
+
 .dash__text__input {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 5;
+  grid-row-end: 6;
   text-align: center;
   width: 90%;
   background-color: darkslateblue;
   border-radius: 10px;
+}
+
+.dash__input__ctn {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 5;
+  grid-row-end: 6;
 }
 
 @keyframes animate {
@@ -131,20 +183,39 @@
 }
 
 .dash__2FA {
-  margin-top: 10%;
-  margin-bottom: 12%;
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 6;
+  grid-row-end: 7;
+  padding-top: 10%;
+  padding-bottom: 15%;
   font-style: italic;
   color: grey;
   font-size: 10px;
   line-height: 4.5;
+  width: 100%;
+}
+
+.dash__ctn__button {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 7;
+  grid-row-end: 8;
+  width: 100%;
+  min-width: 5vw;
 }
 
 .dash__button {
-  margin-top: 7%;
-  border: 1px solid white;
-  width: 30%;
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 7;
+  grid-row-end: 8;
+  max-height: 15%;
+  width: 30px;
   border-radius: 5px;
   background-color: darkviolet;
+  width: 100%;
+  height: auto;
 }
 
 .dash__button:active {
@@ -172,7 +243,6 @@
 }
 
 .pict__player {
-  border: 1pox solid salmon;
   height: 80%;
   aspect-ratio: 1 / 1;
   margin-left: 5%;
@@ -194,7 +264,11 @@
 }
 
 .ctn__stats {
-  margin-top: 15%;
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 2;
+  grid-row-end: 3;
+  margin-bottom: 10%;
 }
 
 .ctn__stats__info {
@@ -247,4 +321,155 @@
 .achievements__unlocked {
   margin: 1%;
   color: aliceblue;
+}
+
+@media (max-width: 1000px) {
+  .ctn__dash {
+    padding-top: 3rem;
+    padding-left: 3rem;
+    padding-right: 3rem;
+    grid-template-columns: 38vw 38vw;
+    grid-template-rows: 35vh 25vh 17vh;
+  }
+
+  .dash__profile {
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-start: 1;
+    grid-row-end: 2;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 20% 10% 12% 15% 18% 18%;
+  }
+
+  .pict__prof {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 1;
+    grid-row-end: 5;
+    margin-top: 10%;
+  }
+
+  .dash__2FA {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 5;
+    grid-row-end: 7;
+  }
+
+  .dash__h2 {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    grid-row-end: 3;
+  }
+
+  .dash__h3 {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 3;
+    grid-row-end: 4;
+  }
+
+  .dash__p {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 4;
+    grid-row-end: 5;
+  }
+
+  .dash__username {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 5;
+    grid-row-end: 6;
+  }
+
+  .dash__input__ctn {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 5;
+    grid-row-end: 6;
+  }
+
+  .dash__ctn__button {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 6;
+    grid-row-end: 7;
+  }
+
+  .dash__title {
+    font-size: large;
+  }
+
+  .stats__info__title {
+    font-size: 1rem;
+  }
+
+  .ctn__stats__info {
+    margin-top: 5%;
+  }
+
+  .ctn__stats {
+    margin-bottom: 1%;
+  }
+
+  .dash__data {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 2;
+    grid-row-end: 3;
+  }
+
+  .dash__statistiques {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    grid-row-end: 3;
+  }
+
+  .dash__achievements {
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-start: 3;
+    grid-row-end: 3;
+  }
+}
+
+@media (max-width: 450px) {
+  .ctn__dash {
+    padding-top: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    grid-template-columns: 60%;
+    grid-template-rows: 30%;
+  }
+
+  .dash__profile {
+    grid-column-start: 1;
+    grid-column-end: 4;
+    grid-row-start: 1;
+    grid-row-end: 4;
+  }
+
+  .dash__data {
+    grid-column-start: 1;
+    grid-column-end: 4;
+    grid-row-start: 4;
+    grid-row-end: 6;
+  }
+
+  .dash__statistiques {
+    grid-column-start: 1;
+    grid-column-end: 4;
+    grid-row-start: 6;
+    grid-row-end: 10;
+  }
+
+  .dash__achievements {
+    grid-column-start: 1;
+    grid-column-end: 4;
+    grid-row-start: 10;
+    grid-row-end: 14;
+  }
 }

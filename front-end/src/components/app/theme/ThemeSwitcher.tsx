@@ -34,7 +34,7 @@ const ThemeSwitcher = (): ReactElement => {
                 <ToggleSwitch
                   onToggle={(checked): void => handleToggle(theme, checked)}
                   backgroundColor="var(--toggle-color)"
-                  checkedBackgroundColor={'var(' + theme.colors.secondary + ')'}
+                  checkedBackgroundColor={'var(' + theme.colors.toggle + ')'}
                   sliderColor={'var(' + theme.colors.primary + ')'}
                   checked={activeToggle === theme.id}
                 />

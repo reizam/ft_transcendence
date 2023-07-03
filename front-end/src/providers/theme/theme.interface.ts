@@ -6,6 +6,7 @@ export interface ITheme {
   colors: {
     primary: string;
     secondary: string;
+    toggle: string;
   };
 }
 
@@ -20,7 +21,8 @@ export const ThemeStore: ITheme[] = [
     name: 'Pong2000',
     colors: {
       primary: '--main-theme-color',
-      secondary: '--button-background-color',
+      secondary: '--main-theme-color',
+      toggle: '--toggle-color',
     },
   },
   {
@@ -29,6 +31,7 @@ export const ThemeStore: ITheme[] = [
     colors: {
       primary: '--rg-field-color',
       secondary: '--rg-ball-color',
+      toggle: '--rg-ball-color',
     },
   },
   {
@@ -37,22 +40,25 @@ export const ThemeStore: ITheme[] = [
     colors: {
       primary: '--wb-field-color',
       secondary: '--wb-ball-color',
+      toggle: '--wb-ball-color',
     },
   },
   {
     id: 're',
     name: 'Retro',
     colors: {
-      primary: '--re-field-color',
+      primary: '--re-ball-color',
       secondary: '--re-ball-color',
+      toggle: '--toggle-color',
     },
   },
   {
     id: 'ma',
     name: 'Matrix',
     colors: {
-      primary: '--ma-field-color',
+      primary: '--ma-ball-color',
       secondary: '--ma-ball-color',
+      toggle: '--toggle-color',
     },
   },
 ];
