@@ -5,7 +5,7 @@
   padding: 6rem;
   display: grid;
   grid-template-columns: 24vw 25vw 24vw;
-  grid-template-rows: 23vh 23vh 24vh;
+  grid-template-rows: 23vh 23vh 23vh;
   column-gap: 2vw;
   row-gap: 2vh;
   font-family: 'Poppins', sans-serif;
