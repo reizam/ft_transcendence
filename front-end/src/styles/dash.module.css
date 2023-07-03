@@ -2,13 +2,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
 
 .ctn__dash {
-  padding-top: 5rem;
-  padding-left: 5rem;
-  padding-right: 5rem;
-  padding-bottom: 5rem;
+  padding: 6rem;
   display: grid;
-  grid-template-columns: 26vw 26vw 26vw;
-  grid-template-rows: 24vh 24vh 24vh;
+  grid-template-columns: 24vw 25vw 24vw;
+  grid-template-rows: 23vh 23vh 24vh;
   column-gap: 2vw;
   row-gap: 2vh;
   font-family: 'Poppins', sans-serif;
