@@ -46,6 +46,7 @@ function EditChannelForm({
         <div className="flex flex-row space-x-4 items-center">
           <input
             type="checkbox"
+            name="toggle password input"
             checked={values.withPassword}
             onChange={(event): void =>
               void setFieldValue('withPassword', event.target.checked)
@@ -55,6 +56,8 @@ function EditChannelForm({
         </div>
         {values.withPassword && (
           <BasicInput
+            type="input"
+            name="new channel password"
             className="text-black rounded-full w-1/2 py-2 px-4 outline-0 placeholder:text-center placeholder:antialiased antialiased"
             placeholder={
               !initialValues.withPassword
@@ -74,6 +77,7 @@ function EditChannelForm({
           Quitter le salon
         </button>
         <button
+          type="submit"
           onClick={onClick}
           className="bg-purple ring-1 ring-white hover:ring-2 hover:ring-offset-1 active:opacity-75 rounded-full text-white font-medium text-sm transition ease-in-out duration-200 px-4 py-2"
         >

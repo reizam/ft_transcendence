@@ -23,7 +23,7 @@ function ChatRightSidebar({
   const admins = useMemo(
     () =>
       channel.users.filter(
-        (user) => user.admin && user.user.id !== channel.ownerId
+        (user) => user.isAdmin && user.user.id !== channel.ownerId
       ),
     [channel]
   );

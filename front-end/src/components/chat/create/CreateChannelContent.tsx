@@ -17,20 +17,20 @@ function CreateChannelContent(): React.ReactElement {
 
   const onSubmit = (values: ChannelFormValues): void => {
     createChannel({
-      private: values.private,
+      isPrivate: values.isPrivate,
       password: values.password,
       users: values.users,
     });
   };
 
   return (
-    <ChatLayout title="Créer un salon" screen="create">
+    <ChatLayout title="Create a channel" screen="create">
       <ChannelForm
         onSubmit={onSubmit}
-        buttonLabel="Créer le salon"
+        buttonLabel="Create channel"
         initialValues={{
           password: '',
-          private: false,
+          isPrivate: false,
           users: [],
         }}
       />

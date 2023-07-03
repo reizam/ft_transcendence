@@ -37,7 +37,7 @@ function UserList({ owner, admins, users }: UserListProps): React.ReactElement {
       <div className="relative flex flex-col space-y-4 rounded-lg p-4 w-full">
         <div className="flex flex-row items-start flex-wrap gap-1 w-full overflow-y-auto">
           {users
-            .filter((user) => !user.admin)
+            .filter((user) => !user.isAdmin)
             .map((user) => (
               <ChannelUserItem key={user.userId} channelUser={user} />
             ))}

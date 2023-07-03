@@ -39,14 +39,6 @@ export class AuthService {
           },
           take: 20,
         },
-        friends: {
-          select: {
-            id: true,
-            username: true,
-            elo: true,
-            profilePicture: true,
-          },
-        },
         blockedUsers: {
           select: {
             id: true,

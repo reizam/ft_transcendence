@@ -189,7 +189,7 @@ export class ChannelService {
     userId: number,
     channel: IChannel,
   ): Promise<boolean> {
-    return channel.ownerId === userId || channel.users.some((u) => u.admin);
+    return channel.ownerId === userId || channel.users.some((u) => u.isAdmin);
   }
 
   async isAdmin(userId: number, channelId: number): Promise<boolean> {
@@ -213,7 +213,7 @@ export class ChannelService {
       OR: [
         {
           id: fixedChannelId,
-          private: true,
+          isPrivate: true,
           password,
           users: {
             some: {
@@ -223,12 +223,12 @@ export class ChannelService {
         },
         {
           id: fixedChannelId,
-          private: true,
+          isPrivate: true,
           ownerId: userId,
         },
         {
           id: fixedChannelId,
-          private: false,
+          isPrivate: false,
         },
       ],
     } as Prisma.ChannelWhereInput;
@@ -238,27 +238,27 @@ export class ChannelService {
       select: {
         id: true,
         ownerId: true,
-        private: true,
+        isPrivate: true,
         password: true,
         owner: {
           select: {
             id: true,
-            email: true,
-            firstName: true,
-            lastName: true,
+            // email: true,
+            // firstName: true,
+            // lastName: true,
             profilePicture: true,
             username: true,
           },
         },
         users: {
           select: {
-            admin: true,
+            isAdmin: true,
             user: {
               select: {
                 id: true,
-                email: true,
-                firstName: true,
-                lastName: true,
+                // email: true,
+                // firstName: true,
+                // lastName: true,
                 profilePicture: true,
                 username: true,
               },
@@ -273,21 +273,44 @@ export class ChannelService {
 
   async createChannel(
     ownerUserId: number,
-    _private: boolean,
+    isPrivate: boolean,
     password?: string,
   ): Promise<IChannel> {
     const channel = await this.prisma.channel.create({
       data: {
-        private: _private,
+        isPrivate: isPrivate,
         ownerId: ownerUserId,
         password: password ? hashSync(password, 10) : null,
+      },
+      include: {
+        owner: {
+          select: {
+            id: true,
+            username: true,
+            profilePicture: true,
+          },
+        },
+        users: {
+          select: {
+            channelId: true,
+            userId: true,
+            user: {
+              select: {
+                id: true,
+                username: true,
+                profilePicture: true,
+              },
+            },
+            isAdmin: true,
+          },
+        },
       },
     });
     await this.prisma.channelUser.create({
       data: {
         channelId: channel.id,
         userId: ownerUserId,
-        admin: true,
+        isAdmin: true,
       },
     });
 
@@ -321,7 +344,7 @@ export class ChannelService {
           users: {
             deleteMany: {},
             create: channel.users.map((user) => ({
-              admin: admins.includes(user.user.id),
+              isAdmin: admins.includes(user.user.id),
               userId: user.user.id,
             })),
           },
@@ -337,7 +360,7 @@ export class ChannelService {
           users: {
             deleteMany: {},
             create: channel.users.map((user) => ({
-              admin: admins.includes(user.user.id),
+              isAdmin: admins.includes(user.user.id),
               userId: user.user.id,
             })),
           },
@@ -376,7 +399,7 @@ export class ChannelService {
           ownerId: userId,
         },
         {
-          private: false,
+          isPrivate: false,
         },
       ],
     } as Prisma.ChannelWhereInput;
@@ -389,26 +412,26 @@ export class ChannelService {
       select: {
         id: true,
         ownerId: true,
-        private: true,
+        isPrivate: true,
         owner: {
           select: {
             id: true,
-            email: true,
-            firstName: true,
-            lastName: true,
+            // email: true,
+            // firstName: true,
+            // lastName: true,
             profilePicture: true,
             username: true,
           },
         },
         users: {
           select: {
-            admin: true,
+            isAdmin: true,
             user: {
               select: {
                 id: true,
-                email: true,
-                firstName: true,
-                lastName: true,
+                // email: true,
+                // firstName: true,
+                // lastName: true,
                 profilePicture: true,
                 username: true,
               },

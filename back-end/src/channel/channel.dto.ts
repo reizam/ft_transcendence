@@ -12,7 +12,7 @@ import {
 
 export class CreateChannelDto {
   @IsBoolean()
-  readonly private: boolean;
+  readonly isPrivate: boolean;
 
   @IsString()
   @IsOptional()

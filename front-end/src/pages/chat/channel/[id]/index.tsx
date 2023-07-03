@@ -1,7 +1,7 @@
 import React from 'react';
 import { NextPage } from 'next';
 import Layout from '@/components/app/layouts/Layout';
-import ChannelSettingsContent from '@/components/chat/channel/ChannelContent';
+import ChannelContent from '@/components/chat/channel/ChannelContent';
 import { withProtected } from '@/providers/auth/auth.routes';
 import { useRouter } from 'next/router';
 
@@ -12,7 +12,7 @@ const Channel: NextPage = () => {
 
   return (
     <Layout title="Salon">
-      <ChannelSettingsContent channelId={channelId} />
+      <ChannelContent channelId={channelId} />
     </Layout>
   );
 };

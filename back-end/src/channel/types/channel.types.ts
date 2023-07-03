@@ -1,37 +1,34 @@
+export interface IChatUser {
+  id: number;
+  username: string;
+  profilePicture: string;
+}
+
 export interface IChannel {
   id: number;
-
-  private: boolean;
+  isPrivate: boolean;
   password: string | null;
-
-  owner: any;
+  owner: IChatUser;
   ownerId: number;
-
   users: IChannelUser[];
-
   createdAt: Date;
 }
 
 export interface IMessage {
   id: number;
-
   channelId: number;
   userId: number;
   user: any;
-
   message: string;
   gameId: number | null;
-
   own?: boolean;
 }
 
 export interface IChannelUser {
   channelId: number;
-
   userId: number;
-  user: any;
-
-  admin: boolean;
+  user: IChatUser;
+  isAdmin: boolean;
 }
 
 export interface IMessagePage {

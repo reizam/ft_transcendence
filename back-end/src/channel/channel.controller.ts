@@ -42,7 +42,7 @@ export class ChannelController {
   ): Promise<IChannel> {
     const channel = await this.channelService.createChannel(
       user.id,
-      createChannelDto.private,
+      createChannelDto.isPrivate,
       createChannelDto.password?.length ? createChannelDto.password : undefined,
     );
 

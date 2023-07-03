@@ -3,7 +3,7 @@ import { generateAcronymFromList } from '@/utils/string.util';
 
 export const isAdmin = (userId: number, channel: IChannel): boolean =>
   channel.ownerId === userId ||
-  channel.users.some((u) => u.userId === userId && u.admin);
+  channel.users.some((u) => u.userId === userId && u.isAdmin);
 
 export const generateChannelTitles = (
   channel: IChannel
@@ -22,7 +22,7 @@ export const generateChannelTitles = (
   );
 
   return {
-    title: channel.private
+    title: channel.isPrivate
       ? `Salon privé - ${users.join(', ')}`
       : users.join(', '),
     acronym: generateAcronymFromList(users),

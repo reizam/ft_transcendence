@@ -38,6 +38,8 @@ function MessageInput({ channelId }: MessageInputProps): React.ReactElement {
   return (
     <div className="flex flex-row items-center space-x-4">
       <BasicInput
+        type="input"
+        name="write message"
         onKeyPress={onKeyPress}
         value={message}
         onChange={onChange}

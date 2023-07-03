@@ -22,11 +22,11 @@ model User {
   has2FA            Boolean
   twoFactorSecret   String?
 
-  friends           User[]  @relation("FriendsList")
-  friendOf          User[]  @relation("FriendsList")
+  friends           User[]        @relation("FriendsList")
+  friendOf          User[]        @relation("FriendsList")
   
-  blockedUsers      User[]  @relation("BlockedList")
-  blockedBy         User[]  @relation("BlockedList")
+  blockedUsers      User[]        @relation("BlockedList")
+  blockedBy         User[]        @relation("BlockedList")
 
   createdAt         DateTime      @default(now())
 
@@ -61,51 +61,51 @@ model Game {
 }
 
 model Channel {
-  id Int @id @default(autoincrement())
+  id                Int           @id @default(autoincrement())
 
-  private Boolean @default(false)
+  isPrivate         Boolean       @default(false)
 
-  ownerId Int
-  owner   User @relation(fields: [ownerId], references: [id])
+  ownerId           Int
+  owner             User          @relation(fields: [ownerId], references: [id])
 
-  users ChannelUser[]
+  users             ChannelUser[]
 
-  password  String?
-  createdAt DateTime @default(now())
+  password          String?
+  createdAt         DateTime      @default(now())
 }
 
 model ChannelUser {
-  channelId Int
-  channel   Channel @relation(fields: [channelId], references: [id])
+  channelId         Int
+  channel           Channel       @relation(fields: [channelId], references: [id])
 
-  userId Int
-  user   User @relation(fields: [userId], references: [id])
+  userId            Int
+  user              User          @relation(fields: [userId], references: [id])
 
-  admin Boolean @default(false)
+  isAdmin           Boolean       @default(false)
 
   @@id([channelId, userId])
 }
 
 model ChannelSanction {
-  id Int @id @default(autoincrement())
+  id                Int           @id @default(autoincrement())
 
-  channelId Int
-  user      Int
-  expiresAt DateTime?
+  channelId         Int
+  user              Int
+  expiresAt         DateTime?
 
-  type      String
-  createdAt DateTime @default(now())
+  type              String
+  createdAt         DateTime      @default(now())
 }
 
 model Message {
-  id Int @id @default(autoincrement())
+  id                Int           @id @default(autoincrement())
 
-  channelId Int
-  userId    Int
-  user      User @relation(fields: [userId], references: [id])
-  message   String
+  channelId         Int
+  userId            Int
+  user              User          @relation(fields: [userId], references: [id])
+  message           String
 
-  gameId Int?
+  gameId            Int?
 
-  createdAt DateTime @default(now())
+  createdAt         DateTime      @default(now())
 }

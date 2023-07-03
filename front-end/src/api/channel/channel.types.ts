@@ -1,14 +1,16 @@
+export interface IChatUser {
+  id: number;
+  username: string;
+  profilePicture: string;
+}
+
 export interface IChannel {
   id: number;
-
-  private: boolean;
+  isPrivate: boolean;
   password: string | null;
-
-  owner: any;
+  owner: IChatUser;
   ownerId: number;
-
   users: IChannelUser[];
-
   createdAt: Date;
 }
 
@@ -45,9 +47,9 @@ export interface IChannelUser {
   channelId: number;
 
   userId: number;
-  user: any;
+  user: IChatUser;
 
-  admin: boolean;
+  isAdmin: boolean;
 }
 
 export interface IChannelPage {
@@ -73,5 +75,5 @@ export interface IChannelPutParams {
 export interface IChannelPostParams {
   users: number[];
   password?: string;
-  private: boolean;
+  isPrivate: boolean;
 }
