@@ -18,21 +18,24 @@ import {
   Body,
   Controller,
   Get,
+  InternalServerErrorException,
   Patch,
   Post,
   Put,
   Query,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from '@prisma/client';
+import { Response } from 'express';
 
+@UseGuards(AuthGuard('jwt'))
 @Controller('channel')
 export class ChannelController {
   constructor(private readonly channelService: ChannelService) {}
 
   @Post()
-  @UseGuards(AuthGuard('jwt'))
   async postChannel(
     @Body() createChannelDto: CreateChannelDto,
     @DUser() user: User,
@@ -47,7 +50,6 @@ export class ChannelController {
   }
 
   @Post('message')
-  @UseGuards(AuthGuard('jwt'))
   async sendMessage(
     @Body() sendMessageDto: PostChannelSendMessageDto,
     @DUser() user: User,
@@ -60,7 +62,6 @@ export class ChannelController {
   }
 
   @Get()
-  @UseGuards(AuthGuard('jwt'))
   async getChannel(
     @Query('channelId') channelId: string,
     @DUser() user: User,
@@ -74,7 +75,6 @@ export class ChannelController {
   }
 
   @Post('leave')
-  @UseGuards(AuthGuard('jwt'))
   async deleteChannel(
     @Query('channelId') channelId: string,
     @DUser() user: User,
@@ -85,7 +85,6 @@ export class ChannelController {
   }
 
   @Put()
-  @UseGuards(AuthGuard('jwt'))
   async putChannel(
     @Body() putChannelDto: PutChannelDto,
     @DUser() user: User,
@@ -102,7 +101,6 @@ export class ChannelController {
   }
 
   @Get('message/page')
-  @UseGuards(AuthGuard('jwt'))
   async getChannelMessages(
     @Query() getChannelMessagesDto: GetChannelMessagesDto,
     @DUser() user: User,
@@ -118,7 +116,6 @@ export class ChannelController {
   }
 
   @Get('page')
-  @UseGuards(AuthGuard('jwt'))
   async getChannels(
     @Query() getChannelsDto: GetChannelsDto,
     @DUser() user: User,
@@ -133,19 +130,19 @@ export class ChannelController {
   }
 
   @Patch('block')
-  @UseGuards(AuthGuard('jwt'))
   async blockUser(
     @Body() blockUserDto: BlockUserDto,
     @DUser() user: User,
-  ): Promise<boolean> {
-    if (blockUserDto.id === user.id) return false;
-
-    await this.channelService.setBlockUser(
-      user.id,
-      blockUserDto.id,
-      blockUserDto.toggleBlock,
-    );
-
-    return true;
+    @Res() res: Response,
+  ): Promise<Response> {
+    if (blockUserDto.id === user.id)
+      throw new InternalServerErrorException('You cannot block yourself');
+    await this.channelService
+      .setBlockUser(user.id, blockUserDto.id, blockUserDto.toggleBlock)
+      .catch((error) => {
+        console.error({ error });
+        throw new InternalServerErrorException();
+      });
+    return res.status(204).send();
   }
 }

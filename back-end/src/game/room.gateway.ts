@@ -12,6 +12,7 @@ import { Game } from '@prisma/client';
 import { Server, Socket } from 'socket.io';
 import { GameGateway } from './game.gateway';
 import { GameState, Player } from './types/game.types';
+import { ISocketUser } from '@/socket/types/socket.types';
 
 @WebSocketGateway()
 export class RoomGateway {
@@ -27,18 +28,18 @@ export class RoomGateway {
   @SubscribeMessage('findGame')
   async onFindGame(
     @ConnectedSocket() client: Socket,
-  ): Promise<void | WsResponse<string | Player[]>> {
+  ): Promise<void | WsResponse<string>> {
     this.roomService.addToPlayerQueue(client);
     const res = await this.roomService.findMatch(client);
     if (!res) return;
     if (res?.error) return { event: 'findError', data: res.error };
     if (res?.players) {
-      const gameId = await this.roomService.getOrCreateGame(
+      const game = await this.roomService.getOrCreateGame(
         res.players[0].id,
         res.players[1].id,
       );
 
-      if (!gameId) return { event: 'findError', data: 'Game creation error' };
+      if (!game) return { event: 'findError', data: 'Game creation error' };
 
       this.server
         .timeout(10000)
@@ -53,12 +54,12 @@ export class RoomGateway {
                 'joinTimeout',
                 "Your opponent is taking a shit. Let's find someone else",
               );
-            this.roomService.deleteGame(gameId);
+            this.roomService.deleteGame(game.id);
           } else {
             this.server
               .to(res.players![0].socketId)
               .to(res.players![1].socketId)
-              .volatile.emit('joinGame', gameId);
+              .volatile.emit('joinGame', game.id);
           }
         });
     }
@@ -69,6 +70,102 @@ export class RoomGateway {
   onStopFindGame(@ConnectedSocket() client: Socket): void {
     console.log('Stoooooooooooooooooooooooooooooooooooop');
     this.roomService.removeFromPlayerQueue(client);
+  }
+
+  @SubscribeMessage('createChallengeGame')
+  async onCreateChallengeGame(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() challengedUser: { id: number; username: string },
+  ): Promise<string | WsResponse<string>> {
+    // TODO:
+    // Check if users are found, connected and available
+    // If so, create game (and delete it if error afterwards)
+    // If OK, send invite, and if timeout in 15s or if refused, send error
+    // If accepted, send joinChallenge with gameId to push to the game
+
+    const user = this.socketUserService.getSocketUser(client);
+
+    if (!user) return { event: 'challengeError', data: 'User not found' };
+
+    const challengedSocketUser: ISocketUser | undefined = this.socketUserService
+      .getOnlineUsers()
+      .find((user) => user.id === challengedUser.id);
+
+    if (!challengedSocketUser) {
+      return {
+        event: 'challengeError',
+        data: `${challengedUser.username + ' is not connected'}`,
+      };
+    }
+
+    let game = await this.roomService.getGameWhereIsPlaying(challengedUser.id);
+
+    if (game) {
+      return {
+        event: 'challengeError',
+        data: `${challengedUser.username + ' is already in a game'}`,
+      };
+    }
+
+    game = await this.roomService.getOrCreateGame(user.id, challengedUser.id);
+
+    if (!game) return { event: 'challengeError', data: 'Game creation error' };
+
+    this.server
+      .to(challengedSocketUser.clientId)
+      .timeout(15000)
+      .emit('challengedBy', user.username, (err: unknown, ack: string[]) => {
+        if (err || ack[0]?.toLowerCase() !== 'accept') {
+          this.roomService.deleteGame(game?.id ?? -1);
+          client?.emit(
+            'challengeError',
+            `${
+              challengedUser?.username +
+              ' was definitely too afraid to accept your challenge...'
+            }`,
+          );
+        } else {
+          console.log({ ack });
+          this.server
+            .to(client?.id)
+            .to(challengedSocketUser?.clientId)
+            .emit('joinChallenge', game?.id);
+        }
+      });
+
+    return 'Challenge sent!';
+  }
+
+  @SubscribeMessage('watchGame')
+  async onWatchGame(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() watchedUser: { id: number; username: string },
+  ): Promise<string | WsResponse<string>> {
+    const user = this.socketUserService.getSocketUser(client);
+
+    if (!user) return { event: 'watchError', data: 'User not found' };
+
+    const watchedSocketUser: ISocketUser | undefined = this.socketUserService
+      .getOnlineUsers()
+      .find((user) => user.id === watchedUser.id);
+
+    if (!watchedSocketUser) {
+      return {
+        event: 'watchError',
+        data: `${watchedUser.username + ' is not connected'}`,
+      };
+    }
+
+    const game = await this.roomService.getGameWhereIsPlaying(watchedUser.id);
+
+    if (!game) {
+      return {
+        event: 'watchError',
+        data: `${watchedUser.username + ' is not currently playing'}`,
+      };
+    }
+
+    return game.id.toString();
   }
 
   @SubscribeMessage('joinGame')
@@ -200,10 +297,12 @@ export class RoomGateway {
       setTimeout(() => {
         if (gameRoom?.game && this.roomService.hasLeftGame(gameRoom, userId)) {
           this.server.to(String(gameId)).volatile.emit('playerHasLeft', player);
-          if (userId === gameRoom.game.playerOneId) {
-            gameRoom.game.playerOneScore = -1;
-          } else {
-            gameRoom.game.playerTwoScore = -1;
+          if (gameRoom.game.status === GameState.INGAME) {
+            if (userId === gameRoom.game.playerOneId) {
+              gameRoom.game.playerOneScore = -1;
+            } else {
+              gameRoom.game.playerTwoScore = -1;
+            }
           }
           gameRoom.game.status = GameState.STOPPED;
         }

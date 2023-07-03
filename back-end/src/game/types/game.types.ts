@@ -1,5 +1,6 @@
 import { Game, User } from '@prisma/client';
 import { GameService } from '../game.service';
+import { IsNumber } from 'class-validator';
 
 export type Player = Pick<User, 'id' | 'elo'> & {
   socketId: string;
@@ -9,6 +10,11 @@ export type Player = Pick<User, 'id' | 'elo'> & {
 export interface IFindGame {
   error?: string;
   players?: Player[];
+}
+
+export class CreateGame {
+  @IsNumber()
+  challengedId: number;
 }
 
 export type GameParameters = {

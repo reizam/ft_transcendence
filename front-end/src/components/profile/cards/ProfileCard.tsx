@@ -9,6 +9,8 @@ import dashStyles from '@/styles/dash.module.css';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { deleteCookie, getCookie } from 'cookies-next';
+import { useSocket } from '@/providers/socket/socket.context';
+import { useRouter } from 'next/router';
 
 interface ProfileDataProps {
   profileData: ProfileData;
@@ -20,14 +22,45 @@ function ProfileCard({
   canEdit,
 }: ProfileDataProps): React.ReactElement {
   const [isEditing, setIsEditing] = useState(false);
+  const [hasChallenged, setHasChallenged] = useState(false);
   const { mutate: updateMe } = useUpdateMe();
   const { mutate: blockUser } = useBlockUser();
   const { user } = useAuth();
+  const { socket } = useSocket();
+  const router = useRouter();
 
   const isBlocked = React.useMemo(
-    () => user?.blockedUsers.some((user) => user.id === profileData.id),
-    [user?.blockedUsers, profileData.id]
+    () => user?.blockedUsers.some((user) => user.id === profileData?.id),
+    [user?.blockedUsers, profileData?.id]
   );
+
+  const challengeUser = (challengedUser: {
+    id: number;
+    username: string;
+  }): void => {
+    setHasChallenged(true);
+    socket?.volatile.emit(
+      'createChallengeGame',
+      challengedUser,
+      (_ack: string) => {
+        toast.info(
+          "Let's see if " +
+            profileData.username +
+            ' is not too afraid to accept the challenge!'
+        );
+      }
+    );
+    setTimeout(() => setHasChallenged(false), 15000);
+  };
+
+  const watchUser = (challengedUser: {
+    id: number;
+    username: string;
+  }): void => {
+    socket?.volatile.emit('watchGame', challengedUser, (gameId: string) =>
+      router.push('/game/' + gameId)
+    );
+  };
 
   useEffect(() => {
     const toastId: string = 'newUserPrompt';
@@ -46,16 +79,16 @@ function ProfileCard({
         sameSite: 'strict',
       });
     };
-    let timer: NodeJS.Timeout = 0 as any;
+    let promptTimer: NodeJS.Timeout = 0 as any;
     const isNewUserCookie = getCookie('newUser', {
       sameSite: 'strict',
     });
 
     if (isNewUserCookie) {
-      timer = setTimeout(promptUser, 500);
+      promptTimer = setTimeout(promptUser, 500);
     }
     return () => {
-      clearTimeout(timer);
+      clearTimeout(promptTimer);
       toast.dismiss(toastId);
     };
   }, []);
@@ -74,20 +107,22 @@ function ProfileCard({
         isEditing={isEditing}
         mutate={updateMe}
       />
-      {canEdit && (
-        <div className={dashStyles.dash__2FA}>
-          <ToggleSwitch
-            checked={profileData.has2FA}
-            onToggle={
-              isEditing
-                ? (): void => updateMe({ has2FA: !profileData.has2FA })
-                : undefined
-            }
-            isEditing={isEditing}
-          />
-          Two-Factor Authentication
-        </div>
-      )}
+      <div className={dashStyles.dash__2FA}>
+        {canEdit && (
+          <>
+            <ToggleSwitch
+              checked={profileData.has2FA}
+              onToggle={
+                isEditing
+                  ? (): void => updateMe({ has2FA: !profileData.has2FA })
+                  : undefined
+              }
+              isEditing={isEditing}
+            />
+            Two-Factor Authentication
+          </>
+        )}
+      </div>
       {canEdit ? (
         <>
           <EditButton
@@ -102,14 +137,48 @@ function ProfileCard({
         </>
       ) : (
         profileData.id !== user?.id && (
-          <button
-            onClick={(): void =>
-              blockUser({ id: profileData.id, toggleBlock: !isBlocked })
-            }
-            className="bg-purple ring-1 ring-white hover:ring-2 hover:ring-offset-1 active:opacity-75 rounded-full text-white font-medium text-sm transition ease-in-out duration-200 px-4 py-2"
-          >
-            {isBlocked ? 'Unblock' : 'Block'}
-          </button>
+          <>
+            <div>
+              <button
+                onClick={(): void =>
+                  blockUser({ id: profileData.id, toggleBlock: !isBlocked })
+                }
+                className="bg-[var(--main-theme-color)] ring-[var(--container-color)] hover:ring-1 active:opacity-75
+                  rounded-full min-w-[10vw] aspect-[7/2] px-4 mt-1"
+              >
+                {isBlocked ? 'Unblock' : 'Block'}
+              </button>
+            </div>
+            <div>
+              <button
+                onClick={(): void =>
+                  challengeUser({
+                    id: profileData.id,
+                    username: profileData.username,
+                  })
+                }
+                className="bg-[var(--main-theme-color)] ring-[var(--container-color)] hover:ring-1 active:opacity-75
+                  rounded-full min-w-[10vw] aspect-[7/2] px-4 mt-10 disabled:opacity-75"
+                disabled={hasChallenged}
+              >
+                Challenge
+              </button>
+            </div>
+            <div>
+              <button
+                onClick={(): void =>
+                  watchUser({
+                    id: profileData.id,
+                    username: profileData.username,
+                  })
+                }
+                className="bg-[var(--main-theme-color)] ring-[var(--container-color)] hover:ring-1 active:opacity-75
+                  rounded-full min-w-[10vw] aspect-[7/2] px-4 mt-10"
+              >
+                Watch
+              </button>
+            </div>
+          </>
         )
       )}
     </div>

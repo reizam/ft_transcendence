@@ -25,12 +25,36 @@ export const useBlockUser = (): UseMutationResult<
   unknown
 > => {
   const queryClient = useQueryClient();
+  const toastUpdateOptions = {
+    autoClose: 1000,
+    isLoading: false,
+  };
+
   return useMutation({
     mutationFn: async (body: { id: number; toggleBlock: boolean }) => {
       const data = await updateWithToken('/channel/block', body, {
         headers: { 'Content-Type': 'application/json' },
       });
       return data;
+    },
+    onMutate: () => toast.loading('Updating'),
+    onSuccess: (_data, _var, context?: Id) => {
+      context
+        ? toast.update(context, {
+            render: 'Updated',
+            type: 'success',
+            ...toastUpdateOptions,
+          })
+        : toast.dismiss();
+    },
+    onError: (_data, _var, context?: Id) => {
+      context
+        ? toast.update(context, {
+            render: 'Failed to update',
+            type: 'error',
+            ...toastUpdateOptions,
+          })
+        : toast.dismiss();
     },
     onSettled: () => {
       void queryClient.invalidateQueries(['PROFILE', 'GET', 'ME']);

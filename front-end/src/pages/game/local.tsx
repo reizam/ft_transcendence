@@ -92,7 +92,7 @@ const Game: NextPage = () => {
     let timer1: NodeJS.Timeout = 0 as any;
     let timer2: NodeJS.Timeout = 0 as any;
     const handleGameError = (err: string) => {
-      timer1 = setTimeout(() => toast.error(err ?? 'Unknown error'), 200);
+      timer1 = setTimeout(() => toast.error(err ?? 'Unknown game error'), 200);
       timer2 = setTimeout(() => router.push('/game'), 1500);
       window.removeEventListener('beforeunload', handleBeforeUnload);
       window.removeEventListener('unload', handleUnload);
