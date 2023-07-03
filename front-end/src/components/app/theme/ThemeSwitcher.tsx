@@ -33,6 +33,7 @@ const ThemeSwitcher = (): ReactElement => {
               <div className={gameStyles.toggle__theme}>
                 <ToggleSwitch
                   onToggle={(checked): void => handleToggle(theme, checked)}
+                  name={key}
                   backgroundColor="var(--toggle-color)"
                   checkedBackgroundColor={'var(' + theme.colors.toggle + ')'}
                   sliderColor={'var(' + theme.colors.primary + ')'}

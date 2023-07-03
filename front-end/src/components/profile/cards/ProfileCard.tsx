@@ -117,6 +117,7 @@ function ProfileCard({
                   ? (): void => updateMe({ has2FA: !profileData.has2FA })
                   : undefined
               }
+              name="2FA switch"
               isEditing={isEditing}
             />
             Two-Factor Authentication
