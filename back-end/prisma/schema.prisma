@@ -22,10 +22,11 @@ model User {
   has2FA            Boolean
   twoFactorSecret   String?
 
-  friends           String[]      @default([])
-
-  blockedUsers      User[]        @relation("UserBlocks")
-  blockedBy         User[]        @relation("UserBlocks")
+  friends           User[]  @relation("FriendsList")
+  friendOf          User[]  @relation("FriendsList")
+  
+  blockedUsers      User[]  @relation("BlockedList")
+  blockedBy         User[]  @relation("BlockedList")
 
   createdAt         DateTime      @default(now())
 

@@ -12,6 +12,7 @@ import { ChannelModule } from './channel/channel.module';
 import { ProfileModule } from './profile/profile.module';
 import { UserModule } from './user/user.module';
 import { UserService } from './user/user.service';
+import { FriendsModule } from './friends/friends.module';
 import { RoomGateway } from './game/room.gateway';
 import { GameGateway } from './game/game.gateway';
 
@@ -25,6 +26,7 @@ import { GameGateway } from './game/game.gateway';
     SocketModule,
     ChannelModule,
     GameModule,
+    FriendsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -8,12 +8,12 @@ import {
 import { toast } from 'react-toastify';
 
 const onFetchError = (err: Error): void => {
-  // console.error(err);
+  console.error(err);
   toast.error('Failed to fetch');
 };
 
 const onFetchSuccess = (data: IUserData): void => {
-  // console.log(data);
+  console.log(data);
 };
 
 const defaultUserFetchConfig = {
@@ -45,4 +45,15 @@ export const useGetUser = (id?: string): UseQueryResult<IUserData, Error> =>
       return data as IUserData;
     },
     { ...defaultUserFetchConfig, enabled: !!id }
+  );
+
+  export const useGetFriends = (): UseQueryResult<IUserData, Error> =>
+  useQuery(
+    ['FRIENDS', 'GET'],
+    async () => {
+      const data = await getWithToken('/friends');
+      console.log(data);
+      return data;
+    },
+    { ...defaultUserFetchConfig }
   );
