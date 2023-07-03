@@ -33,7 +33,7 @@ function UsersList({ users: users, isFriend }: UsersListProps): ReactElement {
               <h2>The Rest of the World</h2>
             </div>
             {users?.map((user) => (
-              <Line user={user} isFriend={isFriend} />
+              <Line key={user.id} user={user} isFriend={isFriend} />
             ))}
           </>
         </div>
