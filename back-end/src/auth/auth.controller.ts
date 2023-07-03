@@ -56,7 +56,8 @@ export class AuthController {
         res.cookie('newUser', 'true', this.getCookieOptions());
       res.cookie('2FA', 'disabled', this.getCookieOptions());
       res.redirect(
-        this.configService.get<string>('FRONTEND_URL', 'localhost:4000'),
+        this.configService.get<string>('FRONTEND_URL', 'localhost:4000') +
+          '/profile',
       );
     }
   }

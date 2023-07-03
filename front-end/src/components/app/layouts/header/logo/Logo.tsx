@@ -8,7 +8,7 @@ function Logo(): React.ReactElement {
 
   return (
     <div className={logoStyles.ctn__logo}>
-      <Link href="/">
+      <Link href="/game">
         <h2
           className={logoStyles.h2__logo}
           style={{

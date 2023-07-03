@@ -47,7 +47,7 @@ const check2FA: NextPage = () => {
           autoClose: 2000,
           isLoading: false,
         });
-        router.push('/');
+        router.push('/profile');
       } else {
         toast.update(id, {
           render: response?.data?.message ?? 'Invalid server response',
