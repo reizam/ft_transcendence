@@ -4,6 +4,7 @@ import { AuthStatus, IAuthContext } from '@/providers/auth/auth.interface';
 import { deleteCookie, getCookie } from 'cookies-next';
 import { useRouter } from 'next/router';
 import { createContext, useContext, useEffect, useState } from 'react';
+import socket from '@/lib/socket';
 
 export const AuthContext = createContext<IAuthContext>({
   logout: () => Promise.resolve(),
@@ -20,6 +21,7 @@ export const useProvideAuth = (): IAuthContext => {
   const [status, setStatus] = useState<AuthStatus>('loading');
   const { data: user } = useGetMe(undefined, {
     enabled: status === 'authenticated',
+    // TODO: Add refetch on window focus? Or use useGetMe instead of useAuth in components?
   });
 
   const getAccessToken = async (): Promise<string | null> => {
@@ -52,6 +54,7 @@ export const useProvideAuth = (): IAuthContext => {
     deleteCookie('2FA', {
       sameSite: 'strict',
     });
+    socket?.disconnect();
   };
 
   useEffect(() => {
