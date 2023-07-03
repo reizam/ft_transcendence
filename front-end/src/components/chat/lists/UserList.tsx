@@ -17,9 +17,6 @@ interface UserListProps {
 }
 
 function UserList({ owner, admins, users }: UserListProps): React.ReactElement {
-  console.log({ owner });
-  console.log({ admins });
-  console.log({ users });
   return (
     <div className="flex flex-col space-y-4 w-full">
       <div className="relative flex flex-col space-y-4 bg-purple/25 rounded-lg p-4 w-full">
