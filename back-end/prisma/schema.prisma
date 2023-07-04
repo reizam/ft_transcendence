@@ -84,23 +84,12 @@ model ChannelUser {
   user              User          @relation(fields: [userId], references: [id])
 
   isAdmin           Boolean       @default(false)
-  isMute            Boolean       @default(false)
   isKick            Boolean       @default(false)
+  muteUntil         DateTime?
 
   createdAt         DateTime      @default(now())
 
   @@id([channelId, userId])
-}
-
-model ChannelSanction {
-  id                Int           @id @default(autoincrement())
-
-  channelId         Int
-  user              Int
-  expiresAt         DateTime?
-
-  type              String
-  createdAt         DateTime      @default(now())
 }
 
 model Message {
