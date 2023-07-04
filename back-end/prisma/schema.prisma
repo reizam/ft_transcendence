@@ -70,7 +70,7 @@ model Channel {
 
   users             ChannelUser[]
 
-  isProtected       Boolean
+  isProtected       Boolean       @default(false)
   password          String?
 
   createdAt         DateTime      @default(now())
