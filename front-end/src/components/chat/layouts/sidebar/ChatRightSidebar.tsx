@@ -17,13 +17,13 @@ function ChatRightSidebar({
   channel,
 }: ChatRightSidebarProps): React.ReactElement {
   const owner = useMemo(
-    () => channel.users.find((user) => user.user.id === channel.ownerId),
+    () => channel.users.find((user) => user.userId === channel.ownerId),
     [channel]
   );
   const admins = useMemo(
     () =>
       channel.users.filter(
-        (user) => user.isAdmin && user.user.id !== channel.ownerId
+        (user) => user.isAdmin && user.userId !== channel.ownerId
       ),
     [channel]
   );

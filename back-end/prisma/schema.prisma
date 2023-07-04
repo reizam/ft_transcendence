@@ -70,7 +70,9 @@ model Channel {
 
   users             ChannelUser[]
 
+  isProtected       Boolean
   password          String?
+
   createdAt         DateTime      @default(now())
 }
 
@@ -82,6 +84,8 @@ model ChannelUser {
   user              User          @relation(fields: [userId], references: [id])
 
   isAdmin           Boolean       @default(false)
+
+  createdAt         DateTime      @default(now())
 
   @@id([channelId, userId])
 }
