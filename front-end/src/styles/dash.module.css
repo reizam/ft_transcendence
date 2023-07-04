@@ -4,8 +4,8 @@
 .ctn__dash {
   padding: 6rem;
   display: grid;
-  grid-template-columns: 24vw 25vw 24vw;
-  grid-template-rows: 23vh 23vh 23vh;
+  grid-template-columns: repeat(3, 23vw);
+  grid-template-rows: repeat(3, 21vh);
   column-gap: 2vw;
   row-gap: 2vh;
   font-family: 'Poppins', sans-serif;
@@ -57,8 +57,8 @@
   grid-row-end: 2;
   aspect-ratio: 1 / 1;
   margin: auto;
-  width: 70%;
-  min-width: 175px;
+  width: 120px;
+  min-width: 100px;
   height: auto;
   min-height: 35%;
 }
@@ -320,13 +320,13 @@
   color: aliceblue;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1100px) {
   .ctn__dash {
-    padding-top: 3rem;
-    padding-left: 3rem;
-    padding-right: 3rem;
-    grid-template-columns: 38vw 38vw;
-    grid-template-rows: 35vh 25vh 17vh;
+    padding-top: 6rem;
+    padding-left: 6rem;
+    padding-right: 6rem;
+    grid-template-columns: 30vw 30vw;
+    grid-template-rows: 30vh 20vh 15vh;
   }
 
   .dash__profile {
@@ -430,6 +430,10 @@
     grid-column-end: 3;
     grid-row-start: 3;
     grid-row-end: 3;
+  }
+
+  .ctn__stats {
+    margin-top: 15%;
   }
 }
 
