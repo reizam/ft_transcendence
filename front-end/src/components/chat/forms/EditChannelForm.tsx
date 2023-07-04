@@ -4,6 +4,10 @@ import React from 'react';
 import { toast } from 'react-toastify';
 import * as Yup from 'yup';
 
+import friendsStyles from '@/styles/friends.module.css';
+import { IChannelUser } from '@/api/channel/channel.types';
+import Line from '@/components/chat/line/Line';
+
 const schema = Yup.object().shape({
   password: Yup.string(),
   withPassword: Yup.boolean().required(),
@@ -12,6 +16,7 @@ const schema = Yup.object().shape({
 export type EditChannelFormValues = {
   withPassword: boolean;
   password: string;
+  users: IChannelUser[];
 };
 
 interface EditChannelFormProps {
@@ -39,6 +44,7 @@ function EditChannelForm({
       toast.error('Veuillez corriger les erreurs dans le formulaire.');
     }
   };
+  console.log(values);
 
   return (
     <div className="flex flex-col items-center justify-between w-full h-full px-4 py-8 overflow-y-auto hide-scrollbar">
@@ -69,6 +75,27 @@ function EditChannelForm({
           />
         )}
       </div>
+
+      <div className="flex flex-col items-center space-y-8 w-full">
+        {/* <div className={friendsStyles.ctn__pre__friends__canvas}> */}
+        <div className="space-x-4 items-center">
+          <h2>Users</h2>
+          {initialValues.users?.map((user) => (
+            <Line key={user.userId} user={user.user} />
+          ))}
+        </div>
+      </div>
+
+      <div className="flex flex-col items-center space-y-8 w-full">
+        {/* <div className={friendsStyles.ctn__pre__friends__canvas}> */}
+        <div className="space-x-4 items-center">
+          <h2>Ban Users</h2>
+          {initialValues.users?.map((user) => (
+            <Line key={user.userId} user={user.user} />
+          ))}
+        </div>
+      </div>
+
       <div className="flex flex-row space-x-4 items-center">
         <button
           onClick={onLeave}

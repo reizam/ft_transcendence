@@ -2,6 +2,10 @@ export interface IChatUser {
   id: number;
   username: string;
   profilePicture: string;
+  isAdmin: boolean;
+  isMute: boolean;
+  isBan: boolean;
+  isBlock: boolean;
 }
 
 export interface IChannel {

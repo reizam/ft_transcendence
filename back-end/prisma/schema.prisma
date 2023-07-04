@@ -82,6 +82,8 @@ model ChannelUser {
   user              User          @relation(fields: [userId], references: [id])
 
   isAdmin           Boolean       @default(false)
+  isMute            Boolean       @default(false)
+  isKick            Boolean       @default(false)
 
   @@id([channelId, userId])
 }
