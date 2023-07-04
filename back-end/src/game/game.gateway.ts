@@ -11,6 +11,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { RoomService } from './room.service';
+import { User } from '@prisma/client';
 
 @WebSocketGateway()
 export class GameGateway {
@@ -28,7 +29,23 @@ export class GameGateway {
     if (game.status === GameState.STOPPED) {
       this.schedulerRegistry.deleteInterval(`${game.id}`);
       game.finishedAt = new Date();
-      this.server.emit('endGame');
+
+      const winnerId =
+        game.playerOneScore > game.playerTwoScore
+          ? game.playerOneId
+          : game.playerTwoId;
+      const loserId =
+        game.playerOneScore < game.playerTwoScore
+          ? game.playerOneId
+          : game.playerTwoId;
+      const playersInfos: { winner: User; loser: User } =
+        await this.roomService.getPlayerStats(winnerId, loserId);
+
+      this.server.to(String(game.id)).emit('endGame', {
+        id: winnerId,
+        username: playersInfos.winner.username,
+        profilePicture: playersInfos.winner.profilePicture,
+      });
       void this.roomService.getGame(game.id).then((res) => {
         if (res) {
           this.roomService
@@ -81,6 +98,8 @@ export class GameGateway {
     )
       return;
 
+    // TODO: let the front move the left or right according to the
+    // playerOne or playerTwo potentially sent by 'joinGame'?
     if (gameRoom.isLocal) {
       gameRoom.game.paddles.left.update(data.paddleY.left);
       gameRoom.game.paddles.right.update(data.paddleY.right);
