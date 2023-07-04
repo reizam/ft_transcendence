@@ -81,7 +81,7 @@ function EditChannelForm({
         <div className="space-x-4 items-center">
           <h2>Users</h2>
           {initialValues.users?.map((user) => (
-            <Line key={user.userId} user={user.user} />
+            <Line key={user.userId} user={user.user} isBan={false} />
           ))}
         </div>
       </div>
@@ -91,7 +91,7 @@ function EditChannelForm({
         <div className="space-x-4 items-center">
           <h2>Ban Users</h2>
           {initialValues.users?.map((user) => (
-            <Line key={user.userId} user={user.user} />
+            <Line key={user.userId} user={user.user} isBan={true} />
           ))}
         </div>
       </div>

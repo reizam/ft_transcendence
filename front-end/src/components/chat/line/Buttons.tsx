@@ -11,6 +11,7 @@ import Link from 'next/link';
 
 interface ButtonsProps {
   user: IChatUser;
+  isBan: boolean;
 }
 
 function GetAdminButton(isAdmin: boolean): ReactElement {
@@ -89,7 +90,9 @@ function GetBlockButton(isBlock: boolean): ReactElement {
   }
 }
 
-function Buttons({ user: user }: ButtonsProps): ReactElement {
+function Buttons({ user, isBan }: ButtonsProps): ReactElement {
+  if (isBan) return <>{GetBanButton(user.isBan)}</>;
+
   return (
     <div className={friendsStyles.buttons__ctn}>
       {GetAdminButton(user.isAdmin)}
