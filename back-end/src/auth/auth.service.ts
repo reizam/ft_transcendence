@@ -12,6 +12,10 @@ import { authenticator } from 'otplib';
 export class AuthService {
   constructor(private jwtService: JwtService, private prisma: PrismaService) {}
 
+  async validateChatUser(channelId: number, password: string): Promise<void> {
+    return;
+  }
+
   async validateUser(profile: IJWTPayload): Promise<User | null> {
     const user = await this.prisma.user.findFirst({
       where: {
@@ -53,7 +57,7 @@ export class AuthService {
   async validateOrCreateUser(
     profile: IUser,
   ): Promise<WithWasJustCreated<User>> {
-    let wasJustCreated: boolean = false;
+    let wasJustCreated = false;
     let user = await this.prisma.user.findFirst({
       where: {
         fortytwoId: profile.fortytwoId,

@@ -11,11 +11,10 @@ export interface IChatUser {
 export interface IChannel {
   id: number;
   isPrivate: boolean;
-  password: string | null;
-  owner: IChatUser;
+  isProtected: boolean;
   ownerId: number;
   users: IChannelUser[];
-  createdAt: Date;
+  createdAt?: Date;
 }
 
 export interface IMessagePage {
@@ -49,10 +48,8 @@ export interface IMessage {
 
 export interface IChannelUser {
   channelId: number;
-
   userId: number;
   user: IChatUser;
-
   isAdmin: boolean;
 }
 
@@ -73,7 +70,6 @@ export interface IChannelPutParams {
   channelId: number;
   withPassword: boolean;
   password?: string;
-  admins?: number[];
 }
 
 export interface IChannelPostParams {

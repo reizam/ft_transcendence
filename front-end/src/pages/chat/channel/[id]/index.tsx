@@ -1,8 +1,7 @@
-import React from 'react';
-import { NextPage } from 'next';
 import Layout from '@/components/app/layouts/Layout';
 import ChannelContent from '@/components/chat/channel/ChannelContent';
 import { withProtected } from '@/providers/auth/auth.routes';
+import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 
 const Channel: NextPage = () => {

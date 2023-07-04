@@ -119,8 +119,7 @@ function ChannelSettingsContent({
         initialValues={{
           users: channel.users,
           password: '',
-          withPassword:
-            channel.password && channel.password.length > 0 ? true : false,
+          withPassword: channel.isProtected,
         }}
       />
     </ChatLayout>

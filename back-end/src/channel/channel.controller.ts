@@ -92,7 +92,6 @@ export class ChannelController {
     await this.channelService.updateChannel(
       user.id,
       putChannelDto.channelId,
-      putChannelDto.admins,
       putChannelDto.withPassword,
       putChannelDto.password,
     );
