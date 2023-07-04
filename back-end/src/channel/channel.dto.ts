@@ -36,12 +36,6 @@ export class PutChannelDto {
   @IsString()
   @IsOptional()
   readonly password?: string;
-
-  @IsArray()
-  @IsInt({
-    each: true,
-  })
-  readonly admins: number[];
 }
 
 export class PostChannelSendMessageDto {

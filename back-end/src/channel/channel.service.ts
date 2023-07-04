@@ -310,33 +310,19 @@ export class ChannelService {
           },
         },
       },
-      select: {
-        id: true,
-        ownerId: true,
-        isPrivate: true,
-        isProtected: true,
+      include: {
         users: {
           select: {
-            userId: true,
             isAdmin: true,
+            userId: true,
             user: {
               select: {
-                // email: true,
-                // firstName: true,
-                // lastName: true,
                 profilePicture: true,
                 username: true,
               },
             },
           },
         },
-      },
-    });
-    await this.prisma.channelUser.create({
-      data: {
-        channelId: channel.id,
-        userId: ownerUserId,
-        isAdmin: true,
       },
     });
 
@@ -346,7 +332,6 @@ export class ChannelService {
   async updateChannel(
     userId: number,
     channelId: number,
-    admins: number[],
     withPassword: boolean,
     password?: string,
   ): Promise<boolean> {
@@ -360,39 +345,15 @@ export class ChannelService {
       throw new Error('You are not the admin of this channel');
     }
 
-    if (withPassword) {
-      await this.prisma.channel.update({
-        where: {
-          id: channelId,
-        },
-        data: {
-          password: password ? hashSync(password, 10) : null,
-          users: {
-            deleteMany: {},
-            create: channel.users.map((user) => ({
-              isAdmin: admins.includes(user.user.id),
-              userId: user.user.id,
-            })),
-          },
-        },
-      });
-    } else {
-      await this.prisma.channel.update({
-        where: {
-          id: channelId,
-        },
-        data: {
-          password: null,
-          users: {
-            deleteMany: {},
-            create: channel.users.map((user) => ({
-              isAdmin: admins.includes(user.user.id),
-              userId: user.user.id,
-            })),
-          },
-        },
-      });
-    }
+    await this.prisma.channel.update({
+      where: {
+        id: channelId,
+      },
+      data: {
+        password: password ? hashSync(password, 10) : null,
+        isProtected: password ? true : false,
+      },
+    });
 
     return true;
   }
