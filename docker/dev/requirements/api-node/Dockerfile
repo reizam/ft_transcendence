@@ -1,4 +1,4 @@
-FROM node:14-alpine
+FROM node:16-alpine
 
 ARG DATABASE_URL
 ARG JWT_SECRET
