@@ -4,7 +4,7 @@
 .ctn__dash {
   padding: 6rem;
   display: grid;
-  grid-template-columns: repeat(3, 23vw);
+  grid-template-columns: repeat(3, 31.5%);
   grid-template-rows: repeat(3, 21vh);
   column-gap: 2vw;
   row-gap: 2vh;
@@ -57,10 +57,9 @@
   grid-row-end: 2;
   aspect-ratio: 1 / 1;
   margin: auto;
-  width: 120px;
-  min-width: 100px;
+  width: 75%;
+  min-width: 140px;
   height: auto;
-  min-height: 35%;
 }
 
 .img__prof {
@@ -325,7 +324,7 @@
     padding-top: 6rem;
     padding-left: 6rem;
     padding-right: 6rem;
-    grid-template-columns: 30vw 30vw;
+    grid-template-columns: repeat(2, 49%);
     grid-template-rows: 30vh 20vh 15vh;
   }
 
@@ -344,6 +343,8 @@
     grid-row-start: 1;
     grid-row-end: 5;
     margin-top: 10%;
+    width: 120px;
+    min-width: 140px;
   }
 
   .dash__2FA {
@@ -447,10 +448,21 @@
   }
 
   .dash__profile {
+    /* grid-template-columns: 1fr; */
     grid-column-start: 1;
     grid-column-end: 4;
     grid-row-start: 1;
     grid-row-end: 4;
+  }
+
+  .pict__prof {
+    /* grid-column-start: 2;
+    grid-column-end: 2; */
+    grid-row-start: 2;
+    /* grid-row-end: 5;
+    margin-top: 10%;
+    width: 120px;
+    min-width: 140px; */
   }
 
   .dash__data {

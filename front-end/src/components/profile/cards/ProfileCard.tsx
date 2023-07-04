@@ -173,7 +173,7 @@ function ProfileCard({
                   })
                 }
                 className="bg-[var(--main-theme-color)] ring-[var(--container-color)] hover:ring-1 active:opacity-75
-                  rounded-full min-w-[10vw] aspect-[7/2] mt-10"
+                  rounded-full min-w-[10vw] aspect-[7/2] mt-10 mb-5"
               >
                 Watch
               </button>

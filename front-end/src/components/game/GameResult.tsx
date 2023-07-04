@@ -18,8 +18,8 @@ export const GameResult = ({ winner }: GameResultProps): JSX.Element => {
           alt="Winner picture"
         />
       </div>
-      <div className="flex flex-wrap justify-center">
-        {winner.username} has won the game!
+      <div className="flex m-auto">
+        <h2>{winner.username} has won the game!</h2>
       </div>
     </div>
   );
