@@ -13,13 +13,7 @@ export const generateChannelTitles = (
 } => {
   const users: string[] = [];
 
-  users.push(channel.owner.username);
-
-  users.push(
-    ...channel.users
-      .filter(({ user }) => user.username !== channel.owner.username)
-      .map(({ user }) => user.username)
-  );
+  users.push(...channel.users.map(({ user }) => user.username));
 
   return {
     title: channel.isPrivate

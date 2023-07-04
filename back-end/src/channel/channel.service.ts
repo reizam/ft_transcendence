@@ -20,73 +20,103 @@ export class ChannelService {
       throw new Error('Channel not found');
     }
 
-    if (channel.ownerId === userId) {
-      if (channel.users.length === 1) {
-        await this.prisma.$transaction([
-          this.prisma.channel.update({
-            where: {
-              id: channelId,
+    await this.prisma.channel.update({
+      where: {
+        id: channelId,
+      },
+      data: {
+        users: {
+          delete: {
+            channelId_userId: {
+              channelId,
+              userId,
             },
-            data: {
-              users: {
-                delete: {
-                  channelId_userId: {
-                    channelId,
-                    userId,
-                  },
-                },
-              },
-            },
-          }),
-          this.prisma.channel.delete({
-            where: {
-              id: channelId,
-            },
-          }),
-        ]);
-      } else if (userId === channel.ownerId) {
-        await this.prisma.$transaction([
-          this.prisma.channel.update({
-            where: {
-              id: channelId,
-            },
-            data: {
-              users: {
-                delete: {
-                  channelId_userId: {
-                    channelId,
-                    userId,
-                  },
-                },
-              },
-            },
-          }),
-          this.prisma.channel.update({
-            where: {
-              id: channelId,
-            },
-            data: {
-              owner: {
-                connect: {
-                  id: channel.users[0].user.id,
-                },
-              },
-            },
-          }),
-        ]);
-      }
-    } else {
+          },
+        },
+      },
+    });
+
+    if (channel.users.length === 1) {
+      await this.prisma.channel.delete({
+        where: {
+          id: channelId,
+        },
+      });
+    } else if (userId === channel.ownerId) {
+      await this.setOwner(channelId);
+    }
+  }
+
+  // async joinChannel(userId: number, channelId: number): Promise<void> {
+  //   const channel = await this.getChannel(channelId);
+
+  //   if (!channel) {
+  //     throw new Error('Channel not found');
+  //   }
+
+  //   await this.prisma.channel.update({
+  //     where: {
+  //       id: channelId,
+  //     },
+  //     data: {
+  //       users: {
+  //         connect: {
+  //           channelId_userId: {
+  //             channelId,
+  //             userId,
+  //           },
+  //         },
+  //       },
+  //     },
+  //   });
+  // }
+
+  async setOwner(channelId: number, newOwnerId?: number): Promise<void> {
+    if (newOwnerId !== undefined) {
       await this.prisma.channel.update({
         where: {
           id: channelId,
         },
         data: {
-          users: {
-            delete: {
-              channelId_userId: {
-                channelId,
-                userId,
-              },
+          owner: {
+            connect: {
+              id: newOwnerId,
+            },
+          },
+        },
+      });
+    } else {
+      const channelUsers = await this.prisma.channelUser.findMany({
+        where: {
+          channelId,
+        },
+        orderBy: {
+          createdAt: 'asc',
+        },
+      });
+      let newOwner = channelUsers.find((user) => user.isAdmin);
+      if (newOwner === undefined) {
+        newOwner = channelUsers[0];
+        await this.prisma.channelUser.update({
+          where: {
+            channelId_userId: {
+              channelId: newOwner.channelId,
+              userId: newOwner.userId,
+            },
+          },
+          data: {
+            isAdmin: true,
+          },
+        });
+      }
+      await this.prisma.channel.update({
+        where: {
+          id: channelId,
+        },
+        data: {
+          owner: {
+            connect: {
+              id: newOwner.userId,
             },
           },
         },
@@ -202,11 +232,7 @@ export class ChannelService {
     return this.isAdminWithChannel(userId, channel);
   }
 
-  async getChannel(
-    userId: number,
-    channelId: number,
-    password?: string,
-  ): Promise<IChannel> {
+  async getChannel(userId: number, channelId: number): Promise<IChannel> {
     const fixedChannelId = Number(channelId);
 
     const where = {
@@ -214,17 +240,11 @@ export class ChannelService {
         {
           id: fixedChannelId,
           isPrivate: true,
-          password,
           users: {
             some: {
               userId: userId,
             },
           },
-        },
-        {
-          id: fixedChannelId,
-          isPrivate: true,
-          ownerId: userId,
         },
         {
           id: fixedChannelId,
@@ -239,10 +259,10 @@ export class ChannelService {
         id: true,
         ownerId: true,
         isPrivate: true,
-        password: true,
+        isProtected: true,
         owner: {
           select: {
-            id: true,
+            // id: true,
             // email: true,
             // firstName: true,
             // lastName: true,
@@ -253,9 +273,10 @@ export class ChannelService {
         users: {
           select: {
             isAdmin: true,
+            userId: true,
             user: {
               select: {
-                id: true,
+                // id: true,
                 // email: true,
                 // firstName: true,
                 // lastName: true,
@@ -278,30 +299,35 @@ export class ChannelService {
   ): Promise<IChannel> {
     const channel = await this.prisma.channel.create({
       data: {
-        isPrivate: isPrivate,
+        isPrivate,
         ownerId: ownerUserId,
+        isProtected: password ? true : false,
         password: password ? hashSync(password, 10) : null,
-      },
-      include: {
-        owner: {
-          select: {
-            id: true,
-            username: true,
-            profilePicture: true,
+        users: {
+          create: {
+            userId: ownerUserId,
+            isAdmin: true,
           },
         },
+      },
+      select: {
+        id: true,
+        ownerId: true,
+        isPrivate: true,
+        isProtected: true,
         users: {
           select: {
-            channelId: true,
             userId: true,
+            isAdmin: true,
             user: {
               select: {
-                id: true,
-                username: true,
+                // email: true,
+                // firstName: true,
+                // lastName: true,
                 profilePicture: true,
+                username: true,
               },
             },
-            isAdmin: true,
           },
         },
       },
@@ -371,16 +397,6 @@ export class ChannelService {
     return true;
   }
 
-  async getChannelById(channelId: number): Promise<IChannel> {
-    const channel = await this.prisma.channel.findUnique({
-      where: {
-        id: channelId,
-      },
-    });
-
-    return channel as IChannel;
-  }
-
   async getChannelPage(
     userId: number,
     page: number,
@@ -389,14 +405,12 @@ export class ChannelService {
     const where = {
       OR: [
         {
+          isPrivate: true,
           users: {
             some: {
               userId: userId,
             },
           },
-        },
-        {
-          ownerId: userId,
         },
         {
           isPrivate: false,
@@ -407,28 +421,21 @@ export class ChannelService {
     const totalCount = await this.prisma.channel.count({
       where,
     });
+
     const channels = await this.prisma.channel.findMany({
       where,
       select: {
         id: true,
         ownerId: true,
         isPrivate: true,
-        owner: {
-          select: {
-            id: true,
-            // email: true,
-            // firstName: true,
-            // lastName: true,
-            profilePicture: true,
-            username: true,
-          },
-        },
+        isProtected: true,
         users: {
           select: {
             isAdmin: true,
+            userId: true,
             user: {
               select: {
-                id: true,
+                // id: true,
                 // email: true,
                 // firstName: true,
                 // lastName: true,

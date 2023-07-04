@@ -118,8 +118,7 @@ function ChannelSettingsContent({
         onSubmit={onSubmit}
         initialValues={{
           password: '',
-          withPassword:
-            channel.password && channel.password.length > 0 ? true : false,
+          withPassword: channel.isProtected,
         }}
       />
     </ChatLayout>

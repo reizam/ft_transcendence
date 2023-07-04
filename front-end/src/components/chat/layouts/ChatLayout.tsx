@@ -40,7 +40,7 @@ function ChatLayout({
           children
         )}
       </ChatPage>
-      {channel ? <ChatRightSidebar screen={screen} channel={channel} /> : <></>}
+      {channel && <ChatRightSidebar screen={screen} channel={channel} />}
     </div>
   );
 }

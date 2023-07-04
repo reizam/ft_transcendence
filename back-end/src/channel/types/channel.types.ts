@@ -7,11 +7,12 @@ export interface IChatUser {
 export interface IChannel {
   id: number;
   isPrivate: boolean;
+  isProtected: boolean;
   password: string | null;
-  owner: IChatUser;
+  owner?: IChatUser;
   ownerId: number;
   users: IChannelUser[];
-  createdAt: Date;
+  createdAt?: Date;
 }
 
 export interface IMessage {
@@ -25,8 +26,8 @@ export interface IMessage {
 }
 
 export interface IChannelUser {
-  channelId: number;
-  userId: number;
+  channelId?: number;
+  userId?: number;
   user: IChatUser;
   isAdmin: boolean;
 }

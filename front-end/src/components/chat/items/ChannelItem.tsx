@@ -1,11 +1,10 @@
-import React from 'react';
 import { IChannel } from '@/api/channel/channel.types';
 import EntityAvatar from '@/components/app/image/EntityAvatar';
-import { generateAcronymFromList } from '@/utils/string.util';
+import { generateChannelTitles } from '@/utils/channel.util';
+import { preventDefault } from '@/utils/react.util';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { preventDefault } from '@/utils/react.util';
-import { generateChannelTitles } from '@/utils/channel.util';
+import React from 'react';
 
 interface ChannelItemProps {
   channel: IChannel;

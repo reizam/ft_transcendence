@@ -1,7 +1,7 @@
 import { IUser } from '@/auth/types/auth.types';
 import { IJWTPayload } from '@/auth/types/jwt.types';
 import { PrismaService } from '@/prisma/prisma.service';
-import { WithWasJustCreated } from '@/profile/types/profile.types';
+import { WithRank, WithWasJustCreated } from '@/profile/types/profile.types';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import type { User } from '@prisma/client';
@@ -12,7 +12,23 @@ import { authenticator } from 'otplib';
 export class AuthService {
   constructor(private jwtService: JwtService, private prisma: PrismaService) {}
 
-  async validateUser(profile: IJWTPayload): Promise<User | null> {
+  //TODO: put the player stats/rank logic somewhere else
+  async getRank(user?: User | null): Promise<number> {
+    if (!user) {
+      console.error('Cannot find statistics');
+      return 0;
+    }
+    const higherEloCount = await this.prisma.user.count({
+      where: { elo: { gt: user.elo } },
+    });
+    return higherEloCount + 1;
+  }
+
+  async validateChatUser(channelId: number, password: string): Promise<void> {
+    return;
+  }
+
+  async validateUser(profile: IJWTPayload): Promise<WithRank<User> | null> {
     const user = await this.prisma.user.findFirst({
       where: {
         id: profile.sub,
@@ -53,7 +69,7 @@ export class AuthService {
   async validateOrCreateUser(
     profile: IUser,
   ): Promise<WithWasJustCreated<User>> {
-    let wasJustCreated: boolean = false;
+    let wasJustCreated = false;
     let user = await this.prisma.user.findFirst({
       where: {
         fortytwoId: profile.fortytwoId,
