@@ -70,9 +70,10 @@ model Channel {
 
   users             ChannelUser[]
 
-  isProtected Boolean
-  password  String?
-  createdAt DateTime @default(now())
+  isProtected       Boolean
+  password          String?
+
+  createdAt         DateTime      @default(now())
 }
 
 model ChannelUser {
@@ -84,7 +85,7 @@ model ChannelUser {
 
   isAdmin           Boolean       @default(false)
 
-  createdAt DateTime @default(now())
+  createdAt         DateTime      @default(now())
 
   @@id([channelId, userId])
 }

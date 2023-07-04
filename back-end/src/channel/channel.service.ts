@@ -260,23 +260,24 @@ export class ChannelService {
         ownerId: true,
         isPrivate: true,
         isProtected: true,
-        owner: {
-          select: {
-            // id: true,
-            // email: true,
-            // firstName: true,
-            // lastName: true,
-            profilePicture: true,
-            username: true,
-          },
-        },
+        // owner: {
+        //   select: {
+        //     id: true,
+        //     // email: true,
+        //     // firstName: true,
+        //     // lastName: true,
+        //     profilePicture: true,
+        //     username: true,
+        //   },
+        // },
         users: {
           select: {
             isAdmin: true,
             userId: true,
+            channelId: true,
             user: {
               select: {
-                // id: true,
+                id: true,
                 // email: true,
                 // firstName: true,
                 // lastName: true,
@@ -315,8 +316,10 @@ export class ChannelService {
           select: {
             isAdmin: true,
             userId: true,
+            channelId: true,
             user: {
               select: {
+                id: true,
                 profilePicture: true,
                 username: true,
               },
@@ -394,9 +397,10 @@ export class ChannelService {
           select: {
             isAdmin: true,
             userId: true,
+            channelId: true,
             user: {
               select: {
-                // id: true,
+                id: true,
                 // email: true,
                 // firstName: true,
                 // lastName: true,

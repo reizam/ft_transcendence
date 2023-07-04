@@ -1,5 +1,5 @@
 export interface IChatUser {
-  id?: number;
+  id: number;
   username: string;
   profilePicture: string;
 }
@@ -8,7 +8,6 @@ export interface IChannel {
   id: number;
   isPrivate: boolean;
   isProtected: boolean;
-  owner?: IChatUser;
   ownerId: number;
   users: IChannelUser[];
   createdAt?: Date;
@@ -25,8 +24,8 @@ export interface IMessage {
 }
 
 export interface IChannelUser {
-  channelId?: number;
-  userId?: number;
+  channelId: number;
+  userId: number;
   user: IChatUser;
   isAdmin: boolean;
 }

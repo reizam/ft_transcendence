@@ -1,5 +1,5 @@
 export interface IChatUser {
-  id?: number;
+  id: number;
   username: string;
   profilePicture: string;
 }
@@ -44,10 +44,8 @@ export interface IMessage {
 
 export interface IChannelUser {
   channelId: number;
-
   userId: number;
   user: IChatUser;
-
   isAdmin: boolean;
 }
 
