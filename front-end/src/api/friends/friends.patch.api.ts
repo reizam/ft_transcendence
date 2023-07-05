@@ -21,7 +21,7 @@ export const useUpdateFriends = (): UseMutationResult<
       return data;
     },
     onSettled: () => {
-      void queryClient.invalidateQueries(['FRIENDS', 'GET']);
+      void queryClient.invalidateQueries(['FRIENDS', 'GET', 'ME']);
     },
   });
 };

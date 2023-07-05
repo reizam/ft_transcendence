@@ -11,6 +11,8 @@ import { toast } from 'react-toastify';
 import { deleteCookie, getCookie } from 'cookies-next';
 import { useSocket } from '@/providers/socket/socket.context';
 import { useRouter } from 'next/router';
+import { useGetFriends } from '@/api/friends/friends.get.api';
+import { useUpdateFriends } from '@/api/friends/friends.patch.api';
 
 interface ProfileDataProps {
   profileData: ProfileData;
@@ -25,6 +27,12 @@ function ProfileCard({
   const [hasChallenged, setHasChallenged] = useState(false);
   const { mutate: updateMe } = useUpdateMe();
   const { mutate: blockUser } = useBlockUser();
+  const {
+    data: friendsData,
+    isLoading: isFriendsLoading,
+    isError: isFriendsError,
+  } = useGetFriends();
+  const { mutate: updateFriends } = useUpdateFriends();
   const { user } = useAuth();
   const { socket } = useSocket();
   const router = useRouter();
@@ -32,6 +40,11 @@ function ProfileCard({
   const isBlocked = React.useMemo(
     () => user?.blockedUsers.some((user) => user.id === profileData?.id),
     [user?.blockedUsers, profileData?.id]
+  );
+
+  const isFriend = React.useMemo(
+    () => !!friendsData?.friends.find((f) => f.id === profileData?.id),
+    [friendsData?.friends, profileData?.id]
   );
 
   const challengeUser = (challengedUser: {
@@ -142,12 +155,21 @@ function ProfileCard({
             <div>
               <button
                 onClick={(): void =>
-                  blockUser({ id: profileData.id, toggleBlock: !isBlocked })
+                  isFriend
+                    ? updateFriends({
+                        operation: 'REMOVE',
+                        friendId: profileData.id,
+                      })
+                    : updateFriends({
+                        operation: 'ADD',
+                        friendId: profileData.id,
+                      })
                 }
                 className="bg-[var(--main-theme-color)] ring-[var(--container-color)] hover:ring-1 active:opacity-75
-                  rounded-full min-w-[10vw] aspect-[7/2] mt-1"
+                  rounded-full min-w-[10vw] aspect-[7/2] mt-2 disabled:opacity-75"
+                disabled={isFriendsLoading || isFriendsError}
               >
-                {isBlocked ? 'Unblock' : 'Block'}
+                {isFriend ? 'Remove friend' : 'Add friend'}
               </button>
             </div>
             <div>
@@ -159,7 +181,7 @@ function ProfileCard({
                   })
                 }
                 className="bg-[var(--main-theme-color)] ring-[var(--container-color)] hover:ring-1 active:opacity-75
-                  rounded-full min-w-[10vw] aspect-[7/2] mt-10 disabled:opacity-75"
+                  rounded-full min-w-[10vw] aspect-[7/2] mt-5 disabled:opacity-75"
                 disabled={hasChallenged}
               >
                 Challenge
@@ -174,9 +196,20 @@ function ProfileCard({
                   })
                 }
                 className="bg-[var(--main-theme-color)] ring-[var(--container-color)] hover:ring-1 active:opacity-75
-                  rounded-full min-w-[10vw] aspect-[7/2] mt-10 mb-5"
+                  rounded-full min-w-[10vw] aspect-[7/2] mt-5"
               >
                 Watch
+              </button>
+            </div>
+            <div>
+              <button
+                onClick={(): void =>
+                  blockUser({ id: profileData.id, toggleBlock: !isBlocked })
+                }
+                className="bg-[var(--main-theme-color)] ring-[var(--container-color)] hover:ring-1 active:opacity-75
+                  rounded-full min-w-[10vw] aspect-[7/2] mt-5 mb-5"
+              >
+                {isBlocked ? 'Unblock' : 'Block'}
               </button>
             </div>
           </div>
