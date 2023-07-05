@@ -47,11 +47,7 @@ function ProfileCard({
           "Let's see if " +
             profileData.username +
             ' is not too afraid to accept the challenge!',
-          {
-            autoClose: 14000,
-            pauseOnFocusLoss: false,
-            pauseOnHover: false,
-          }
+          { pauseOnFocusLoss: false }
         );
       }
     );
