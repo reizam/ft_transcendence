@@ -16,16 +16,19 @@ import { toast } from 'react-toastify';
 
 const Game: NextPage = () => {
   const { primary: primaryColor } = useColors();
-  const [count, { startCountdown, stopCountdown, resetCountdown }] =
-    useCountdown({
-      countStart: 10,
-    });
+  const [
+    count,
+    { startCountdown, stopCountdown, resetCountdown, setCountdown },
+  ] = useCountdown({
+    countStart: 10,
+  });
 
   const { socket } = useSocket();
   const router = useRouter();
   const { id: gameId } = router.query;
 
   const [isPlayer, setIsPlayer] = useState<boolean>(false);
+  const [isLeftPlayer, setIsLeftPlayer] = useState<boolean>(false);
   const [startGame, setStartGame] = useState<boolean>(false);
   const [winner, setWinner] = useState<{
     id: number;
@@ -46,16 +49,24 @@ const Game: NextPage = () => {
       return;
     }
 
-    // TODO: For spectators, return something else if game has started
-    // in order to mount the Canvas
     const sendJoinGame = () => {
       socket?.volatile.emit(
         'joinGame',
         parseInt(gameId as string),
-        (ack: { asPlayer: boolean; gameStarted: boolean }) => {
+        (ack: {
+          asPlayer: boolean;
+          isLeftPlayer: boolean;
+          playersReady: boolean;
+          gameStarted: boolean;
+          countdown: number;
+        }) => {
           if (ack.asPlayer && !isPlayer) setIsPlayer(true);
           else if (!ack.asPlayer) setIsPlayer(false);
+          if (ack.isLeftPlayer && !isLeftPlayer) setIsLeftPlayer(true);
+          else if (!ack.isLeftPlayer) setIsLeftPlayer(false);
+          if (ack.playersReady) setTimeout(() => startCountdown(), 100);
           if (ack.gameStarted && !startGame) setStartGame(true);
+          if (ack.countdown !== 10) setCountdown(ack.countdown);
         }
       );
     };
