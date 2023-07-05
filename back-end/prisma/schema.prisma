@@ -84,7 +84,7 @@ model ChannelUser {
   user              User          @relation(fields: [userId], references: [id])
 
   isAdmin           Boolean       @default(false)
-  isKick            Boolean       @default(false)
+  isBanned          Boolean       @default(false)
   muteUntil         DateTime?
 
   createdAt         DateTime      @default(now())
