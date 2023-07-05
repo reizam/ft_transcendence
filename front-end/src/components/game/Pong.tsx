@@ -198,6 +198,7 @@ const Pong = ({
     const handleKeyDown = (e: KeyboardEvent): void => {
       e.preventDefault();
       if (parameters.keys.includes(e.key)) {
+        keyState.current = {};
         keyState.current[e.key] = true;
       }
     };
