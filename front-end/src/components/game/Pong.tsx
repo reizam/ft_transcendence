@@ -151,12 +151,17 @@ const Pong = ({ gameId, isPlayer, isLocal }: PongProps): JSX.Element => {
 
     socket?.on(
       'gameState',
-      (gameState_: {
-        ball: { x: number; y: number; radius: number };
-        score: { left: number; right: number };
-      }) => {
-        console.log(gameState_);
+      (
+        gameState_: {
+          ball: { x: number; y: number; radius: number };
+          score: { left: number; right: number };
+        },
+        paddleY: { left: number; right: number }
+      ) => {
         gameState.current = { ...gameState.current, ...gameState_ };
+        if (!isPlayer) {
+          gameState.current = { ...gameState.current, paddleY };
+        }
         ratio.current = context.canvas.width / parameters.dimensions.width;
       }
     );

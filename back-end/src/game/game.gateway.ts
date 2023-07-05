@@ -64,17 +64,24 @@ export class GameGateway {
       });
     } else if (game.status === GameState.INGAME) {
       game.status = this.gameService.update(game);
-      this.server.to(String(game.id)).volatile.emit('gameState', {
-        ball: {
-          x: game.ball.x,
-          y: game.ball.y,
-          radius: game.ball.radius,
+      this.server.to(String(game.id)).volatile.emit(
+        'gameState',
+        {
+          ball: {
+            x: game.ball.x,
+            y: game.ball.y,
+            radius: game.ball.radius,
+          },
+          score: {
+            left: game.playerOneScore,
+            right: game.playerTwoScore,
+          },
         },
-        score: {
-          left: game.playerOneScore,
-          right: game.playerTwoScore,
+        {
+          left: game.paddles.left.y,
+          right: game.paddles.right.y,
         },
-      });
+      );
     }
   }
 
@@ -117,13 +124,13 @@ export class GameGateway {
 
   startGame(game: GameInfos): void {
     game.status = GameState.INGAME;
+    game.launchedAt = new Date();
     setTimeout(() => {
       this.server.to(String(game.id)).emit('startCountdown');
     }, 100);
     setTimeout(() => {
       const interval = setInterval(() => this.loop(game), 1000 / 120);
 
-      game.launchedAt = new Date();
       this.server.to(String(game.id)).emit('startGame');
       this.schedulerRegistry.addInterval(`${game.id}`, interval);
     }, 11000);
