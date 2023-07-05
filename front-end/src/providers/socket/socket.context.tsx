@@ -56,6 +56,8 @@ export const useProvideSocket = (): ISocketContext => {
           },
           closeOnClick: true,
           autoClose: 14000,
+          pauseOnFocusLoss: false,
+          pauseOnHover: false,
         }
       );
     };
