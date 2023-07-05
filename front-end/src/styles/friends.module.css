@@ -45,6 +45,16 @@
   height: auto;
   display: flex;
   flex-wrap: wrap;
+  margin-top: 2%;
+}
+
+.flexContainer {
+  width: 40%;
+  align-items: center;
+}
+
+.linkContainer {
+  display: flex;
 }
 
 /*  --  LINE CSS  --  */
@@ -52,7 +62,7 @@
   /*  --- PROFILE_PICTURE ---   */
 
       .pict__prof {
-        width: 15%;
+        width: 30%;
         aspect-ratio: 1 / 1;
         display: flex;
         align-items: center;
@@ -75,11 +85,10 @@
   /*  --- PROFILE_NAME ---   */
 
       .user__name {
-        width: 25%;
-        padding-left: 3%;
+        width: 80%;
+        padding-left: 5%;
         display: flex;
         align-items: center;
-        justify-content: left;
       }
 
   /*  --- STATUS_LOG ---   */
