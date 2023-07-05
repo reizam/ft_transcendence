@@ -197,7 +197,8 @@ const Game: NextPage = () => {
               {startGame && !winner ? (
                 <Pong
                   gameId={parseInt(gameId as string)}
-                  isPlayer={true}
+                  isPlayer={isPlayer}
+                  isLeftPlayer={isLeftPlayer}
                   isLocal={false}
                 />
               ) : (

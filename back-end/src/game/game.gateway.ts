@@ -105,15 +105,13 @@ export class GameGateway {
     )
       return;
 
-    // TODO: let the front move the left or right according to the
-    // playerOne or playerTwo potentially sent by 'joinGame'?
     if (gameRoom.isLocal) {
       gameRoom.game.paddles.left.update(data.paddleY.left);
       gameRoom.game.paddles.right.update(data.paddleY.right);
     } else if (user.id === gameRoom.game.playerOneId) {
       gameRoom.game.paddles.left.update(data.paddleY.left);
     } else if (user.id === gameRoom.game.playerTwoId) {
-      gameRoom.game.paddles.right.update(data.paddleY.left);
+      gameRoom.game.paddles.right.update(data.paddleY.right);
     }
 
     return {

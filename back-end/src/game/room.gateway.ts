@@ -227,7 +227,9 @@ export class RoomGateway {
         gameRoom.game.launchedAt &&
         now - gameRoom.game.launchedAt?.getTime() < 10000
       ) {
-        countdown -= now - gameRoom.game.launchedAt.getTime() / 1000;
+        countdown -= Math.trunc(
+          (now - gameRoom.game.launchedAt.getTime()) / 1000,
+        );
       } else {
         gameStarted = true;
       }

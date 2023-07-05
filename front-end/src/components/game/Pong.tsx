@@ -7,10 +7,16 @@ import { toast } from 'react-toastify';
 interface PongProps {
   gameId: number;
   isPlayer: boolean;
+  isLeftPlayer?: boolean;
   isLocal: boolean;
 }
 
-const Pong = ({ gameId, isPlayer, isLocal }: PongProps): JSX.Element => {
+const Pong = ({
+  gameId,
+  isPlayer,
+  isLeftPlayer,
+  isLocal,
+}: PongProps): JSX.Element => {
   const { primary: primaryColor, secondary: secondaryColor } = useColors();
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -34,9 +40,7 @@ const Pong = ({ gameId, isPlayer, isLocal }: PongProps): JSX.Element => {
       radius: 20,
     },
     scoreLimit: 10,
-    keys: isLocal
-      ? ['w', 's', 'ArrowUp', 'ArrowDown']
-      : ['ArrowUp', 'ArrowDown'],
+    keys: ['w', 's', 'ArrowUp', 'ArrowDown'],
   };
 
   const gameState = useRef({
@@ -237,18 +241,34 @@ const Pong = ({ gameId, isPlayer, isLocal }: PongProps): JSX.Element => {
         }
       } else {
         if (keyState.current['w'] || keyState.current['ArrowUp']) {
-          gameState.current.paddleY.left -= parameters.paddle.speed;
-          if (gameState.current.paddleY.left < 0)
-            gameState.current.paddleY.left = 0;
+          if (isLeftPlayer) {
+            gameState.current.paddleY.left -= parameters.paddle.speed;
+            if (gameState.current.paddleY.left < 0)
+              gameState.current.paddleY.left = 0;
+          } else {
+            gameState.current.paddleY.right -= parameters.paddle.speed;
+            if (gameState.current.paddleY.right < 0)
+              gameState.current.paddleY.right = 0;
+          }
         }
         if (keyState.current['s'] || keyState.current['ArrowDown']) {
-          gameState.current.paddleY.left += parameters.paddle.speed;
-          if (
-            gameState.current.paddleY.left + parameters.paddle.height >=
-            parameters.dimensions.height
-          )
-            gameState.current.paddleY.left =
-              parameters.dimensions.height - parameters.paddle.height;
+          if (isLeftPlayer) {
+            gameState.current.paddleY.left += parameters.paddle.speed;
+            if (
+              gameState.current.paddleY.left + parameters.paddle.height >=
+              parameters.dimensions.height
+            )
+              gameState.current.paddleY.left =
+                parameters.dimensions.height - parameters.paddle.height;
+          } else {
+            gameState.current.paddleY.right += parameters.paddle.speed;
+            if (
+              gameState.current.paddleY.right + parameters.paddle.height >=
+              parameters.dimensions.height
+            )
+              gameState.current.paddleY.right =
+                parameters.dimensions.height - parameters.paddle.height;
+          }
         }
       }
     };
