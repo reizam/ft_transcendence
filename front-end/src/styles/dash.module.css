@@ -5,7 +5,7 @@
   padding: 6rem;
   display: grid;
   grid-template-columns: repeat(3, 31.5%);
-  grid-template-rows: repeat(3, 21vh);
+  grid-template-rows: repeat(3, 22vh);
   column-gap: 2vw;
   row-gap: 2vh;
   font-family: 'Poppins', sans-serif;
@@ -58,7 +58,7 @@
   aspect-ratio: 1 / 1;
   margin: auto;
   width: 60%;
-  min-width: 140px;
+  min-width: 150px;
   height: auto;
 }
 
@@ -325,7 +325,7 @@
     padding-left: 6rem;
     padding-right: 6rem;
     grid-template-columns: repeat(2, 49%);
-    grid-template-rows: 30vh 20vh 15vh;
+    grid-template-rows: 30vh 25vh 15vh;
   }
 
   .dash__profile {
