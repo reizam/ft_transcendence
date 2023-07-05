@@ -164,7 +164,7 @@ const Pong = ({
       ) => {
         gameState.current = { ...gameState.current, ...gameState_ };
         if (!isPlayer) {
-          gameState.current = { ...gameState.current, paddleY };
+          gameState.current.paddleY = paddleY;
         }
         ratio.current = context.canvas.width / parameters.dimensions.width;
       }
@@ -212,62 +212,62 @@ const Pong = ({
     const updatePaddles = (): void => {
       if (isLocal) {
         if (keyState.current['w']) {
-          gameState.current.paddleY.left -= parameters.paddle.speed;
-          if (gameState.current.paddleY.left < 0)
+          if (gameState.current.paddleY.left - parameters.paddle.speed < 0)
             gameState.current.paddleY.left = 0;
+          else gameState.current.paddleY.left -= parameters.paddle.speed;
         }
         if (keyState.current['s']) {
-          gameState.current.paddleY.left += parameters.paddle.speed;
           if (
             gameState.current.paddleY.left + parameters.paddle.height >=
             parameters.dimensions.height
           )
             gameState.current.paddleY.left =
               parameters.dimensions.height - parameters.paddle.height;
+          else gameState.current.paddleY.left += parameters.paddle.speed;
         }
         if (keyState.current['ArrowUp']) {
-          gameState.current.paddleY.right -= parameters.paddle.speed;
-          if (gameState.current.paddleY.right < 0)
+          if (gameState.current.paddleY.right - parameters.paddle.speed < 0)
             gameState.current.paddleY.right = 0;
+          else gameState.current.paddleY.right -= parameters.paddle.speed;
         }
         if (keyState.current['ArrowDown']) {
-          gameState.current.paddleY.right += parameters.paddle.speed;
           if (
             gameState.current.paddleY.right + parameters.paddle.height >=
             parameters.dimensions.height
           )
             gameState.current.paddleY.right =
               parameters.dimensions.height - parameters.paddle.height;
+          else gameState.current.paddleY.right += parameters.paddle.speed;
         }
       } else {
         if (keyState.current['w'] || keyState.current['ArrowUp']) {
           if (isLeftPlayer) {
-            gameState.current.paddleY.left -= parameters.paddle.speed;
-            if (gameState.current.paddleY.left < 0)
+            if (gameState.current.paddleY.left - parameters.paddle.speed < 0)
               gameState.current.paddleY.left = 0;
+            else gameState.current.paddleY.left -= parameters.paddle.speed;
           } else {
-            gameState.current.paddleY.right -= parameters.paddle.speed;
-            if (gameState.current.paddleY.right < 0)
+            if (gameState.current.paddleY.right - parameters.paddle.speed < 0)
               gameState.current.paddleY.right = 0;
+            else gameState.current.paddleY.right -= parameters.paddle.speed;
           }
         }
         if (keyState.current['s'] || keyState.current['ArrowDown']) {
           if (isLeftPlayer) {
-            gameState.current.paddleY.left += parameters.paddle.speed;
             if (
               gameState.current.paddleY.left + parameters.paddle.height >=
               parameters.dimensions.height
             )
               gameState.current.paddleY.left =
                 parameters.dimensions.height - parameters.paddle.height;
+            else gameState.current.paddleY.left += parameters.paddle.speed;
           } else {
-            gameState.current.paddleY.right += parameters.paddle.speed;
             if (
               gameState.current.paddleY.right + parameters.paddle.height >=
               parameters.dimensions.height
             )
               gameState.current.paddleY.right =
                 parameters.dimensions.height - parameters.paddle.height;
+            else gameState.current.paddleY.right += parameters.paddle.speed;
           }
         }
       }
