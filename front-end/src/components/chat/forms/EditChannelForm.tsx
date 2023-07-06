@@ -3,10 +3,10 @@ import { useFormik } from 'formik';
 import React from 'react';
 import { toast } from 'react-toastify';
 import * as Yup from 'yup';
-
-import friendsStyles from '@/styles/friends.module.css';
+import chatStyles from '@/styles/chat.module.css';
 import { IChannelUser } from '@/api/channel/channel.types';
 import Line from '@/components/chat/line/Line';
+import chat from '@/pages/chat';
 
 const schema = Yup.object().shape({
   password: Yup.string(),
@@ -77,9 +77,8 @@ function EditChannelForm({
       </div>
 
       <div className="flex flex-col items-center space-y-8 w-full">
-        {/* <div className={friendsStyles.ctn__pre__friends__canvas}> */}
-        <div className="space-x-4 items-center">
-          <h2>Users</h2>
+        <div className={chatStyles.ctn_user}>
+          <h2 className={chatStyles.h2_user}>Users</h2>
           {initialValues.users?.map((user) => (
             <Line key={user.userId} user={user.user} isBan={false} />
           ))}
@@ -87,9 +86,8 @@ function EditChannelForm({
       </div>
 
       <div className="flex flex-col items-center space-y-8 w-full">
-        {/* <div className={friendsStyles.ctn__pre__friends__canvas}> */}
-        <div className="space-x-4 items-center">
-          <h2>Ban Users</h2>
+        <div className={chatStyles.ctn_user}>
+          <h2 className={chatStyles.h2_user}>The Rest of the World</h2>
           {initialValues.users?.map((user) => (
             <Line key={user.userId} user={user.user} isBan={true} />
           ))}

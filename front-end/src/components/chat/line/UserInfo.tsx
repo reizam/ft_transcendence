@@ -1,4 +1,4 @@
-import friendsStyles from '@/styles/friends.module.css';
+import chatStyles from '@/styles/chat.module.css';
 
 import { ReactElement } from 'react';
 import { IChatUser } from '@/api/channel/channel.types';
@@ -8,7 +8,7 @@ interface UserInfoProps {
 }
 
 function UserInfo({ user: user }: UserInfoProps): ReactElement {
-  return <div className={friendsStyles.user__name}>{user?.username}</div>;
+  return <div className={chatStyles.ctn_user_name}>{user?.username}</div>;
 }
 
 export default UserInfo;

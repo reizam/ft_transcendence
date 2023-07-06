@@ -1,4 +1,4 @@
-import friendsStyles from '@/styles/friends.module.css';
+import chatStyles from '@/styles/chat.module.css';
 
 import { IChatUser } from '@/api/channel/channel.types';
 import { ReactElement } from 'react';
@@ -12,7 +12,7 @@ interface LineProps {
 
 function Line({ user, isBan }: LineProps): ReactElement {
   return (
-    <div className={friendsStyles.friends__list}>
+    <div className={chatStyles.ctn_list}>
       <UserInfo user={user} />
       <Buttons user={user} isBan={isBan} />
     </div>
