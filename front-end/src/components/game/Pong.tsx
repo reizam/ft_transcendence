@@ -198,7 +198,14 @@ const Pong = ({
     const handleKeyDown = (e: KeyboardEvent): void => {
       e.preventDefault();
       if (parameters.keys.includes(e.key)) {
-        keyState.current = {};
+        if (isLocal && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+          keyState.current[e.key === 'ArrowUp' ? 'ArrowDown' : 'ArrowUp'] =
+            false;
+        } else if (isLocal && (e.key === 'w' || e.key === 's')) {
+          keyState.current[e.key === 'w' ? 's' : 'w'] = false;
+        } else {
+          keyState.current = {};
+        }
         keyState.current[e.key] = true;
       }
     };
