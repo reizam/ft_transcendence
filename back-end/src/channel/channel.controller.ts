@@ -3,6 +3,7 @@ import {
   CreateChannelDto,
   GetChannelMessagesDto,
   GetChannelsDto,
+  KickUserDto,
   PostChannelSendMessageDto,
   PutChannelDto,
 } from '@/channel/channel.dto';
@@ -16,9 +17,12 @@ import {
 import { DUser } from '@/decorators/user.decorator';
 import {
   Body,
+  ConflictException,
   Controller,
+  ForbiddenException,
   Get,
   InternalServerErrorException,
+  NotFoundException,
   Patch,
   Post,
   Put,
@@ -27,7 +31,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { User } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import { Response } from 'express';
 
 @UseGuards(AuthGuard('jwt'))
@@ -46,7 +50,7 @@ export class ChannelController {
       createChannelDto.password?.length ? createChannelDto.password : undefined,
     );
 
-    return channel as IChannel;
+    return channel;
   }
 
   @Post('message')
@@ -71,11 +75,13 @@ export class ChannelController {
       Number(channelId),
     );
 
-    return channel as IChannel;
+    if (!channel) throw new NotFoundException();
+    return channel;
   }
 
+  // TODO: Make it Patch
   @Post('leave')
-  async deleteChannel(
+  async leaveChannel(
     @Query('channelId') channelId: string,
     @DUser() user: User,
   ): Promise<boolean> {
@@ -84,6 +90,7 @@ export class ChannelController {
     return true;
   }
 
+  // TODO: Make it Patch
   @Put()
   async putChannel(
     @Body() putChannelDto: PutChannelDto,
@@ -135,11 +142,56 @@ export class ChannelController {
     @Res() res: Response,
   ): Promise<Response> {
     if (blockUserDto.id === user.id)
-      throw new InternalServerErrorException('You cannot block yourself');
+      throw new ConflictException('You cannot block yourself');
     await this.channelService
       .setBlockUser(user.id, blockUserDto.id, blockUserDto.toggleBlock)
       .catch((error) => {
         console.error({ error });
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          if (error.code === 'P2025')
+            throw new NotFoundException("Your profile wasn't found");
+          if (error.code === 'P2015')
+            throw new NotFoundException('User not found');
+        }
+        throw new InternalServerErrorException();
+      });
+    return res.status(204).send();
+  }
+
+  @Patch('kick')
+  async kickUser(
+    @Body() kickUserDto: KickUserDto,
+    @DUser() user: User,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const channel = await this.channelService.getChannel(
+      user.id,
+      Number(kickUserDto.channelId),
+    );
+
+    if (!channel)
+      throw new NotFoundException('Channel not found, or incorrect permission');
+
+    const channelUser = channel.users.find((user) => user.userId);
+    const kickedUser = channel.users.find(
+      (user) => user.userId === kickUserDto.userId,
+    );
+
+    if (!kickedUser) throw new NotFoundException('User not found');
+    if (
+      !channelUser?.isAdmin ||
+      (kickedUser.isAdmin && channel.ownerId !== channelUser?.userId)
+    )
+      throw new ForbiddenException("You don't have the required privileges");
+
+    await this.channelService
+      .leaveChannel(kickUserDto.userId, channel)
+      .catch((error) => {
+        console.error({ error });
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          if (error.code === 'P2015')
+            throw new NotFoundException('User not found');
+        }
         throw new InternalServerErrorException();
       });
     return res.status(204).send();

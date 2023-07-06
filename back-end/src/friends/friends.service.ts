@@ -124,7 +124,7 @@ export class FriendsService {
       throw new Error('Friend not found');
     }
 
-    const updateUser = await this.prisma.user.update({
+    await this.prisma.user.update({
       where: {
         id: userId,
       },
@@ -145,7 +145,6 @@ export class FriendsService {
         id: friendId,
       },
     });
-    console.log;
 
     if (!friend) {
       throw new Error('Friend not found');

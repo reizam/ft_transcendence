@@ -13,11 +13,24 @@ import { hashSync } from 'bcrypt';
 export class ChannelService {
   constructor(private prisma: PrismaService) {}
 
-  async leaveChannel(userId: number, channelId: number): Promise<void> {
-    const channel = await this.getChannel(userId, channelId);
+  async leaveChannel(userId: number, channelId: number): Promise<void>;
+  async leaveChannel(userId: number, channel: IChannel): Promise<void>;
+  async leaveChannel(
+    userId: number,
+    channelOrId: number | IChannel,
+  ): Promise<void> {
+    let channel: IChannel | null;
+    let channelId: number;
 
-    if (!channel) {
-      throw new Error('Channel not found');
+    if (typeof channelOrId === 'number') {
+      channel = await this.getChannel(userId, channelOrId);
+      if (!channel) {
+        throw new Error('Channel not found, or incorrect permission');
+      }
+      channelId = channelOrId;
+    } else {
+      channel = channelOrId;
+      channelId = channel.id;
     }
 
     await this.prisma.channel.update({
@@ -232,7 +245,10 @@ export class ChannelService {
     return this.isAdminWithChannel(userId, channel);
   }
 
-  async getChannel(userId: number, channelId: number): Promise<IChannel> {
+  async getChannel(
+    userId: number,
+    channelId: number,
+  ): Promise<IChannel | null> {
     const fixedChannelId = Number(channelId);
 
     const where = {
@@ -290,7 +306,7 @@ export class ChannelService {
       },
     });
 
-    return channel as IChannel;
+    return channel;
   }
 
   async createChannel(
