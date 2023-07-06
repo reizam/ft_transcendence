@@ -45,18 +45,26 @@ export const useProvideSocket = (): ISocketContext => {
       ackCallback: (ack: string) => void
     ): void => {
       let handleClose = () => ackCallback('refuse');
-
-      toast.info(
+      const toastId = toast.info(
         `${challengerName} challenged you! Click here to accept if you dare`,
         {
-          onClose: () => handleClose,
           onClick: () => {
             handleClose = () => null;
             ackCallback('accept');
           },
           closeOnClick: true,
           autoClose: 14000,
+          pauseOnFocusLoss: false,
+          pauseOnHover: false,
         }
+      );
+
+      setTimeout(
+        () =>
+          toast.update(toastId, {
+            onClose: () => handleClose(),
+          }),
+        500
       );
     };
 

@@ -46,14 +46,3 @@ export const useGetUser = (id?: string): UseQueryResult<IUserData, Error> =>
     },
     { ...defaultUserFetchConfig, enabled: !!id }
   );
-
-  export const useGetFriends = (): UseQueryResult<IUserData, Error> =>
-  useQuery(
-    ['FRIENDS', 'GET'],
-    async () => {
-      const data = await getWithToken('/friends');
-      console.log(data);
-      return data;
-    },
-    { ...defaultUserFetchConfig }
-  );

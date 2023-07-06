@@ -11,6 +11,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { RoomService } from './room.service';
+import { User } from '@prisma/client';
 
 @WebSocketGateway()
 export class GameGateway {
@@ -28,7 +29,23 @@ export class GameGateway {
     if (game.status === GameState.STOPPED) {
       this.schedulerRegistry.deleteInterval(`${game.id}`);
       game.finishedAt = new Date();
-      this.server.emit('endGame');
+
+      const winnerId =
+        game.playerOneScore > game.playerTwoScore
+          ? game.playerOneId
+          : game.playerTwoId;
+      const loserId =
+        game.playerOneScore < game.playerTwoScore
+          ? game.playerOneId
+          : game.playerTwoId;
+      const playersInfos: { winner: User; loser: User } =
+        await this.roomService.getPlayerStats(winnerId, loserId);
+
+      this.server.to(String(game.id)).emit('endGame', {
+        id: winnerId,
+        username: playersInfos.winner.username,
+        profilePicture: playersInfos.winner.profilePicture,
+      });
       void this.roomService.getGame(game.id).then((res) => {
         if (res) {
           this.roomService
@@ -47,17 +64,24 @@ export class GameGateway {
       });
     } else if (game.status === GameState.INGAME) {
       game.status = this.gameService.update(game);
-      this.server.to(String(game.id)).volatile.emit('gameState', {
-        ball: {
-          x: game.ball.x,
-          y: game.ball.y,
-          radius: game.ball.radius,
+      this.server.to(String(game.id)).volatile.emit(
+        'gameState',
+        {
+          ball: {
+            x: game.ball.x,
+            y: game.ball.y,
+            radius: game.ball.radius,
+          },
+          score: {
+            left: game.playerOneScore,
+            right: game.playerTwoScore,
+          },
         },
-        score: {
-          left: game.playerOneScore,
-          right: game.playerTwoScore,
+        {
+          left: game.paddles.left.y,
+          right: game.paddles.right.y,
         },
-      });
+      );
     }
   }
 
@@ -87,7 +111,7 @@ export class GameGateway {
     } else if (user.id === gameRoom.game.playerOneId) {
       gameRoom.game.paddles.left.update(data.paddleY.left);
     } else if (user.id === gameRoom.game.playerTwoId) {
-      gameRoom.game.paddles.right.update(data.paddleY.left);
+      gameRoom.game.paddles.right.update(data.paddleY.right);
     }
 
     return {
@@ -98,13 +122,13 @@ export class GameGateway {
 
   startGame(game: GameInfos): void {
     game.status = GameState.INGAME;
+    game.launchedAt = new Date();
     setTimeout(() => {
       this.server.to(String(game.id)).emit('startCountdown');
     }, 100);
     setTimeout(() => {
       const interval = setInterval(() => this.loop(game), 1000 / 120);
 
-      game.launchedAt = new Date();
       this.server.to(String(game.id)).emit('startGame');
       this.schedulerRegistry.addInterval(`${game.id}`, interval);
     }, 11000);

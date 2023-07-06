@@ -1,7 +1,7 @@
 import friendsStyles from '@/styles/friends.module.css';
 import UserInfo from '@/components/friends/line/UserInfo';
 import StatusInfo from '@/components/friends/line/StatusInfo';
-import Buttons from '@/components/friends/line/Buttons';
+import Buttons from '@/components/friends/line/FriendButtons';
 import { ReactElement } from 'react';
 import { IUserDataSummary } from '@/api/friends/friends.types';
 
@@ -10,7 +10,7 @@ interface LineProps {
   isFriend: boolean;
 }
 
-function Line({ user: user, isFriend }: LineProps): ReactElement {
+function FriendLine({ user: user, isFriend }: LineProps): ReactElement {
   return (
     <div className={friendsStyles.friends__list}>
       <UserInfo user={user} />
@@ -20,4 +20,4 @@ function Line({ user: user, isFriend }: LineProps): ReactElement {
   );
 }
 
-export default Line;
+export default FriendLine;

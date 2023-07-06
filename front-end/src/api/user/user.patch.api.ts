@@ -38,7 +38,7 @@ export const useBlockUser = (): UseMutationResult<
       return data;
     },
     onMutate: () => toast.loading('Updating'),
-    onSuccess: (_data, _var, context?: Id) => {
+    onSuccess: (_data: unknown, _var: unknown, context?: Id) => {
       context
         ? toast.update(context, {
             render: 'Updated',
@@ -47,7 +47,7 @@ export const useBlockUser = (): UseMutationResult<
           })
         : toast.dismiss();
     },
-    onError: (_data, _var, context?: Id) => {
+    onError: (_data: unknown, _var: unknown, context?: Id) => {
       context
         ? toast.update(context, {
             render: 'Failed to update',
@@ -71,10 +71,10 @@ export const useUpdateMe = (): UseMutationResult<
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (body: UpdateProfile) => {
-      const data = await updateWithToken('/profile', body, {
+      const data = await updateWithToken<IMutationResult>('/profile', body, {
         headers: { 'Content-Type': 'application/json' },
       });
-      return data as IMutationResult;
+      return data;
     },
     onMutate: async (newData: UpdateProfile) => {
       await queryClient.cancelQueries(['PROFILE', 'GET', 'ME']);
@@ -94,7 +94,7 @@ export const useUpdateMe = (): UseMutationResult<
     },
     onSuccess: (
       data: IMutationResult,
-      _variables: unknown,
+      _variables: UpdateProfile,
       context?: IContext
     ): void => {
       if (context !== undefined) {
@@ -132,7 +132,7 @@ export const useUpdateMe = (): UseMutationResult<
         toast.dismiss();
       }
     },
-    onError: (err: unknown, _data: UpdateProfile, context?: IContext) => {
+    onError: (err: unknown, _variables: UpdateProfile, context?: IContext) => {
       if (context !== undefined) {
         toast.update(context.id, {
           render: `${

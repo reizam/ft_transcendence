@@ -20,7 +20,7 @@ const defaultUserFetchConfig = {
 
 export const useGetFriends = (): UseQueryResult<IUserFriends, Error> =>
   useQuery(
-    ['FRIENDS', 'GET'],
+    ['FRIENDS', 'GET', 'ME'],
     async () => {
       const data = await getWithToken('/friends');
       console.log(data);
