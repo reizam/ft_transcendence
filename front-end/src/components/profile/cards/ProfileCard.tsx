@@ -153,6 +153,8 @@ function ProfileCard({
           </EditButton>
         </div>
       ) : (
+        // TODO: Add Status, and disable buttons appropriately
+        // Also add a button to DM
         profileData.id !== user?.id && (
           <div className={dashStyles.dash__profile__btns}>
             <div className={dashStyles.ctn__four_buttons}>
@@ -174,7 +176,11 @@ function ProfileCard({
                     disabled={isFriendsLoading || isFriendsError}
                     title="Add or Remove"
                   >
-                    {isFriend ? <TiUserDelete size="24px" /> : <TiUserAdd size="24px" />}
+                    {isFriend ? (
+                      <TiUserDelete size="24px" />
+                    ) : (
+                      <TiUserAdd size="24px" />
+                    )}
                   </button>
                 </div>
                 <div className={dashStyles.ctn__one_button}>
@@ -216,7 +222,11 @@ function ProfileCard({
                     className={dashStyles.style__button__pro}
                     title="Block or Unblock"
                   >
-                    {isBlocked ? <CgUnblock size="24px" /> : <CgBlock size="24px" />}
+                    {isBlocked ? (
+                      <CgUnblock size="24px" />
+                    ) : (
+                      <CgBlock size="24px" />
+                    )}
                   </button>
                 </div>
               </div>
