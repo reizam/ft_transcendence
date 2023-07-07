@@ -45,8 +45,11 @@ function EditChannelForm({
     }
   };
 
-  const isBanned = (userId: number, bannedUserIds: number[]): boolean => {
-    if (bannedUserIds.find((id) => id === userId)) return true;
+  const isBanned = (
+    userId: number,
+    bannedUserIds: number[] | undefined
+  ): boolean => {
+    if (bannedUserIds?.find((id) => id === userId)) return true;
     return false;
   };
 
