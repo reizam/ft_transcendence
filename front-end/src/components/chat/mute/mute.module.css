@@ -1,0 +1,125 @@
+.ctn_pck_box {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ctn_box {
+    z-index: 10000;
+    width: 60%;
+    max-width: 900px;
+    height: 500px;
+    background-color: var(--button-background-color);
+    border-radius: var(--radius-container);
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/*  --  HEADER SECTION  --  */
+.ctn_header {
+    width: 100%;
+}
+
+/*  --  ESCAPE SECTION --  */
+.ctn_escape {
+    margin-left: 96%;
+    width: 100%;
+    margin-top: 2%;
+    padding-right: 2%;
+    height: 5%;
+}
+
+/*  --  TITLE SECTION   --  */
+.ctn_title {
+    margin: auto;
+    width: 90%;
+    height: 5vh;
+    display: flex;
+    border-bottom: 1px solid white;
+}
+
+.style_h2 {
+    font-family: var(--title-font);
+    font-size: var(--title-size);
+    margin: auto;
+}
+
+/*  --  PRESENTATION SECTION    --  */
+.ctn_presentation {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.style_text {
+    width: 100%;
+    text-align: center;
+    font-size: large;
+}
+
+.style_username {
+    width: 100%;
+    font-family: var(--title-font);
+    font-size: var(--title-size);
+    text-align: center;
+}
+
+/*  --  INPUT SECTION   --  */
+.ctn_input {
+    width: 100%;
+    height: 10vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.style_input {
+    border-radius: 10px;
+    font-size: 3ch;
+    width: 13%;
+    color: var(--background);
+    text-align: center;
+}
+
+/*  --  VALIDATION SECTION  --  */
+.ctn_validation {
+    width: 100%;
+    height: 10%;
+    margin-bottom: 5%;
+    display: flex;
+    justify-content: center;
+
+}
+
+.style_button {
+    background-color: rgb(159 77 210 / 1);
+    border: 1px solid white;
+    border-radius: 9999px;
+    color: white;
+    font-weight: 500;
+    font-size: 14px;
+    padding: 8px 16px;
+    transition-property: background-color, border-color, opacity;
+    transition-timing-function: ease-in-out;
+    transition-duration: 200ms;
+    cursor: pointer;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    aspect-ratio: 2/1;
+}
+
+.style_button:hover {
+    border: 3px white solid;
+    transition: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 200ms;
+}

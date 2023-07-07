@@ -2,6 +2,6 @@
 
 .h1__title {
   font-family: var(--title-font);
-  font-size: 1.6em;
+  font-size: var(--title-size);
   line-height: 0.9em;
 }

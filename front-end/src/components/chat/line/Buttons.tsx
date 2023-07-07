@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { Fragment, ReactElement, useState } from 'react';
 import friendsStyles from '@/styles/friends.module.css';
 import chatStyles from '@/styles/chat.module.css';
 import { useUpdateFriends } from '@/api/friends/friends.patch.api';
@@ -7,6 +7,7 @@ import { AiFillMessage } from 'react-icons/ai';
 import { RiPingPongFill, RiMovieFill } from 'react-icons/ri';
 import { IChatUser } from '@/api/channel/channel.types';
 import Link from 'next/link';
+import Modal from '../mute/Mute';
 
 interface ButtonsProps {
   user: IChatUser;
@@ -30,7 +31,9 @@ function GetAdminButton(isAdmin: boolean): ReactElement {
   }
 }
 
-function GetMuteButton(isMute: boolean): ReactElement {
+function GetMuteButton(isMute: boolean, user: IChatUser): ReactElement {
+  const [showModal, setShowModal] = useState(false);
+
   switch (isMute) {
     case true:
       return (
@@ -40,9 +43,12 @@ function GetMuteButton(isMute: boolean): ReactElement {
       );
     default:
       return (
-        <div className={chatStyles.ctn_btn}>
-          <button className={chatStyles.style_btn_desactivate}>Mute</button>
-        </div>
+        <Fragment>
+          <div className={chatStyles.ctn_btn}>
+            <button className={chatStyles.style_btn_desactivate} onClick={() => setShowModal(true)}>Mute</button>
+          </div>
+          <Modal user={user} isVisible={showModal} onClose={() => setShowModal(false)}/>
+        </Fragment>
       );
   }
 }
@@ -57,9 +63,12 @@ function GetBanButton(isBan: boolean): ReactElement {
       );
     default:
       return (
-        <div className={chatStyles.ctn_btn}>
-          <button className={chatStyles.style_btn_desactivate}>Ban</button>
-        </div>
+        <Fragment>
+          <div className={chatStyles.ctn_btn}>
+            <button className={chatStyles.style_btn_desactivate}>Ban</button>
+          </div>
+        
+        </Fragment>
       );
   }
 }
@@ -98,13 +107,13 @@ function Buttons({ user, isBan }: ButtonsProps): ReactElement {
     );
   else
     return (
-      <div className={chatStyles.ctn_list_btn}>
-        {GetAdminButton(user.isAdmin)}
-        {GetMuteButton(user.isMute)}
-        {GetKickButton()}
-        {GetBanButton(user.isBan)}
-        {GetBlockButton(user.isBlock)}
-      </div>
+        <div className={chatStyles.ctn_list_btn}>
+          {GetAdminButton(user.isAdmin)}
+          {GetMuteButton(user.isMute, user)}
+          {GetKickButton()}
+          {GetBanButton(user.isBan)}
+          {GetBlockButton(user.isBlock)}
+        </div>
   );
 }
 
