@@ -117,8 +117,10 @@ function ChannelSettingsContent({
         onLeave={onLeave}
         onSubmit={onSubmit}
         initialValues={{
-          password: '',
+          channel,
+          users: channel.users,
           withPassword: channel.isProtected,
+          password: '',
         }}
       />
     </ChatLayout>

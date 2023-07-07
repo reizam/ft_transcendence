@@ -276,16 +276,6 @@ export class ChannelService {
         ownerId: true,
         isPrivate: true,
         isProtected: true,
-        // owner: {
-        //   select: {
-        //     id: true,
-        //     // email: true,
-        //     // firstName: true,
-        //     // lastName: true,
-        //     profilePicture: true,
-        //     username: true,
-        //   },
-        // },
         users: {
           select: {
             isAdmin: true,
@@ -294,15 +284,13 @@ export class ChannelService {
             user: {
               select: {
                 id: true,
-                // email: true,
-                // firstName: true,
-                // lastName: true,
                 profilePicture: true,
                 username: true,
               },
             },
           },
         },
+        bannedUserIds: true,
       },
     });
 
@@ -326,6 +314,7 @@ export class ChannelService {
             isAdmin: true,
           },
         },
+        bannedUserIds: [],
       },
       include: {
         users: {
@@ -417,15 +406,13 @@ export class ChannelService {
             user: {
               select: {
                 id: true,
-                // email: true,
-                // firstName: true,
-                // lastName: true,
                 profilePicture: true,
                 username: true,
               },
             },
           },
         },
+        bannedUserIds: true,
       },
       take: limit,
       skip: page * limit,
@@ -436,7 +423,7 @@ export class ChannelService {
 
     return {
       totalCount,
-      channels: channels as IChannel[],
+      channels,
       page,
       limit,
       hasNextPage: (page + 1) * limit < totalCount,

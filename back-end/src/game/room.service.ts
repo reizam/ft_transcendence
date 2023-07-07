@@ -148,20 +148,6 @@ export class RoomService {
         elo: user.elo,
         searchGameSince: Date.now(),
       });
-      if (this.playerQueue.length < 3) {
-        this.playerQueue.push({
-          id: user.id + 1,
-          socketId: client.id, //+ '_2',
-          elo: user.elo - 50,
-          searchGameSince: Date.now() - 5000,
-        });
-        this.playerQueue.push({
-          id: user.id + 2,
-          socketId: client.id, //+ '_3',
-          elo: user.elo + 80,
-          searchGameSince: Date.now() + 1000,
-        });
-      }
       this.playerQueue.sort((a, b) => a.elo - b.elo);
       // release();
     }
@@ -295,7 +281,7 @@ export class RoomService {
 
   playersReady(room: GameRoom): boolean {
     if (
-      room.userIds.findIndex((id) => room.game.playerOneId === id) !== -1 || //&&
+      room.userIds.findIndex((id) => room.game.playerOneId === id) !== -1 &&
       room.userIds.findIndex((id) => room.game.playerTwoId === id) !== -1
     )
       return true;

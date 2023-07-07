@@ -10,6 +10,7 @@ export interface IChannel {
   isProtected: boolean;
   ownerId: number;
   users: IChannelUser[];
+  bannedUserIds: number[];
   createdAt?: Date;
 }
 
@@ -47,6 +48,7 @@ export interface IChannelUser {
   userId: number;
   user: IChatUser;
   isAdmin: boolean;
+  mutedUntil?: Date;
 }
 
 export interface IChannelPage {
