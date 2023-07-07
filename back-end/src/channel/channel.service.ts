@@ -1,6 +1,7 @@
 import {
   IChannel,
   IChannelPage,
+  IChannelUser,
   IMessage,
   IMessagePage,
 } from '@/channel/types/channel.types';
@@ -458,5 +459,26 @@ export class ChannelService {
         },
       });
     }
+  }
+
+  hasPrivileges(
+    requesterUser: IChannelUser,
+    targetUser: IChannelUser,
+    ownerId: number,
+  ): boolean {
+    enum Role {
+      User = 0,
+      Admin = 1,
+      Owner = 2,
+    }
+
+    // if requesterUser.role > targetUser.role
+    //  return OK;
+    // else
+    //  return NTM;
+  }
+
+  isBanned(userId: number, bannedUserIds: number[]): boolean {
+    //
   }
 }

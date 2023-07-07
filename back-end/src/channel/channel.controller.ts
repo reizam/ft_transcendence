@@ -172,9 +172,11 @@ export class ChannelController {
     if (!channel)
       throw new NotFoundException('Channel not found, or incorrect permission');
 
-    const channelUser = channel.users.find((user) => user.userId);
+    const channelUser = channel.users.find(
+      (channelUser) => channelUser.userId == user.id,
+    );
     const kickedUser = channel.users.find(
-      (user) => user.userId === kickUserDto.userId,
+      (channelUser) => channelUser.userId === kickUserDto.userId,
     );
 
     if (!kickedUser) throw new NotFoundException('User not found');
