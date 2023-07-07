@@ -85,9 +85,11 @@
     border-radius: 10px;
     font-size: 3ch;
     width: 13%;
-    color: var(--background);
+    color: var(--container-color);
     text-align: center;
+    background-color: rgba(240, 240, 240, 0.25);
 }
+
 
 /*  --  VALIDATION SECTION  --  */
 .ctn_validation {
