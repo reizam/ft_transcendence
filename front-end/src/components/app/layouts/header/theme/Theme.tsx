@@ -1,8 +1,16 @@
 import React from 'react';
 import { FaPaintRoller } from 'react-icons/fa';
 
-function Theme(): React.ReactElement {
-  return <FaPaintRoller size={24} />;
+interface ThemeProps {
+  onClick?: () => void;
+}
+
+function Theme({ onClick }: ThemeProps): React.ReactElement {
+  return (
+    <button>
+      <FaPaintRoller size={24} onClick={onClick} />
+    </button>
+  );
 }
 
 export default Theme;
