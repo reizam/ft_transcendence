@@ -131,12 +131,19 @@
   align-items: center;
 }
 
+.ctn_box_title {
+  margin-right: 5%;
+  display: flex;
+  align-items: center;
+}
+
 .box_theme {
   font-family: var(--title-font);
   display: flex;
   align-items: center;
   font-size: 1.5em;
   margin-top: 5%;
+  margin-right: 10%;
 }
 
 .box__theme {
@@ -150,4 +157,12 @@
   padding-right: 10px;
   display: flex;
   align-items: center;
+}
+
+.paint_classic {
+  color: var(--container-color);
+}
+
+.paint_color {
+  color: var(--main-theme-color);
 }
