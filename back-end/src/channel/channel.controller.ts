@@ -168,21 +168,33 @@ export class ChannelController {
       user.id,
       Number(kickUserDto.channelId),
     );
-
     if (!channel)
       throw new NotFoundException('Channel not found, or incorrect permission');
 
-    const channelUser = channel.users.find(
+    const requesterUser = channel.users.find(
       (channelUser) => channelUser.userId == user.id,
     );
-    const kickedUser = channel.users.find(
+    const targetUser = channel.users.find(
       (channelUser) => channelUser.userId === kickUserDto.userId,
     );
+    if (!requesterUser || !targetUser)
+      throw new NotFoundException('User not found');
 
-    if (!kickedUser) throw new NotFoundException('User not found');
     if (
-      !channelUser?.isAdmin ||
-      (kickedUser.isAdmin && channel.ownerId !== channelUser?.userId)
+      this.channelService.isBanned(
+        requesterUser.userId,
+        channel.bannedUserIds,
+      ) ||
+      this.channelService.isBanned(targetUser.userId, channel.bannedUserIds)
+    )
+      throw new ForbiddenException('User is banned');
+
+    if (
+      !this.channelService.hasPrivileges(
+        requesterUser,
+        targetUser,
+        channel.ownerId,
+      )
     )
       throw new ForbiddenException("You don't have the required privileges");
 

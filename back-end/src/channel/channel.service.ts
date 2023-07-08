@@ -466,19 +466,27 @@ export class ChannelService {
     targetUser: IChannelUser,
     ownerId: number,
   ): boolean {
-    enum Role {
-      User = 0,
-      Admin = 1,
-      Owner = 2,
-    }
-
-    // if requesterUser.role > targetUser.role
-    //  return OK;
-    // else
-    //  return NTM;
+    const requesterRole = this.getRole(requesterUser, ownerId);
+    const targetRole = this.getRole(targetUser, ownerId);
+    return requesterRole > targetRole;
   }
 
   isBanned(userId: number, bannedUserIds: number[]): boolean {
-    //
+    return bannedUserIds.includes(userId);
+  }
+
+  isNotBanned(userId: number, bannedUserIds: number[]): boolean {
+    return bannedUserIds.includes(userId);
+  }
+
+  getRole(user: IChannelUser, ownerId: number): number {
+    enum Role {
+      User = 0,
+      Admin,
+      Owner,
+    }
+    if (user.userId == ownerId) return Role.Owner;
+    else if (user.isAdmin) return Role.Admin;
+    return Role.User;
   }
 }
