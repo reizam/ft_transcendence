@@ -13,7 +13,7 @@ function Profile(): ReactElement {
       {isLoading ? (
         <LoadingScreen />
       ) : isError || !data ? (
-        <p>No profile data</p>
+        <p>Error</p>
       ) : (
         <ProfileContent canEdit={true} userData={data} />
       )}
