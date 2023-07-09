@@ -75,3 +75,11 @@ export interface IChannelPostParams {
   password?: string;
   isPrivate: boolean;
 }
+
+export enum Sanction {
+  KICK = 'kick',
+  BAN = 'ban',
+  UNBAN = 'unban',
+  MUTE = 'mute',
+  UNMUTE = 'unmute',
+}

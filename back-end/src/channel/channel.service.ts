@@ -4,9 +4,15 @@ import {
   IChannelUser,
   IMessage,
   IMessagePage,
+  Sanction,
 } from '@/channel/types/channel.types';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { hashSync } from 'bcrypt';
 
@@ -14,11 +20,11 @@ import { hashSync } from 'bcrypt';
 export class ChannelService {
   constructor(private prisma: PrismaService) {}
 
-  async leaveChannel(userId: number, channelId: number): Promise<void>;
   async leaveChannel(userId: number, channel: IChannel): Promise<void>;
+  async leaveChannel(userId: number, channelId: number): Promise<void>;
   async leaveChannel(
     userId: number,
-    channelOrId: number | IChannel,
+    channelOrId: IChannel | number,
   ): Promise<void> {
     let channel: IChannel | null;
     let channelId: number;
@@ -341,7 +347,6 @@ export class ChannelService {
   async updateChannel(
     userId: number,
     channelId: number,
-    withPassword: boolean,
     password?: string,
   ): Promise<boolean> {
     const channel = await this.getChannel(userId, channelId);
@@ -461,28 +466,180 @@ export class ChannelService {
     }
   }
 
-  hasPrivileges(
-    requesterUser: IChannelUser,
-    targetUser: IChannelUser,
-    ownerId: number,
-  ): boolean {
-    const requesterRole = this.getRole(requesterUser, ownerId);
-    const targetRole = this.getRole(targetUser, ownerId);
-    return requesterRole > targetRole;
-  }
-
   isBanned(userId: number, bannedUserIds: number[]): boolean {
     return bannedUserIds.includes(userId);
   }
 
-  getRole(user: IChannelUser, ownerId: number): number {
+  getRole(user: IChannelUser | undefined, ownerId: number): number {
     enum Role {
       User = 0,
       Admin,
       Owner,
     }
+    if (!user) return Role.User;
     if (user.userId == ownerId) return Role.Owner;
     else if (user.isAdmin) return Role.Admin;
     return Role.User;
+  }
+
+  hasPrivileges(
+    requesterUser: IChannelUser,
+    targetUser: IChannelUser | undefined,
+    ownerId: number,
+  ): boolean {
+    const requesterRole = this.getRole(requesterUser, ownerId);
+    const targetRole = this.getRole(targetUser, ownerId);
+
+    return requesterRole > targetRole;
+  }
+
+  async muteUser(
+    userId: number,
+    channel: IChannel,
+    mutedUntil: Date,
+  ): Promise<void> {
+    await this.prisma.channelUser.update({
+      where: {
+        channelId_userId: {
+          channelId: channel.id,
+          userId,
+        },
+      },
+      data: {
+        mutedUntil,
+      },
+    });
+  }
+
+  async unmuteUser(userId: number, channel: IChannel): Promise<void> {
+    await this.prisma.channelUser.update({
+      where: {
+        channelId_userId: {
+          channelId: channel.id,
+          userId,
+        },
+      },
+      data: {
+        mutedUntil: null,
+      },
+    });
+  }
+
+  async kickOrMuteOrUnmute(
+    requesterUserId: number,
+    targetUserId: number,
+    channelId: number,
+    sanction: string,
+    mutedUntil?: Date,
+  ): Promise<void> {
+    const channel = await this.getChannel(requesterUserId, channelId);
+    if (!channel)
+      throw new NotFoundException('Channel not found, or incorrect permission');
+
+    const requesterUser = channel.users.find(
+      (channelUser) => channelUser.userId == requesterUserId,
+    );
+    const targetUser = channel.users.find(
+      (channelUser) => channelUser.userId === targetUserId,
+    );
+    if (!requesterUser || !targetUser)
+      throw new NotFoundException('Channel user not found');
+
+    if (
+      this.isBanned(requesterUser.userId, channel.bannedUserIds) ||
+      this.isBanned(targetUser.userId, channel.bannedUserIds)
+    )
+      throw new ForbiddenException('User is banned');
+    if (!this.hasPrivileges(requesterUser, targetUser, channel.ownerId))
+      throw new ForbiddenException("You don't have the required privileges");
+
+    if (sanction === Sanction.KICK) {
+      await this.leaveChannel(targetUserId, channel).catch((error) => {
+        console.error({ error });
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          if (error.code === 'P2015')
+            throw new NotFoundException('User not found');
+        }
+        throw error;
+      });
+    } else if (sanction === Sanction.MUTE && mutedUntil) {
+      await this.muteUser(targetUserId, channel, mutedUntil);
+    } else if (sanction === Sanction.UNMUTE) {
+      await this.unmuteUser(targetUserId, channel);
+    } else {
+      throw new UnprocessableEntityException();
+    }
+  }
+
+  async addToBannedList(userId: number, channel: IChannel): Promise<void> {
+    const newBannedList = [...channel.bannedUserIds, userId];
+
+    await this.prisma.channel.update({
+      where: {
+        id: channel.id,
+      },
+      data: {
+        bannedUserIds: newBannedList,
+      },
+    });
+  }
+
+  async removeFromBannedList(userId: number, channel: IChannel): Promise<void> {
+    const newBannedList = channel.bannedUserIds.filter(
+      (bannedUser) => bannedUser !== userId,
+    );
+
+    await this.prisma.channel.update({
+      where: {
+        id: channel.id,
+      },
+      data: {
+        bannedUserIds: newBannedList,
+      },
+    });
+  }
+
+  async banOrUnban(
+    requesterUserId: number,
+    targetUserId: number,
+    channelId: number,
+    sanction: string,
+  ): Promise<void> {
+    const channel = await this.getChannel(requesterUserId, channelId);
+    if (!channel)
+      throw new NotFoundException('Channel not found, or incorrect permission');
+
+    const requesterUser = channel.users.find(
+      (channelUser) => channelUser.userId == requesterUserId,
+    );
+    if (!requesterUser) throw new NotFoundException('Channel user not found');
+    if (this.isBanned(requesterUser.userId, channel.bannedUserIds))
+      throw new ForbiddenException('User is banned');
+    if (this.isBanned(targetUserId, channel.bannedUserIds))
+      throw new ForbiddenException('User is already banned');
+
+    const targetUser = channel.users.find(
+      (channelUser) => channelUser.userId === targetUserId,
+    );
+    if (!this.hasPrivileges(requesterUser, targetUser, channel.ownerId))
+      throw new ForbiddenException("You don't have the required privileges");
+
+    if (sanction === Sanction.BAN) {
+      if (targetUser) {
+        await this.leaveChannel(targetUserId, channel).catch((error) => {
+          console.error({ error });
+          if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === 'P2015')
+              throw new NotFoundException('User not found');
+          }
+          throw error;
+        });
+      }
+      await this.addToBannedList(targetUserId, channel);
+    } else if (sanction === Sanction.UNBAN) {
+      await this.removeFromBannedList(targetUserId, channel);
+    } else {
+      throw new UnprocessableEntityException();
+    }
   }
 }

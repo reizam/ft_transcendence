@@ -3,9 +3,9 @@ import {
   CreateChannelDto,
   GetChannelMessagesDto,
   GetChannelsDto,
-  KickUserDto,
   PostChannelSendMessageDto,
   PutChannelDto,
+  sanctionUserDto,
 } from '@/channel/channel.dto';
 import { ChannelService } from '@/channel/channel.service';
 import {
@@ -13,6 +13,7 @@ import {
   IChannelPage,
   IMessage,
   IMessagePage,
+  Sanction,
 } from '@/channel/types/channel.types';
 import { DUser } from '@/decorators/user.decorator';
 import {
@@ -28,6 +29,7 @@ import {
   Put,
   Query,
   Res,
+  UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -99,7 +101,6 @@ export class ChannelController {
     await this.channelService.updateChannel(
       user.id,
       putChannelDto.channelId,
-      putChannelDto.withPassword,
       putChannelDto.password,
     );
 
@@ -158,56 +159,41 @@ export class ChannelController {
     return res.status(204).send();
   }
 
-  @Patch('kick')
-  async kickUser(
-    @Body() kickUserDto: KickUserDto,
+  @Patch('sanction')
+  async sanctionUser(
+    @Body() sanctionUserDto: sanctionUserDto,
     @DUser() user: User,
     @Res() res: Response,
   ): Promise<Response> {
-    const channel = await this.channelService.getChannel(
-      user.id,
-      Number(kickUserDto.channelId),
-    );
-    if (!channel)
-      throw new NotFoundException('Channel not found, or incorrect permission');
-
-    const requesterUser = channel.users.find(
-      (channelUser) => channelUser.userId == user.id,
-    );
-    const targetUser = channel.users.find(
-      (channelUser) => channelUser.userId === kickUserDto.userId,
-    );
-    if (!requesterUser || !targetUser)
-      throw new NotFoundException('User not found');
+    if (
+      sanctionUserDto.sanction === Sanction.KICK ||
+      (sanctionUserDto.sanction === Sanction.MUTE &&
+        sanctionUserDto.muteUntil) ||
+      sanctionUserDto.sanction === Sanction.UNMUTE
+    ) {
+      await this.channelService.kickOrMuteOrUnmute(
+        user.id,
+        sanctionUserDto.userId,
+        sanctionUserDto.channelId,
+        sanctionUserDto.sanction,
+        sanctionUserDto.muteUntil,
+      );
+      return res.status(204).send();
+    }
 
     if (
-      this.channelService.isBanned(
-        requesterUser.userId,
-        channel.bannedUserIds,
-      ) ||
-      this.channelService.isBanned(targetUser.userId, channel.bannedUserIds)
-    )
-      throw new ForbiddenException('User is banned');
+      sanctionUserDto.sanction === Sanction.BAN ||
+      sanctionUserDto.sanction === Sanction.UNBAN
+    ) {
+      await this.channelService.banOrUnban(
+        user.id,
+        sanctionUserDto.userId,
+        sanctionUserDto.channelId,
+        sanctionUserDto.sanction,
+      );
+      return res.status(204).send();
+    }
 
-    if (
-      !this.channelService.hasPrivileges(
-        requesterUser,
-        targetUser,
-        channel.ownerId,
-      )
-    )
-      throw new ForbiddenException("You don't have the required privileges");
-
-    await this.channelService
-      .leaveChannel(kickUserDto.userId, channel)
-      .catch((error) => {
-        console.error({ error });
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-          if (error.code === 'P2015')
-            throw new NotFoundException('User not found');
-        }
-        throw new InternalServerErrorException();
-      });
-    return res.status(204).send();
+    throw new UnprocessableEntityException();
   }
 }

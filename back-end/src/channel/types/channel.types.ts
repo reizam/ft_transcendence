@@ -47,3 +47,11 @@ export interface IChannelPage {
   hasNextPage: boolean;
   totalCount: number;
 }
+
+export enum Sanction {
+  KICK = 'kick',
+  BAN = 'ban',
+  UNBAN = 'unban',
+  MUTE = 'mute',
+  UNMUTE = 'unmute',
+}

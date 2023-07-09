@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
+  IsDate,
   IsInt,
   IsNotEmpty,
   IsOptional,
@@ -87,7 +88,10 @@ export class BlockUserDto {
   readonly toggleBlock: boolean;
 }
 
-export class KickUserDto {
+export class sanctionUserDto {
+  @IsString()
+  readonly sanction: string;
+
   @IsInt()
   @Min(1)
   readonly userId: number;
@@ -95,4 +99,8 @@ export class KickUserDto {
   @IsInt()
   @Min(1)
   readonly channelId: number;
+
+  @IsDate()
+  @IsOptional()
+  readonly muteUntil?: Date;
 }
