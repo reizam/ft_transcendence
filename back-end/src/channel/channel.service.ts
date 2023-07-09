@@ -470,7 +470,6 @@ export class ChannelService {
     const channelUser = channelUsers.find(
       (channelUser) => channelUser.userId == userId,
     );
-    console.log(channelUser);
     if (!channelUser?.mutedUntil) return false;
     return new Date(new Date().getTime()) < channelUser?.mutedUntil;
   }
