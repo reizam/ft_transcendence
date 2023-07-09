@@ -496,7 +496,7 @@ export class ChannelService {
   async muteUser(
     userId: number,
     channel: IChannel,
-    mutedUntil: Date,
+    minutesToAdd: number,
   ): Promise<void> {
     await this.prisma.channelUser.update({
       where: {
@@ -506,7 +506,7 @@ export class ChannelService {
         },
       },
       data: {
-        mutedUntil,
+        mutedUntil: new Date(new Date().getTime() + minutesToAdd * 60000),
       },
     });
   }
@@ -525,12 +525,40 @@ export class ChannelService {
     });
   }
 
-  async kickOrMuteOrUnmute(
+  async promoteUser(userId: number, channel: IChannel): Promise<void> {
+    await this.prisma.channelUser.update({
+      where: {
+        channelId_userId: {
+          channelId: channel.id,
+          userId,
+        },
+      },
+      data: {
+        isAdmin: true,
+      },
+    });
+  }
+
+  async demoteUser(userId: number, channel: IChannel): Promise<void> {
+    await this.prisma.channelUser.update({
+      where: {
+        channelId_userId: {
+          channelId: channel.id,
+          userId,
+        },
+      },
+      data: {
+        isAdmin: false,
+      },
+    });
+  }
+
+  async changeStatus(
     requesterUserId: number,
     targetUserId: number,
     channelId: number,
     sanction: string,
-    mutedUntil?: Date,
+    minutesToAdd?: number,
   ): Promise<void> {
     const channel = await this.getChannel(requesterUserId, channelId);
     if (!channel)
@@ -562,10 +590,14 @@ export class ChannelService {
         }
         throw error;
       });
-    } else if (sanction === Sanction.MUTE && mutedUntil) {
-      await this.muteUser(targetUserId, channel, mutedUntil);
+    } else if (sanction === Sanction.MUTE && minutesToAdd) {
+      await this.muteUser(targetUserId, channel, minutesToAdd);
     } else if (sanction === Sanction.UNMUTE) {
       await this.unmuteUser(targetUserId, channel);
+    } else if (sanction === Sanction.PROMOTE) {
+      await this.promoteUser(targetUserId, channel);
+    } else if (sanction === Sanction.DEMOTE) {
+      await this.demoteUser(targetUserId, channel);
     } else {
       throw new UnprocessableEntityException();
     }
