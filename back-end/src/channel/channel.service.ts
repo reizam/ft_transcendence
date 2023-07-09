@@ -151,9 +151,8 @@ export class ChannelService {
   ): Promise<IMessage> {
     const channel = await this.getChannel(userId, channelId);
 
-    if (!channel) {
-      throw new Error('Channel not found');
-    }
+    if (!channel) throw new Error('Channel not found');
+    if (this.isMuted(userId, channel.users)) throw new Error('User is muted');
 
     return await this.prisma.message.create({
       data: {
@@ -288,6 +287,7 @@ export class ChannelService {
             isAdmin: true,
             userId: true,
             channelId: true,
+            mutedUntil: true,
             user: {
               select: {
                 id: true,
@@ -301,7 +301,7 @@ export class ChannelService {
       },
     });
 
-    return channel;
+    return channel as IChannel;
   }
 
   async createChannel(
@@ -464,6 +464,15 @@ export class ChannelService {
         },
       });
     }
+  }
+
+  isMuted(userId: number, channelUsers: IChannelUser[]): boolean {
+    const channelUser = channelUsers.find(
+      (channelUser) => channelUser.userId == userId,
+    );
+    console.log(channelUser);
+    if (!channelUser?.mutedUntil) return false;
+    return new Date(new Date().getTime()) < channelUser?.mutedUntil;
   }
 
   isBanned(userId: number, bannedUserIds: number[]): boolean {
