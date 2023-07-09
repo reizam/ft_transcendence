@@ -4,6 +4,7 @@ import {
   IsBoolean,
   IsDate,
   IsInt,
+  IsIn,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -89,6 +90,7 @@ export class BlockUserDto {
 }
 
 export class sanctionUserDto {
+  @IsIn(['kick', 'mute', 'unmute', 'ban', 'unban', 'promote', 'demote'])
   @IsString()
   readonly sanction: string;
 
@@ -100,7 +102,7 @@ export class sanctionUserDto {
   @Min(1)
   readonly channelId: number;
 
-  @IsDate()
+  @IsInt()
   @IsOptional()
-  readonly muteUntil?: Date;
+  readonly minutesToAdd?: number;
 }

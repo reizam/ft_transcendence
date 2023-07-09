@@ -167,16 +167,18 @@ export class ChannelController {
   ): Promise<Response> {
     if (
       sanctionUserDto.sanction === Sanction.KICK ||
+      sanctionUserDto.sanction === Sanction.DEMOTE ||
+      sanctionUserDto.sanction === Sanction.PROMOTE ||
+      sanctionUserDto.sanction === Sanction.UNMUTE ||
       (sanctionUserDto.sanction === Sanction.MUTE &&
-        sanctionUserDto.muteUntil) ||
-      sanctionUserDto.sanction === Sanction.UNMUTE
+        sanctionUserDto.minutesToAdd)
     ) {
-      await this.channelService.kickOrMuteOrUnmute(
+      await this.channelService.changeStatus(
         user.id,
         sanctionUserDto.userId,
         sanctionUserDto.channelId,
         sanctionUserDto.sanction,
-        sanctionUserDto.muteUntil,
+        sanctionUserDto.minutesToAdd,
       );
       return res.status(204).send();
     }
@@ -193,7 +195,6 @@ export class ChannelController {
       );
       return res.status(204).send();
     }
-
     throw new UnprocessableEntityException();
   }
 }
