@@ -109,7 +109,8 @@ function Buttons({ user, isBanned }: ButtonsProps): ReactElement {
   );
 
   const isMuted = (mutedUntil?: Date): boolean => {
-    if (mutedUntil && mutedUntil.getTime() > new Date().getTime()) return true;
+    if (mutedUntil && new Date(mutedUntil) > new Date(new Date().getTime()))
+      return true;
     return false;
   };
 
