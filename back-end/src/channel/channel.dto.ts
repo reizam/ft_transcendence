@@ -50,38 +50,37 @@ export class PostChannelSendMessageDto {
 export class GetChannelMessagesDto {
   @IsInt()
   @Min(1)
-  // @Type(() => Number) // redundant with "IsInt()"?
+  @Type(() => Number)
   readonly channelId: number;
 
   @IsInt()
   @Min(0)
-  // @Type(() => Number) // redundant with "IsInt()"?
+  @Type(() => Number)
   readonly page: number;
 
   @IsInt()
   @Min(1)
   @Max(100)
-  // @Type(() => Number) // redundant with "IsInt()"?
+  @Type(() => Number)
   readonly limit: number;
 }
 
 export class GetChannelsDto {
   @IsInt()
   @Min(0)
-  // @Type(() => Number) // redundant with "IsInt()"?
+  @Type(() => Number)
   readonly page: number;
 
   @IsInt()
   @Min(1)
   @Max(100)
-  // @Type(() => Number) // redundant with "IsInt()"?
+  @Type(() => Number)
   readonly limit: number;
 }
 
 export class BlockUserDto {
   @IsInt()
   @Min(1)
-  // @Type(() => Number) // redundant with "IsInt()"?
   readonly id: number;
 
   @IsBoolean()

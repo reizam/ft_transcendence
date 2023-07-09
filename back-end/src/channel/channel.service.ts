@@ -475,10 +475,6 @@ export class ChannelService {
     return bannedUserIds.includes(userId);
   }
 
-  isNotBanned(userId: number, bannedUserIds: number[]): boolean {
-    return bannedUserIds.includes(userId);
-  }
-
   getRole(user: IChannelUser, ownerId: number): number {
     enum Role {
       User = 0,
