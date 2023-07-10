@@ -92,6 +92,7 @@ function EditChannelForm({
             <Line
               key={user.userId}
               user={user}
+              isInChannel={true}
               isBanned={isBanned(
                 user.userId,
                 initialValues.channel.bannedUserIds
@@ -108,6 +109,7 @@ function EditChannelForm({
             <Line
               key={user.userId}
               user={user}
+              isInChannel={false}
               isBanned={isBanned(
                 user.userId,
                 initialValues.channel.bannedUserIds

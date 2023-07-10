@@ -6,14 +6,15 @@ import Buttons from '@/components/chat/line/Buttons';
 
 interface LineProps {
   user: IChannelUser;
+  isInChannel: boolean;
   isBanned: boolean;
 }
 
-function Line({ user, isBanned }: LineProps): ReactElement {
+function Line({ user, isInChannel, isBanned }: LineProps): ReactElement {
   return (
     <div className={chatStyles.ctn_list}>
       <UserInfo user={user.user} />
-      <Buttons user={user} isBanned={isBanned} />
+      <Buttons user={user} isInChannel={isInChannel} isBanned={isBanned} />
     </div>
   );
 }

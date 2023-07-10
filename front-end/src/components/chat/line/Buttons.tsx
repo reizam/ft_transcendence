@@ -6,6 +6,7 @@ import { useAuth } from '@/providers/auth/auth.context';
 
 interface ButtonsProps {
   user: IChannelUser;
+  isInChannel: boolean;
   isBanned: boolean;
 }
 
@@ -101,7 +102,7 @@ function GetBlockButton(isBlocked: boolean): ReactElement {
   }
 }
 
-function Buttons({ user, isBanned }: ButtonsProps): ReactElement {
+function Buttons({ user, isInChannel, isBanned }: ButtonsProps): ReactElement {
   const { user: socketUser } = useAuth();
   const isBlocked = React.useMemo(
     () => socketUser?.blockedUsers.some((u) => u.id === user?.userId),
@@ -115,14 +116,17 @@ function Buttons({ user, isBanned }: ButtonsProps): ReactElement {
 
   if (isBanned)
     return (
-      <div className={chatStyles.ctn_list_btn}>{GetBanButton(isBanned)}</div>
+      <div className={chatStyles.ctn_list_btn}>
+        {GetBanButton(isBanned)}
+        {GetBlockButton(!!isBlocked)}
+      </div>
     );
   else
     return (
       <div className={chatStyles.ctn_list_btn}>
-        {GetAdminButton(user.isAdmin)}
-        {GetMuteButton(isMuted(user.mutedUntil), user.user)}
-        {GetKickButton()}
+        {isInChannel && GetAdminButton(user.isAdmin)}
+        {isInChannel && GetMuteButton(isMuted(user.mutedUntil), user.user)}
+        {isInChannel && GetKickButton()}
         {GetBanButton(isBanned)}
         {GetBlockButton(!!isBlocked)}
       </div>
