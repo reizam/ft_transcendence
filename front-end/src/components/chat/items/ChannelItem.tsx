@@ -20,7 +20,7 @@ function ChannelItem({ channel }: ChannelItemProps): React.ReactElement {
   );
 
   const href = `/chat/channel/${channel.id}`;
-  const selected = router.asPath.startsWith(href);
+  const selected = router.asPath === href;
 
   return (
     <Link onMouseDown={preventDefault} href={href}>

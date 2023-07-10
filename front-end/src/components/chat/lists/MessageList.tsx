@@ -1,18 +1,44 @@
+import { useChannelMessagesGet } from '@/api/channel/channel.api';
 import { IMessage } from '@/api/channel/channel.types';
+import { IUserData } from '@/api/user/user.types';
 import MessageItem from '@/components/chat/items/MessageItem';
+import { filter, flatMap, uniqBy } from 'lodash';
 import React from 'react';
 
 interface MessageListProps {
-  messages: IMessage[];
-  hasMore: boolean;
-  fetchNextPage: () => void;
+  channelId: number;
+  user: IUserData;
+  // messages: IMessage[];
+  // hasMore: boolean;
+  // fetchNextPage: () => void;
 }
 
 function MessageList({
-  messages,
-  hasMore,
-  fetchNextPage,
+  channelId,
+  user,
 }: MessageListProps): React.ReactElement {
+  const { data, hasNextPage, fetchNextPage } = useChannelMessagesGet(
+    channelId,
+    25,
+    {
+      enabled: isNaN(channelId) === false && channelId !== null,
+      refetchOnWindowFocus: false,
+      refetchInterval: 1000 * 5,
+      staleTime: Infinity,
+    }
+  );
+  const messages = React.useMemo(
+    () =>
+      uniqBy(
+        filter(
+          flatMap(data?.pages || [], 'messages'),
+          (message: IMessage) =>
+            !user?.blockedUsers.some(({ id }) => message.userId === id)
+        ).reverse(),
+        'id'
+      ),
+    [data, user?.blockedUsers]
+  );
   const ref = React.useRef<HTMLDivElement>(null);
 
   const firstMessage = React.useMemo(
@@ -38,8 +64,13 @@ function MessageList({
       ref={ref}
       className="flex flex-col space-y-4 overflow-y-auto w-full h-full hide-scrollbar pb-8"
     >
-      {hasMore ? (
-        <button className="underline text-sm" onClick={fetchNextPage}>
+      {hasNextPage ? (
+        <button
+          className="underline text-sm"
+          onClick={async (): Promise<void> => {
+            await fetchNextPage();
+          }}
+        >
           Charger plus
         </button>
       ) : null}

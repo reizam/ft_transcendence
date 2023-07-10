@@ -3,6 +3,7 @@ import {
   CreateChannelDto,
   GetChannelMessagesDto,
   GetChannelsDto,
+  JoinProtectedChannelDto,
   PostChannelSendMessageDto,
   PutChannelDto,
 } from '@/channel/channel.dto';
@@ -61,17 +62,29 @@ export class ChannelController {
     );
   }
 
+  @Post('join')
+  async joinProtectedChannel(
+    @Body() data: JoinProtectedChannelDto,
+    @DUser() user: User,
+  ): Promise<boolean> {
+    return await this.channelService.joinProtectedChannel(
+      user.id,
+      data.channelId,
+      data.password,
+    );
+  }
+
   @Get()
   async getChannel(
     @Query('channelId') channelId: string,
     @DUser() user: User,
-  ): Promise<IChannel> {
+  ): Promise<IChannel | null> {
     const channel = await this.channelService.getChannel(
       user.id,
       Number(channelId),
     );
 
-    return channel as IChannel;
+    return channel;
   }
 
   @Post('leave')
@@ -92,7 +105,6 @@ export class ChannelController {
     await this.channelService.updateChannel(
       user.id,
       putChannelDto.channelId,
-      putChannelDto.withPassword,
       putChannelDto.password,
     );
 

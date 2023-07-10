@@ -5,9 +5,9 @@ import {
   IMessagePage,
 } from '@/channel/types/channel.types';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { hashSync } from 'bcrypt';
+import { compareSync, hashSync } from 'bcrypt';
 
 @Injectable()
 export class ChannelService {
@@ -232,29 +232,64 @@ export class ChannelService {
     return this.isAdminWithChannel(userId, channel);
   }
 
-  async getChannel(userId: number, channelId: number): Promise<IChannel> {
-    const fixedChannelId = Number(channelId);
-
-    const where = {
-      OR: [
-        {
-          id: fixedChannelId,
-          isPrivate: true,
-          users: {
-            some: {
-              userId: userId,
-            },
+  async createChannelUser(userId: number, channelId: number): Promise<void> {
+    await this.prisma.channel.update({
+      where: {
+        id: channelId,
+      },
+      data: {
+        users: {
+          create: {
+            userId,
+            isAdmin: false,
           },
         },
-        {
-          id: fixedChannelId,
-          isPrivate: false,
-        },
-      ],
-    } as Prisma.ChannelWhereInput;
+      },
+    });
+  }
+
+  async joinProtectedChannel(
+    userId: number,
+    channelId: number,
+    password: string,
+  ): Promise<boolean> {
+    const fixedChannelId = Number(channelId);
 
     const channel = await this.prisma.channel.findFirst({
-      where,
+      where: {
+        id: fixedChannelId,
+      },
+    });
+
+    if (!channel) throw new Error(`Channel [id: ${channelId}] not found`);
+    if (!channel.password)
+      throw new Error(`Channel [id: ${channelId}] not protected`);
+
+    if (!compareSync(password, channel.password)) {
+      Logger.warn(`${userId} failed to authenticate to channel ${channelId}`);
+      return false;
+    }
+
+    await this.createChannelUser(userId, channelId);
+
+    return true;
+  }
+
+  async getChannel(
+    userId: number,
+    channelId: number,
+  ): Promise<IChannel | null> {
+    const fixedChannelId = Number(channelId);
+
+    const channel = await this.prisma.channel.findFirst({
+      where: {
+        id: fixedChannelId,
+        users: {
+          some: {
+            userId: userId,
+          },
+        },
+      },
       select: {
         id: true,
         ownerId: true,
@@ -290,7 +325,7 @@ export class ChannelService {
       },
     });
 
-    return channel as IChannel;
+    return channel;
   }
 
   async createChannel(
@@ -335,7 +370,6 @@ export class ChannelService {
   async updateChannel(
     userId: number,
     channelId: number,
-    withPassword: boolean,
     password?: string,
   ): Promise<boolean> {
     const channel = await this.getChannel(userId, channelId);

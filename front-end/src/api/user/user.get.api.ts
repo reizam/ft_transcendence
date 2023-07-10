@@ -47,7 +47,7 @@ export const useGetUser = (id?: string): UseQueryResult<IUserData, Error> =>
     { ...defaultUserFetchConfig, enabled: !!id }
   );
 
-  export const useGetFriends = (): UseQueryResult<IUserData, Error> =>
+export const useGetFriends = (): UseQueryResult<IUserData, Error> =>
   useQuery(
     ['FRIENDS', 'GET'],
     async () => {
