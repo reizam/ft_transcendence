@@ -183,7 +183,6 @@ const Game: NextPage = () => {
               )}
             </div>
           </div>
-          <ThemeSwitcher />
         </div>
       </div>
     </Layout>
