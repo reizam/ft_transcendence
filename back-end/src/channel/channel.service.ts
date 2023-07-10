@@ -341,7 +341,7 @@ export class ChannelService {
       },
     });
 
-    return channel as IChannel;
+    return channel;
   }
 
   async updateChannel(
@@ -409,6 +409,7 @@ export class ChannelService {
             isAdmin: true,
             userId: true,
             channelId: true,
+            mutedUntil: true,
             user: {
               select: {
                 id: true,
@@ -471,7 +472,7 @@ export class ChannelService {
       (channelUser) => channelUser.userId == userId,
     );
     if (!channelUser?.mutedUntil) return false;
-    return new Date(new Date().getTime()) < channelUser?.mutedUntil;
+    return Date.now() < channelUser.mutedUntil.getTime();
   }
 
   isBanned(userId: number, bannedUserIds: number[]): boolean {
@@ -514,7 +515,7 @@ export class ChannelService {
         },
       },
       data: {
-        mutedUntil: new Date(new Date().getTime() + minutesToAdd * 60000),
+        mutedUntil: new Date(Date.now() + minutesToAdd * 60000),
       },
     });
   }
@@ -566,7 +567,7 @@ export class ChannelService {
     targetUserId: number,
     channelId: number,
     sanction: string,
-    minutesToAdd?: number,
+    minutesToMute?: number,
   ): Promise<void> {
     const channel = await this.getChannel(requesterUserId, channelId);
     if (!channel)
@@ -598,8 +599,8 @@ export class ChannelService {
         }
         throw error;
       });
-    } else if (sanction === Sanction.MUTE && minutesToAdd) {
-      await this.muteUser(targetUserId, channel, minutesToAdd);
+    } else if (sanction === Sanction.MUTE && minutesToMute) {
+      await this.muteUser(targetUserId, channel, minutesToMute);
     } else if (sanction === Sanction.UNMUTE) {
       await this.unmuteUser(targetUserId, channel);
     } else if (sanction === Sanction.PROMOTE) {

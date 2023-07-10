@@ -29,7 +29,7 @@ export interface IChannelUser {
   userId: number;
   user: IChatUser;
   isAdmin: boolean;
-  mutedUntil?: Date;
+  mutedUntil?: Date | null;
 }
 
 export interface IMessagePage {

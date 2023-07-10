@@ -171,14 +171,14 @@ export class ChannelController {
       sanctionUserDto.sanction === Sanction.PROMOTE ||
       sanctionUserDto.sanction === Sanction.UNMUTE ||
       (sanctionUserDto.sanction === Sanction.MUTE &&
-        sanctionUserDto.minutesToAdd)
+        sanctionUserDto.minutesToMute)
     ) {
       await this.channelService.changeStatus(
         user.id,
         sanctionUserDto.userId,
         sanctionUserDto.channelId,
         sanctionUserDto.sanction,
-        sanctionUserDto.minutesToAdd,
+        sanctionUserDto.minutesToMute,
       );
       return res.status(204).send();
     }

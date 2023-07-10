@@ -2,7 +2,6 @@ import { Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
-  IsDate,
   IsInt,
   IsIn,
   IsNotEmpty,
@@ -104,5 +103,5 @@ export class sanctionUserDto {
 
   @IsInt()
   @IsOptional()
-  readonly minutesToAdd?: number;
+  readonly minutesToMute?: number;
 }

@@ -82,4 +82,6 @@ export enum Sanction {
   UNBAN = 'unban',
   MUTE = 'mute',
   UNMUTE = 'unmute',
+  PROMOTE = 'promote',
+  DEMOTE = 'demote',
 }
