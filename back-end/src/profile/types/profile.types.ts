@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsString,
   MaxLength,
+  NotContains,
 } from 'class-validator';
 
 export class UpdateProfile {
@@ -18,13 +19,22 @@ export class UpdateProfile {
   profilePicture: string;
 
   @IsOptional()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Username cannot be empty' })
   @IsString()
-  @IsAscii()
+  @IsAscii({ message: 'Username can only contain ASCII characters' })
   @MaxLength(15, { message: 'Username cannot exceed 15 characters' })
+  @NotContains(' ', { message: 'Username cannot contain spaces' })
   username: string;
 }
 
+export type WithWasJustCreated<T> = T & {
+  wasJustCreated?: boolean;
+};
+
 export type WithRank<T> = T & {
   rank?: number;
+};
+
+export type WithBlockedUsers<T> = T & {
+  blockedUsers?: number[];
 };

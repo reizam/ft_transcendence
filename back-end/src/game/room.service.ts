@@ -7,6 +7,7 @@ import {
   Player,
 } from '@/game/types/game.types';
 import { PrismaService } from '@/prisma/prisma.service';
+import { ProfileService } from '@/profile/profile.service';
 import { SocketUserService } from '@/socket/user/socket.service';
 import { Injectable } from '@nestjs/common';
 import { ConnectedSocket } from '@nestjs/websockets';
@@ -18,6 +19,7 @@ export class RoomService {
   constructor(
     private prisma: PrismaService,
     private socketUserService: SocketUserService,
+    private profileService: ProfileService,
   ) {}
 
   private playerQueue: Player[] = [];
@@ -25,7 +27,7 @@ export class RoomService {
   private rooms: { [id: number]: GameRoom } = {};
 
   async getGame(gameId: number): Promise<Game | null> {
-    if (gameId === null) return null;
+    if (gameId == null) return null;
     return await this.prisma.game.findUnique({
       where: {
         id: gameId,
@@ -36,7 +38,7 @@ export class RoomService {
   async getOrCreateGame(
     playerOneId: number,
     playerTwoId: number,
-  ): Promise<number | null> {
+  ): Promise<Game | null> {
     try {
       const existingGame = await this.prisma.game.findFirst({
         where: {
@@ -52,7 +54,7 @@ export class RoomService {
       });
 
       if (existingGame) {
-        return existingGame.id;
+        return existingGame;
       }
 
       const game = await this.prisma.game.create({
@@ -66,7 +68,7 @@ export class RoomService {
         },
       });
 
-      return game.id;
+      return game;
     } catch (e: unknown) {
       console.error(e);
       return null;
@@ -84,6 +86,19 @@ export class RoomService {
     } catch (e: unknown) {
       console.error(e);
     }
+  }
+
+  async getGameWhereIsPlaying(userId: number): Promise<Game | null> {
+    if (userId == null) return null;
+    return await this.prisma.game.findFirst({
+      where: {
+        OR: [{ playerOneId: userId }, { playerTwoId: userId }],
+        status: {
+          not: 'finished',
+          mode: 'insensitive',
+        },
+      },
+    });
   }
 
   async createUniqueGameId(): Promise<number> {
@@ -391,19 +406,20 @@ export class RoomService {
           elo: Math.round(winnerElo),
         },
       }),
+      this.prisma.game.update({
+        where: {
+          id: game.id,
+        },
+        data: {
+          playerOneScore: game.playerOneScore,
+          playerTwoScore: game.playerTwoScore,
+          status: game.status,
+          launchedAt: game.launchedAt,
+          finishedAt: game.finishedAt,
+        },
+      }),
     ]);
 
-    await this.prisma.game.update({
-      where: {
-        id: game.id,
-      },
-      data: {
-        playerOneScore: game.playerOneScore,
-        playerTwoScore: game.playerTwoScore,
-        status: game.status,
-        launchedAt: game.launchedAt,
-        finishedAt: game.finishedAt,
-      },
-    });
+    await this.profileService.recordAchievements(game);
   }
 }

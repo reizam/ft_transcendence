@@ -1,4 +1,4 @@
-FROM node:14-alpine
+FROM node:16-alpine
 
 ARG DATABASE_URL
 ARG JWT_SECRET
@@ -20,11 +20,13 @@ WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 
 COPY package.json ./
+COPY .dockerignore ./
 # COPY package-lock.json ./
 
 RUN npm install -g prisma
 RUN npm install -g @nestjs/cli
 RUN npm install
+RUN apk add xdg-utils
 
 COPY . ./
 COPY ./prisma ./prisma

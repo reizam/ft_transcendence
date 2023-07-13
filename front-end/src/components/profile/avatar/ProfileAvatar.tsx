@@ -55,6 +55,19 @@ function ProfileAvatar({
     fileReader.readAsDataURL(selectedFile);
   };
 
+  const renderImage = () => (
+    <img
+      className={`${dashStyles.img__prof} ${
+        isEditing ? dashStyles.editing__pointer : ''
+      }`}
+      src={src}
+      alt="ProfileAvatar"
+      style={{
+        boxShadow: isEditing ? '0 0 40px 7px var(--main-theme-color)' : '',
+      }}
+    />
+  );
+
   return (
     <div className={dashStyles.pict__prof}>
       {isEditing && (
@@ -66,18 +79,11 @@ function ProfileAvatar({
           onChange={(e): void => handleFileUpload(e)}
         />
       )}
-      <label htmlFor="select-image">
-        <img
-          className={`${dashStyles.img__prof} ${
-            isEditing ? dashStyles.editing__pointer : ''
-          }`}
-          src={src}
-          alt="ProfileAvatar"
-          style={{
-            boxShadow: isEditing ? '0 0 40px 7px var(--main-theme-color)' : '',
-          }}
-        />
-      </label>
+      {isEditing ? (
+        <label htmlFor="select-image">{renderImage()}</label>
+      ) : (
+        renderImage()
+      )}
     </div>
   );
 }

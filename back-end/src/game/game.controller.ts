@@ -1,19 +1,25 @@
-import { GameService } from '@/game/game.service';
+import { DUser } from '@/decorators/user.decorator';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Controller } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  InternalServerErrorException,
+  Post,
+  Res,
+  UnprocessableEntityException,
+  UseGuards,
+} from '@nestjs/common';
+import { User } from '@prisma/client';
+import { Response } from 'express';
+import { RoomService } from './room.service';
+import { AuthGuard } from '@nestjs/passport';
+import { CreateGame } from './types/game.types';
 
-// Type for testing purpose
-type ResultDto = {
-  draw: boolean;
-  winnerId: number;
-  loserId: number;
-};
-
-// @UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'))
 @Controller('game')
 export class GameController {
   constructor(
-    private gameService: GameService,
+    private roomService: RoomService,
     private prisma: PrismaService,
   ) {}
 
@@ -39,17 +45,24 @@ export class GameController {
   //   }
   // }
 
-  // @Post('create')
+  // @Post('createGame')
   // async createGame(
   //   @DUser() user: User,
+  //   @Body() createGameDto: CreateGame,
   //   @Res() res: Response,
   // ): Promise<Response> {
-  //   const gameId = await this.gameService
-  //     .createGame(user.id)
+  //   console.log({ createGameDto });
+
+  //   if (user.id === createGameDto.challengedId)
+  //     throw new UnprocessableEntityException('You cannot challenge yourself');
+
+  //   const gameId = await this.roomService
+  //     .getOrCreateGame(user.id, createGameDto.challengedId)
   //     .catch((error: any) => {
   //       console.error({ error });
   //       throw new InternalServerErrorException();
   //     });
+
   //   return res.status(200).json({ gameId: gameId });
   // }
 

@@ -1,7 +1,8 @@
-import { ChannelModule } from '@/channel/channel.module';
 import { Module } from '@nestjs/common';
+import { SocketUserService } from './user/socket.service';
 
 @Module({
-  imports: [ChannelModule],
+  providers: [SocketUserService],
+  exports: [SocketUserService],
 })
 export class SocketModule {}

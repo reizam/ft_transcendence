@@ -18,7 +18,7 @@ function FindGame(): JSX.Element {
     let timer2: NodeJS.Timeout = 0 as any;
     const handleFindError = (err: string) => {
       console.error(err);
-      timer1 = setTimeout(() => toast.error(err ?? 'Unknown error'), 200);
+      timer1 = setTimeout(() => toast.error(err ?? 'Unknown find error'), 200);
       timer2 = setTimeout(() => router.push('/game'), 1500);
       isReadyRef.current = false;
       setFoundPlayer(false);
@@ -29,7 +29,7 @@ function FindGame(): JSX.Element {
     let timer4: NodeJS.Timeout = 0 as any;
     const handleJoinTimeout = (err: string) => {
       console.error(err);
-      timer3 = setTimeout(() => toast.error(err ?? 'Unknown error'), 0);
+      timer3 = setTimeout(() => toast.error(err ?? 'Unknown find error'), 0);
       timer4 = setTimeout(() => router.push('/game/find'), 1500);
       isReadyRef.current = false;
       setFoundPlayer(false);

@@ -1,0 +1,268 @@
+.ctn__pre__friends {
+  position: relative;
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+  padding-left: 6rem;
+  padding-right: 2.5%;
+  width: 100%;
+  height: 100%;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.1rem;
+}
+.ctn__pre__notfriends {
+  position: relative;
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+  padding-left: 2.5%;
+  padding-right: 6rem;
+  width: 100%;
+  height: 100%;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.1rem;
+}
+
+.ctn__pre__friends__canvas {
+  width: 100%;
+  height: 100%;
+  background-color: var(--container-background-color);
+  border-radius: var(--radius-container);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: auto;
+}
+
+.canvas__title {
+  margin-top: 5%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family:  var(--title-font);
+}
+
+.friends__list {
+  width: 90%;
+  height: auto;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 2%;
+}
+
+.flexContainer {
+  width: 40%;
+  align-items: center;
+}
+
+.linkContainer {
+  display: flex;
+}
+
+/*  --  LINE CSS  --  */
+
+  /*  --- PROFILE_PICTURE ---   */
+
+      .pict__prof {
+        width: 30%;
+        aspect-ratio: 1 / 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .img__prof {
+        width: 70%;
+        height: 70%;
+        min-width: 50px;
+        min-height: 50px;
+        object-fit: cover;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid aliceblue;
+      }
+
+  /*  --- PROFILE_NAME ---   */
+
+      .user__name {
+        width: 80%;
+        padding-left: 5%;
+        display: flex;
+        align-items: center;
+      }
+
+  /*  --- STATUS_LOG ---   */
+
+      .badge__ctn {
+        width: 5%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: right;
+        background-color: var(--container-background-color);
+      }
+
+      .badge {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 5px;
+      }
+        
+      .red {
+        background-color: red;
+      }
+      
+      .green {
+        background-color: green;
+      }
+      
+      .orange {
+        background-color: orange;
+      }
+      
+      .gray {
+        background-color: gray;
+      }
+
+      .user__info {
+        width: 15%;
+        display: flex;
+        align-items: center;
+        justify-content: left;
+        background-color: var(--container-background-color);
+      }
+
+  /*  --- BUTTONS ---   */
+
+      .buttons__ctn {
+        width: 40%;
+        display: flex;
+        align-items: center;
+        justify-content: left;
+        padding-left: 2%;
+        cursor: pointer;
+      }
+
+      .button__ctn {
+        margin: 3%;
+      }
+
+      .style__button__1 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: var(--container-color);
+        color: var(--button-background-color-hover);
+        width: 40px;
+        border-radius: 50%;
+        aspect-ratio: 1 / 1;
+      }
+
+      .style__button__1:hover {
+        opacity: calc(95%);
+        border: 1px solid var(--main-theme-color);
+        
+      }
+
+      .style__button__2 {
+        background-color: var(--main-theme-color);
+        width: 40px;
+        border-radius: 50%;
+        aspect-ratio: 1 / 1;
+      }
+
+      .style__button__2:hover {
+        opacity: calc(95%);
+        border: 1px solid var(--container-color);
+      }
+
+/*  --  END LINE CSS  --  */
+
+
+/*  --  Container Friends --  */
+
+.ctn__friends_section {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.ctn__friends {
+  width: 50%;
+  height: 100%;
+}
+
+@media screen and (max-width: 1100px) {
+  .ctn__pre__friends {
+    position: relative;
+    padding-top: 6rem;
+    padding-bottom: 2.5%;
+    padding-left: 6rem;
+    padding-right: 6rem;
+  }
+  .ctn__pre__notfriends {
+    position: relative;
+    padding-top: 2.5%;
+    padding-bottom: 6rem;
+    padding-left: 6rem;
+    padding-right: 6rem;
+  }
+  
+  .ctn__pre__friends, .ctn__pre__notfriends {
+    font-size: 0.9rem;
+  }
+
+  .ctn__friends_section {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .ctn__friends {
+    width: 100%;
+    height: 50%;
+  }
+
+  .canvas__title {
+    margin-top: 2%;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  /*  --  LINE CSS  --  */
+
+    /*  --- PROFILE_PICTURE ---   */
+
+    .pict__prof {
+      width: 25%;
+    }
+
+    .img__prof {
+      width: 50%;
+      height: 50%;
+    }
+
+  /*  --- PROFILE_NAME ---   */
+
+    .user__name {
+      width: 40%;
+    }
+
+  /*  --- STATUS_LOG ---   */
+
+    .badge__ctn {
+      width: 10%;
+    }
+
+    .user__info {
+      width: 25%;
+    }
+
+  /*  --- BUTTONS ---   */
+
+  .buttons__ctn {
+    width: 200%;
+  }
+
+/*  --  END LINE CSS  --  */
+}

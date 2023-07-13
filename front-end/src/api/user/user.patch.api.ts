@@ -1,20 +1,69 @@
 import { updateWithToken } from '@/api';
-import { UpdateProfile, IUserData } from '@/api/user/user.types';
+import { IUserData, UpdateProfile } from '@/api/user/user.types';
 import {
   UseMutationResult,
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
+import { createElement } from 'react';
 import { Id, toast } from 'react-toastify';
+
+interface IMutationResult {
+  qrCodeDataUrl: string | undefined;
+}
 
 interface IContext {
   previousData?: IUserData;
   id: Id;
 }
 
-export const useUpdateMe = (): UseMutationResult<
+export const useBlockUser = (): UseMutationResult<
   unknown,
+  unknown,
+  { id: number; toggleBlock: boolean },
+  unknown
+> => {
+  const queryClient = useQueryClient();
+  const toastUpdateOptions = {
+    autoClose: 1000,
+    isLoading: false,
+  };
+
+  return useMutation({
+    mutationFn: async (body: { id: number; toggleBlock: boolean }) => {
+      const data = await updateWithToken('/channel/block', body, {
+        headers: { 'Content-Type': 'application/json' },
+      });
+      return data;
+    },
+    onMutate: () => toast.loading('Updating'),
+    onSuccess: (_data: unknown, _var: unknown, context?: Id) => {
+      context
+        ? toast.update(context, {
+            render: 'Updated',
+            type: 'success',
+            ...toastUpdateOptions,
+          })
+        : toast.dismiss();
+    },
+    onError: (_data: unknown, _var: unknown, context?: Id) => {
+      context
+        ? toast.update(context, {
+            render: 'Failed to update',
+            type: 'error',
+            ...toastUpdateOptions,
+          })
+        : toast.dismiss();
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries(['PROFILE', 'GET', 'ME']);
+    },
+  });
+};
+
+export const useUpdateMe = (): UseMutationResult<
+  IMutationResult,
   unknown,
   UpdateProfile,
   IContext
@@ -22,7 +71,7 @@ export const useUpdateMe = (): UseMutationResult<
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (body: UpdateProfile) => {
-      const data = await updateWithToken('/profile', body, {
+      const data = await updateWithToken<IMutationResult>('/profile', body, {
         headers: { 'Content-Type': 'application/json' },
       });
       return data;
@@ -44,22 +93,46 @@ export const useUpdateMe = (): UseMutationResult<
       return { previousData, id };
     },
     onSuccess: (
-      _data: unknown,
-      _variables: unknown,
+      data: IMutationResult,
+      _variables: UpdateProfile,
       context?: IContext
     ): void => {
       if (context !== undefined) {
+        if (!data) toast.dismiss('qrCodeToast');
         toast.update(context.id, {
-          render: 'Updated',
+          render: data
+            ? createElement(
+                'div',
+                {
+                  style: {
+                    display: 'flex',
+                    flexDirection: 'column',
+                    textAlign: 'center',
+                  },
+                },
+                createElement('img', {
+                  src: data.qrCodeDataUrl,
+                  alt: 'Scan this QR code with your 2FA app',
+                }),
+                createElement(
+                  'p',
+                  {},
+                  'Scan this QR code with your 2FA app before leaving,',
+                  " or you won't be able to log in anymore!"
+                )
+              )
+            : 'Updated',
           type: 'success',
-          autoClose: 1000,
+          autoClose: data ? false : 1000,
+          closeButton: data ? true : false,
           isLoading: false,
+          toastId: data ? 'qrCodeToast' : context.id,
         });
       } else {
         toast.dismiss();
       }
     },
-    onError: (err: unknown, _data: UpdateProfile, context?: IContext) => {
+    onError: (err: unknown, _variables: UpdateProfile, context?: IContext) => {
       if (context !== undefined) {
         toast.update(context.id, {
           render: `${

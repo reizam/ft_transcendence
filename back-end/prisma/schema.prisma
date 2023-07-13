@@ -20,14 +20,19 @@ model User {
   email             String
 
   has2FA            Boolean
+  twoFactorSecret   String?
 
-  friends           String[]      @default([])
-  blockedUsers      String[]
+  friends           User[]  @relation("FriendsList")
+  friendOf          User[]  @relation("FriendsList")
+  
+  blockedUsers      User[]  @relation("BlockedList")
+  blockedBy         User[]  @relation("BlockedList")
 
   createdAt         DateTime      @default(now())
 
   channelsOwned     Channel[]
   channels          ChannelUser[]
+  messages          Message[]
 
   elo               Int           @default(1000)
   wins              Int           @default(0)
@@ -54,15 +59,6 @@ model Game {
   launchedAt        DateTime?
   finishedAt        DateTime?
 }
-
-// model PlayersOnGames {
-//   user          User @relation(fields: [userId], references: [id])
-//   userId        Int
-//   game          Game @relation(fields: [gameId], references: [id])
-//   gameId        Int
-
-//   @@id([userId, gameId])
-// }
 
 model Channel {
   id Int @id @default(autoincrement())
@@ -106,18 +102,10 @@ model Message {
 
   channelId Int
   userId    Int
+  user      User @relation(fields: [userId], references: [id])
   message   String
 
   gameId Int?
-
-  createdAt DateTime @default(now())
-}
-
-model VerificationToken {
-  id           Int    @id @default(autoincrement())
-  userId       String
-  accessToken  String
-  refreshToken String
 
   createdAt DateTime @default(now())
 }

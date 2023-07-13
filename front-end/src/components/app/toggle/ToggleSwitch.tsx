@@ -4,6 +4,7 @@ import toggleStyles from '@components/app/toggle/ToggleSwitch.module.css';
 interface ToggleSwitchProps {
   initialChecked?: boolean;
   onToggle?: (checked: boolean) => void;
+  name: string;
   backgroundColor?: string;
   sliderColor?: string;
   checkedBackgroundColor?: string;
@@ -13,6 +14,7 @@ interface ToggleSwitchProps {
 
 const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
   onToggle,
+  name,
   backgroundColor = '#03001E',
   sliderColor = 'var(--button-background-color-hover)',
   checkedBackgroundColor = '#DF00FE',
@@ -29,6 +31,7 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
     <label className={toggleStyles.switch}>
       <input
         type="checkbox"
+        name={name}
         className={`${toggleStyles.apple__switch} ${
           isEditing ? toggleStyles.editing__pointer : ''
         }`}

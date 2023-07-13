@@ -47,6 +47,7 @@
   --font-normal: 400;
   --font-medium: 500;
   --font-semi-bold: 600;
+  --font-bold: 700;
 
   /*---- Toastify ----*/
   --toastify-color-light: #fff;
@@ -135,4 +136,17 @@ html {
 }
 [data-title] {
   position: relative;
+}
+
+/* Hide the arrows in the input field */
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
 }

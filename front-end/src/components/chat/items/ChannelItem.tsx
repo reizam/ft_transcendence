@@ -4,6 +4,8 @@ import EntityAvatar from '@/components/app/image/EntityAvatar';
 import { generateAcronymFromList } from '@/utils/string.util';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { preventDefault } from '@/utils/react.util';
+import { generateChannelTitles } from '@/utils/channel.util';
 
 interface ChannelItemProps {
   channel: IChannel;
@@ -12,33 +14,16 @@ interface ChannelItemProps {
 function ChannelItem({ channel }: ChannelItemProps): React.ReactElement {
   const router = useRouter();
 
-  const channelTitles = React.useMemo(() => {
-    const users: string[] = [];
-
-    users.push(
-      channel.owner.username ||
-        `${channel.owner.firstName} ${channel.owner.lastName}`
-    );
-
-    users.push(
-      ...channel.users.map(
-        ({ user }) => user.username || `${user.firstName} ${user.lastName}`
-      )
-    );
-
-    return {
-      title: channel.private
-        ? `Salon privé - ${users.join(', ')}`
-        : users.join(', '),
-      acronym: generateAcronymFromList(users),
-    };
-  }, [channel]);
+  const channelTitles = React.useMemo(
+    () => generateChannelTitles(channel),
+    [channel]
+  );
 
   const href = `/chat/channel/${channel.id}`;
-  const selected = router.asPath === href;
+  const selected = router.asPath.startsWith(href);
 
   return (
-    <Link href={href}>
+    <Link onMouseDown={preventDefault} href={href}>
       <div
         className={
           selected

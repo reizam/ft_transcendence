@@ -1,13 +1,17 @@
 .style__button {
   background-color: var(--main-theme-color);
   width: 10vw;
-  aspect-ratio: 4 / 1;
+  aspect-ratio: 7 / 2;
   border-radius: var(--radius-container);
 }
 
 .style__button:hover {
   opacity: calc(95%);
   border: 1px solid var(--container-color);
+}
+
+.style__button:active {
+  opacity: 0.75;
 }
 
 .style__button__editing {
