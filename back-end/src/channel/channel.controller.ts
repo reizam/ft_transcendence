@@ -12,6 +12,7 @@ import { ChannelService } from '@/channel/channel.service';
 import {
   IChannel,
   IChannelPage,
+  IChatUser,
   IMessage,
   IMessagePage,
   Sanction,
@@ -208,5 +209,16 @@ export class ChannelController {
       return res.status(204).send();
     }
     throw new UnprocessableEntityException();
+  }
+
+  @Get('allChatUsers')
+  async getAllUsers(
+    @Query('channelId') channelId: string,
+    @DUser() user: User,
+  ): Promise<IChatUser[]> {
+    return await this.channelService.getAllChatUsers(
+      user.id,
+      Number(channelId),
+    );
   }
 }

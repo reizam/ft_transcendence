@@ -5,6 +5,7 @@ import {
   IChannelPage,
   IChannelPostParams,
   IChannelPutParams,
+  IChatUser,
   IMessage,
   IMessagePage,
 } from '@/api/channel/channel.types';
@@ -26,11 +27,11 @@ const onFetchError = (err: Error): void => {
   toast.error('Failed to fetch');
 };
 
-const onFetchSuccess = (data: IChannel): void => {
+const onFetchSuccess = (data: unknown): void => {
   console.log(data);
 };
 
-const defaultUserFetchConfig = {
+const defaultChannelFetchConfig = {
   refetchOnWindowFocus: false,
   onError: onFetchError,
   onSuccess: onFetchSuccess,
@@ -78,7 +79,7 @@ export const useChannelGet = (
 
       return data as IChannel;
     },
-    { ...defaultUserFetchConfig, ...options }
+    { ...defaultChannelFetchConfig, ...options }
   );
 
 export const useChannelPut = (
@@ -163,4 +164,22 @@ export const useChannelPost = (
       return data as IChannel;
     },
     options
+  );
+
+export const useGetAllChatUsers = (
+  channelId: number,
+  options: UseQueryOptions<IChatUser[], Error>
+): UseQueryResult<IChatUser[], Error> =>
+  useQuery<IChatUser[], Error>(
+    ['CHAT', 'GET', 'USER', 'ALL'],
+    async () => {
+      const users = await getWithToken<IChatUser[]>(`/channel/allChatUsers`, {
+        params: {
+          channelId,
+        },
+      });
+
+      return users;
+    },
+    { ...defaultChannelFetchConfig, ...options }
   );

@@ -37,8 +37,9 @@ function Mute({ onClose, isVisible, user }: MuteProps): ReactElement {
         </div>
         <div className={muteStyles.ctn_input}>
           <input
+            id="muteForm"
             type="number"
-            placeholder="minutes"
+            placeholder="--"
             className={muteStyles.style_input}
           />
         </div>

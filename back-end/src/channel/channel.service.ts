@@ -2,6 +2,7 @@ import {
   IChannel,
   IChannelPage,
   IChannelUser,
+  IChatUser,
   IMessage,
   IMessagePage,
   Sanction,
@@ -726,5 +727,24 @@ export class ChannelService {
     } else {
       throw new UnprocessableEntityException();
     }
+  }
+
+  async getAllChatUsers(
+    userId: number,
+    channelId: number,
+  ): Promise<IChatUser[]> {
+    const channel = await this.getChannel(userId, channelId);
+
+    if (!channel)
+      throw new NotFoundException('Channel not found, or incorrect permission');
+    if (!channel.users.find((channelUser) => channelUser.userId == userId))
+      throw new NotFoundException('Channel user not found');
+    return this.prisma.user.findMany({
+      select: {
+        id: true,
+        username: true,
+        profilePicture: true,
+      },
+    });
   }
 }
