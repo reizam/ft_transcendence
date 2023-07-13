@@ -105,9 +105,10 @@ export class RoomService {
     const generateUniqueId = (): number => {
       const timestamp = Date.now();
       const random = Math.floor(Math.random() * 10000) + 1;
-      let uniqueId = Math.floor(timestamp / random);
+      let uniqueId = Math.trunc(timestamp / random);
 
-      while (uniqueId.toString.length > 9) uniqueId /= 10;
+      while (uniqueId < 1 || uniqueId >= 2147483647)
+        uniqueId = Math.trunc(uniqueId / 10);
       return uniqueId;
     };
     let gameId = generateUniqueId();
