@@ -3,6 +3,7 @@ import {
   CreateChannelDto,
   GetChannelMessagesDto,
   GetChannelsDto,
+  JoinProtectedChannelDto,
   PostChannelSendMessageDto,
   PutChannelDto,
   sanctionUserDto,
@@ -20,7 +21,6 @@ import {
   Body,
   ConflictException,
   Controller,
-  ForbiddenException,
   Get,
   InternalServerErrorException,
   NotFoundException,
@@ -64,6 +64,18 @@ export class ChannelController {
       user.id,
       sendMessageDto.channelId,
       sendMessageDto.message,
+    );
+  }
+
+  @Post('join')
+  async joinProtectedChannel(
+    @Body() data: JoinProtectedChannelDto,
+    @DUser() user: User,
+  ): Promise<boolean> {
+    return await this.channelService.joinProtectedChannel(
+      user.id,
+      data.channelId,
+      data.password,
     );
   }
 

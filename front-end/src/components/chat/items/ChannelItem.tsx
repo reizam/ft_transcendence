@@ -4,6 +4,7 @@ import { generateChannelTitles } from '@/utils/channel.util';
 import { preventDefault } from '@/utils/react.util';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { URLPattern } from 'next/server';
 import React from 'react';
 import { FaLock } from 'react-icons/fa';
 
@@ -19,11 +20,13 @@ function ChannelItem({ channel }: ChannelItemProps): React.ReactElement {
     [channel]
   );
 
-  const href = `/chat/channel/${channel.id}`;
-  const selected = router.asPath.startsWith(href);
+  const pattern = new URLPattern({
+    pathname: `/chat/channel/${channel.id}/*?`,
+  });
+  const selected = pattern.test({ pathname: router.asPath });
 
   return (
-    <Link onMouseDown={preventDefault} href={href}>
+    <Link onMouseDown={preventDefault} href={`/chat/channel/${channel.id}`}>
       <div
         className={
           selected

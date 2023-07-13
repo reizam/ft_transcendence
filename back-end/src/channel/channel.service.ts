@@ -10,11 +10,12 @@ import { PrismaService } from '@/prisma/prisma.service';
 import {
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { hashSync } from 'bcrypt';
+import { compareSync, hashSync } from 'bcrypt';
 
 @Injectable()
 export class ChannelService {
@@ -251,6 +252,49 @@ export class ChannelService {
     return this.isAdminWithChannel(userId, channel);
   }
 
+  async createChannelUser(userId: number, channelId: number): Promise<void> {
+    await this.prisma.channel.update({
+      where: {
+        id: channelId,
+      },
+      data: {
+        users: {
+          create: {
+            userId,
+            isAdmin: false,
+          },
+        },
+      },
+    });
+  }
+
+  async joinProtectedChannel(
+    userId: number,
+    channelId: number,
+    password: string,
+  ): Promise<boolean> {
+    const fixedChannelId = Number(channelId);
+
+    const channel = await this.prisma.channel.findFirst({
+      where: {
+        id: fixedChannelId,
+      },
+    });
+
+    if (!channel) throw new Error(`Channel [id: ${channelId}] not found`);
+    if (!channel.password)
+      throw new Error(`Channel [id: ${channelId}] not protected`);
+
+    if (!compareSync(password, channel.password)) {
+      Logger.warn(`${userId} failed to authenticate to channel ${channelId}`);
+      return false;
+    }
+
+    await this.createChannelUser(userId, channelId);
+
+    return true;
+  }
+
   async getChannel(
     userId: number,
     channelId: number,
@@ -301,7 +345,7 @@ export class ChannelService {
       },
     });
 
-    return channel as IChannel;
+    return channel;
   }
 
   async createChannel(

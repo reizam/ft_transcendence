@@ -13,11 +13,28 @@ import {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
+  UseQueryResult,
   useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
+
+const onFetchError = (err: Error): void => {
+  console.error(err);
+  toast.error('Failed to fetch');
+};
+
+const onFetchSuccess = (data: IChannel): void => {
+  console.log(data);
+};
+
+const defaultUserFetchConfig = {
+  refetchOnWindowFocus: false,
+  onError: onFetchError,
+  onSuccess: onFetchSuccess,
+};
 
 export const useInfiniteChannelsGet = (
   limit: number,
@@ -48,9 +65,9 @@ export const useInfiniteChannelsGet = (
 
 export const useChannelGet = (
   channelId: number,
-  options?: UseQueryOptions<IChannel, unknown>
-) =>
-  useQuery<IChannel, unknown>(
+  options: UseQueryOptions<IChannel, Error>
+): UseQueryResult<IChannel, Error> =>
+  useQuery<IChannel, Error>(
     ['CHANNEL', 'GET', channelId],
     async () => {
       const data = await getWithToken(`/channel`, {
@@ -61,7 +78,7 @@ export const useChannelGet = (
 
       return data as IChannel;
     },
-    options
+    { ...defaultUserFetchConfig, ...options }
   );
 
 export const useChannelPut = (

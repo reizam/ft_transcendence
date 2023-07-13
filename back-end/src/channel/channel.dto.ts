@@ -39,6 +39,14 @@ export class PutChannelDto {
   readonly password?: string;
 }
 
+export class JoinProtectedChannelDto {
+  @IsInt()
+  readonly channelId: number;
+
+  @IsString()
+  readonly password: string;
+}
+
 export class PostChannelSendMessageDto {
   @IsString()
   @IsNotEmpty()
