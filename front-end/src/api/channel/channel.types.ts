@@ -48,7 +48,7 @@ export interface IChannelUser {
   userId: number;
   user: IChatUser;
   isAdmin: boolean;
-  mutedUntil?: Date;
+  mutedUntil?: Date | null;
 }
 
 export interface IChannelPage {
@@ -70,6 +70,11 @@ export interface IChannelPutParams {
   password?: string;
 }
 
+export interface IMessagePost {
+  channelId: number;
+  message: string;
+}
+
 export interface IChannelPostParams {
   users: number[];
   password?: string;
@@ -84,4 +89,11 @@ export enum Sanction {
   UNMUTE = 'unmute',
   PROMOTE = 'promote',
   DEMOTE = 'demote',
+}
+
+export interface IChannelUpdateParams {
+  sanction: Sanction;
+  userId: number;
+  channelId: number;
+  minutesToMute?: number;
 }

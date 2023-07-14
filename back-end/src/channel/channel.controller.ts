@@ -178,6 +178,8 @@ export class ChannelController {
     @DUser() user: User,
     @Res() res: Response,
   ): Promise<Response> {
+    if (sanctionUserDto.userId === user.id)
+      throw new ConflictException('You cannot sanction yourself');
     if (
       sanctionUserDto.sanction === Sanction.KICK ||
       sanctionUserDto.sanction === Sanction.DEMOTE ||

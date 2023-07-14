@@ -1,8 +1,11 @@
 import React, { Fragment, ReactElement, useState } from 'react';
 import chatStyles from '@/styles/chat.module.css';
-import { IChannelUser, IChatUser } from '@/api/channel/channel.types';
+import { IChannelUser, Sanction } from '@/api/channel/channel.types';
 import Modal from '@/components/chat/mute/Mute';
 import { useAuth } from '@/providers/auth/auth.context';
+import { printChannelError, useChannelUpdate } from '@/api/channel/channel.api';
+import { toast } from 'react-toastify';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface ButtonsProps {
   user: IChannelUser;
@@ -27,34 +30,82 @@ function GetAdminButton(isAdmin: boolean): ReactElement {
   }
 }
 
-function GetMuteButton(isMute: boolean, user: IChatUser): ReactElement {
+function GetMuteButton(asMuted: boolean, user: IChannelUser): ReactElement {
   const [showModal, setShowModal] = useState(false);
+  const [isMuted, setIsMuted] = useState(asMuted);
+  const queryClient = useQueryClient();
 
-  switch (isMute) {
-    case true:
-      return (
+  const { mutate: unmute } = useChannelUpdate({
+    onSuccess: () => {
+      void queryClient.invalidateQueries(['CHANNEL', 'GET', user.channelId]);
+      setIsMuted(false);
+    },
+    onError: (err: unknown) => {
+      toast.error(printChannelError(err));
+    },
+  });
+  const handleUnmute = () => {
+    unmute({
+      sanction: Sanction.UNMUTE,
+      userId: user.userId,
+      channelId: user.channelId,
+    });
+  };
+
+  const [muteInMinutes, setMuteInMinutes] = useState<string>('');
+  const { mutate: mute } = useChannelUpdate({
+    onMutate: () => {
+      setShowModal(false);
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries(['CHANNEL', 'GET', user.channelId]);
+      setIsMuted(true);
+    },
+    onError: (err: unknown) => {
+      toast.error(printChannelError(err));
+    },
+  });
+  const handleMute = () => {
+    mute({
+      sanction: Sanction.MUTE,
+      userId: user.userId,
+      channelId: user.channelId,
+      minutesToMute: parseInt(muteInMinutes),
+    });
+  };
+
+  if (isMuted) {
+    return (
+      <div className={chatStyles.ctn_btn}>
+        <button
+          className={chatStyles.style_btn_activate}
+          onClick={handleUnmute}
+        >
+          Unmute
+        </button>
+      </div>
+    );
+  } else {
+    return (
+      <Fragment>
         <div className={chatStyles.ctn_btn}>
-          <button className={chatStyles.style_btn_activate}>Mute</button>
+          <button
+            className={chatStyles.style_btn_desactivate}
+            onClick={() => setShowModal(true)}
+          >
+            Mute
+          </button>
         </div>
-      );
-    default:
-      return (
-        <Fragment>
-          <div className={chatStyles.ctn_btn}>
-            <button
-              className={chatStyles.style_btn_desactivate}
-              onClick={() => setShowModal(true)}
-            >
-              Mute
-            </button>
-          </div>
-          <Modal
-            user={user}
-            isVisible={showModal}
-            onClose={() => setShowModal(false)}
-          />
-        </Fragment>
-      );
+        <Modal
+          user={user.user}
+          isVisible={showModal}
+          valueInMinutes={muteInMinutes}
+          setMuteInMinutes={setMuteInMinutes}
+          onClick={handleMute}
+          onClose={() => setShowModal(false)}
+        />
+      </Fragment>
+    );
   }
 }
 
@@ -109,8 +160,17 @@ function Buttons({ user, isInChannel, isBanned }: ButtonsProps): ReactElement {
     [socketUser?.blockedUsers, user?.userId]
   );
 
-  const isMuted = (mutedUntil?: Date): boolean => {
-    if (mutedUntil && mutedUntil.getTime() > Date.now()) return true;
+  const isMuted = (mutedUntil?: Date | null): boolean => {
+    if (mutedUntil instanceof Date) {
+      if (mutedUntil.getTime() > Date.now()) {
+        return true;
+      }
+    } else if (typeof mutedUntil === 'string') {
+      const date = new Date(mutedUntil);
+      if (!isNaN(date.getTime()) && date.getTime() > Date.now()) {
+        return true;
+      }
+    }
     return false;
   };
 
@@ -125,7 +185,7 @@ function Buttons({ user, isInChannel, isBanned }: ButtonsProps): ReactElement {
     return (
       <div className={chatStyles.ctn_list_btn}>
         {isInChannel && GetAdminButton(user.isAdmin)}
-        {isInChannel && GetMuteButton(isMuted(user.mutedUntil), user.user)}
+        {isInChannel && GetMuteButton(isMuted(user.mutedUntil), user)}
         {isInChannel && GetKickButton()}
         {GetBanButton(isBanned)}
         {GetBlockButton(!!isBlocked)}

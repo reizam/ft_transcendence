@@ -6,14 +6,35 @@ import { ImCross } from 'react-icons/im';
 interface MuteProps {
   user: IChatUser;
   isVisible: boolean;
+  valueInMinutes: string;
+  setMuteInMinutes: React.Dispatch<React.SetStateAction<string>>;
+  onClick: () => void;
   onClose: () => void;
 }
 
-function Mute({ onClose, isVisible, user }: MuteProps): ReactElement {
+function Mute({
+  user,
+  isVisible,
+  valueInMinutes,
+  setMuteInMinutes,
+  onClick,
+  onClose,
+}: MuteProps): ReactElement {
   if (!isVisible) return <></>;
 
   const handleClose = (e: any) => {
     if (e.target.id === 'wrapper') onClose();
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMuteInMinutes(e.target.value);
+  };
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      onClick();
+    } else if (e.key === 'Escape') {
+      onClose();
+    }
   };
 
   return (
@@ -41,10 +62,15 @@ function Mute({ onClose, isVisible, user }: MuteProps): ReactElement {
             type="number"
             placeholder="--"
             className={muteStyles.style_input}
+            value={valueInMinutes}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
           />
         </div>
         <div className={muteStyles.ctn_validation}>
-          <button className={muteStyles.style_button}>Validate</button>
+          <button className={muteStyles.style_button} onClick={onClick}>
+            Validate
+          </button>
         </div>
       </div>
     </div>

@@ -110,6 +110,7 @@ export class sanctionUserDto {
   readonly channelId: number;
 
   @IsInt()
+  @Min(1)
   @IsOptional()
   readonly minutesToMute?: number;
 }
