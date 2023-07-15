@@ -1,5 +1,6 @@
 import Layout from '@/components/app/layouts/Layout';
 import ThemeSwitcher from '@/components/app/theme/ThemeSwitcher';
+import { GameResult } from '@/components/game/GameResult';
 import Pong from '@/components/game/Pong';
 import Countdown from '@/components/utils/Countdown';
 import { Keyframes } from '@/components/utils/Keyframes';
@@ -25,6 +26,11 @@ const Game: NextPage = () => {
 
   const [gameId, setGameId] = useState<number>(-1);
   const [startGame, setStartGame] = useState<boolean>(false);
+  const [winner, setWinner] = useState<{
+    id: number;
+    username: string;
+    profilePicture: string;
+  } | null>(null);
 
   useEffect(() => {
     if (count === 0) {
@@ -100,11 +106,16 @@ const Game: NextPage = () => {
       window.removeEventListener('unhandledrejection', handleRejection);
     };
 
-    const handleEndGame = (): void => {
+    const handleEndGame = (winner: {
+      id: number;
+      username: string;
+      profilePicture: string;
+    }): void => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
       window.removeEventListener('unload', handleUnload);
       router.events.off('routeChangeStart', handleRouteChange);
       window.removeEventListener('unhandledrejection', handleRejection);
+      setWinner(winner);
     };
 
     socket?.once('gameError', handleGameError);
@@ -153,16 +164,19 @@ const Game: NextPage = () => {
                 animation: 'neon-blink 3s infinite alternate',
               }}
             >
-              {startGame && gameId > 0 ? (
+              {startGame && gameId > 0 && !winner ? (
                 <Pong gameId={gameId} isPlayer={true} isLocal={true} />
               ) : (
                 <div className={gameStyles.ctn__countdown}>
-                  <Countdown count={count} total={10} color={primaryColor} />
+                  {!winner ? (
+                    <Countdown count={count} total={10} color={primaryColor} />
+                  ) : (
+                    <GameResult winner={winner}></GameResult>
+                  )}
                 </div>
               )}
             </div>
           </div>
-          <ThemeSwitcher />
         </div>
       </div>
     </Layout>

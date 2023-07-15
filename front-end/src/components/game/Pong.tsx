@@ -7,10 +7,16 @@ import { toast } from 'react-toastify';
 interface PongProps {
   gameId: number;
   isPlayer: boolean;
+  isLeftPlayer?: boolean;
   isLocal: boolean;
 }
 
-const Pong = ({ gameId, isPlayer, isLocal }: PongProps): JSX.Element => {
+const Pong = ({
+  gameId,
+  isPlayer,
+  isLeftPlayer,
+  isLocal,
+}: PongProps): JSX.Element => {
   const { primary: primaryColor, secondary: secondaryColor } = useColors();
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -34,9 +40,7 @@ const Pong = ({ gameId, isPlayer, isLocal }: PongProps): JSX.Element => {
       radius: 20,
     },
     scoreLimit: 10,
-    keys: isLocal
-      ? ['w', 's', 'ArrowUp', 'ArrowDown']
-      : ['ArrowUp', 'ArrowDown'],
+    keys: ['w', 's', 'ArrowUp', 'ArrowDown'],
   };
 
   const gameState = useRef({
@@ -151,12 +155,17 @@ const Pong = ({ gameId, isPlayer, isLocal }: PongProps): JSX.Element => {
 
     socket?.on(
       'gameState',
-      (gameState_: {
-        ball: { x: number; y: number; radius: number };
-        score: { left: number; right: number };
-      }) => {
-        console.log(gameState_);
+      (
+        gameState_: {
+          ball: { x: number; y: number; radius: number };
+          score: { left: number; right: number };
+        },
+        paddleY: { left: number; right: number }
+      ) => {
         gameState.current = { ...gameState.current, ...gameState_ };
+        if (!isPlayer) {
+          gameState.current.paddleY = paddleY;
+        }
         ratio.current = context.canvas.width / parameters.dimensions.width;
       }
     );
@@ -189,6 +198,14 @@ const Pong = ({ gameId, isPlayer, isLocal }: PongProps): JSX.Element => {
     const handleKeyDown = (e: KeyboardEvent): void => {
       e.preventDefault();
       if (parameters.keys.includes(e.key)) {
+        if (isLocal && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+          keyState.current[e.key === 'ArrowUp' ? 'ArrowDown' : 'ArrowUp'] =
+            false;
+        } else if (isLocal && (e.key === 'w' || e.key === 's')) {
+          keyState.current[e.key === 'w' ? 's' : 'w'] = false;
+        } else {
+          keyState.current = {};
+        }
         keyState.current[e.key] = true;
       }
     };
@@ -203,47 +220,63 @@ const Pong = ({ gameId, isPlayer, isLocal }: PongProps): JSX.Element => {
     const updatePaddles = (): void => {
       if (isLocal) {
         if (keyState.current['w']) {
-          gameState.current.paddleY.left -= parameters.paddle.speed;
-          if (gameState.current.paddleY.left < 0)
+          if (gameState.current.paddleY.left - parameters.paddle.speed < 0)
             gameState.current.paddleY.left = 0;
+          else gameState.current.paddleY.left -= parameters.paddle.speed;
         }
         if (keyState.current['s']) {
-          gameState.current.paddleY.left += parameters.paddle.speed;
           if (
             gameState.current.paddleY.left + parameters.paddle.height >=
             parameters.dimensions.height
           )
             gameState.current.paddleY.left =
               parameters.dimensions.height - parameters.paddle.height;
+          else gameState.current.paddleY.left += parameters.paddle.speed;
         }
         if (keyState.current['ArrowUp']) {
-          gameState.current.paddleY.right -= parameters.paddle.speed;
-          if (gameState.current.paddleY.right < 0)
+          if (gameState.current.paddleY.right - parameters.paddle.speed < 0)
             gameState.current.paddleY.right = 0;
+          else gameState.current.paddleY.right -= parameters.paddle.speed;
         }
         if (keyState.current['ArrowDown']) {
-          gameState.current.paddleY.right += parameters.paddle.speed;
           if (
             gameState.current.paddleY.right + parameters.paddle.height >=
             parameters.dimensions.height
           )
             gameState.current.paddleY.right =
               parameters.dimensions.height - parameters.paddle.height;
+          else gameState.current.paddleY.right += parameters.paddle.speed;
         }
       } else {
         if (keyState.current['w'] || keyState.current['ArrowUp']) {
-          gameState.current.paddleY.left -= parameters.paddle.speed;
-          if (gameState.current.paddleY.left < 0)
-            gameState.current.paddleY.left = 0;
+          if (isLeftPlayer) {
+            if (gameState.current.paddleY.left - parameters.paddle.speed < 0)
+              gameState.current.paddleY.left = 0;
+            else gameState.current.paddleY.left -= parameters.paddle.speed;
+          } else {
+            if (gameState.current.paddleY.right - parameters.paddle.speed < 0)
+              gameState.current.paddleY.right = 0;
+            else gameState.current.paddleY.right -= parameters.paddle.speed;
+          }
         }
         if (keyState.current['s'] || keyState.current['ArrowDown']) {
-          gameState.current.paddleY.left += parameters.paddle.speed;
-          if (
-            gameState.current.paddleY.left + parameters.paddle.height >=
-            parameters.dimensions.height
-          )
-            gameState.current.paddleY.left =
-              parameters.dimensions.height - parameters.paddle.height;
+          if (isLeftPlayer) {
+            if (
+              gameState.current.paddleY.left + parameters.paddle.height >=
+              parameters.dimensions.height
+            )
+              gameState.current.paddleY.left =
+                parameters.dimensions.height - parameters.paddle.height;
+            else gameState.current.paddleY.left += parameters.paddle.speed;
+          } else {
+            if (
+              gameState.current.paddleY.right + parameters.paddle.height >=
+              parameters.dimensions.height
+            )
+              gameState.current.paddleY.right =
+                parameters.dimensions.height - parameters.paddle.height;
+            else gameState.current.paddleY.right += parameters.paddle.speed;
+          }
         }
       }
     };

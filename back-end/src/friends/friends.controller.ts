@@ -5,13 +5,14 @@ import {
   Controller,
   Get,
   InternalServerErrorException,
+  NotFoundException,
   Patch,
   Res,
   UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import type { User } from '@prisma/client';
+import { Prisma, type User } from '@prisma/client';
 import { Response } from 'express';
 import { FriendsService } from './friends.service';
 
@@ -52,6 +53,13 @@ export class FriendsController {
         .addFriend(user.id, updateDto.friendId)
         .catch((error) => {
           console.error({ error });
+          if (error instanceof Error)
+            throw new NotFoundException(error.message);
+          if (
+            error instanceof Prisma.PrismaClientKnownRequestError &&
+            error.code === 'P2025'
+          )
+            throw new NotFoundException("Your profile wasn't found");
           throw new InternalServerErrorException();
         });
       return res.status(204).send();
@@ -61,6 +69,13 @@ export class FriendsController {
         .removeFriend(user.id, updateDto.friendId)
         .catch((error) => {
           console.error({ error });
+          if (error instanceof Error)
+            throw new NotFoundException(error.message);
+          if (
+            error instanceof Prisma.PrismaClientKnownRequestError &&
+            error.code === 'P2025'
+          )
+            throw new NotFoundException("Your profile wasn't found");
           throw new InternalServerErrorException();
         });
       return res.status(204).send();

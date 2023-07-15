@@ -17,8 +17,8 @@ export const generateChannelTitles = (
 
   return {
     title: channel.isPrivate
-      ? `Salon privé - ${users.join(', ')}`
-      : users.join(', '),
+      ? `Private (${channel.id}) - ${users.join(', ')}`
+      : `Public (${channel.id}) - ${users.join(', ')}`,
     acronym: generateAcronymFromList(users),
   };
 };

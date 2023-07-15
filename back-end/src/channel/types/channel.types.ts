@@ -10,6 +10,7 @@ export interface IChannel {
   isProtected: boolean;
   ownerId: number;
   users: IChannelUser[];
+  bannedUserIds: number[];
   createdAt?: Date;
 }
 
@@ -28,6 +29,7 @@ export interface IChannelUser {
   userId: number;
   user: IChatUser;
   isAdmin: boolean;
+  mutedUntil?: Date | null;
 }
 
 export interface IMessagePage {
@@ -44,4 +46,14 @@ export interface IChannelPage {
   limit: number;
   hasNextPage: boolean;
   totalCount: number;
+}
+
+export enum Sanction {
+  KICK = 'kick',
+  BAN = 'ban',
+  UNBAN = 'unban',
+  MUTE = 'mute',
+  UNMUTE = 'unmute',
+  PROMOTE = 'promote',
+  DEMOTE = 'demote',
 }

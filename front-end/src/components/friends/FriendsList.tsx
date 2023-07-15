@@ -1,5 +1,5 @@
 import { IUserDataSummary } from '@/api/friends/friends.types';
-import Line from '@/components/friends/line/Line';
+import FriendLine from '@/components/friends/line/FriendLine';
 import friendsStyles from '@/styles/friends.module.css';
 import { ReactElement } from 'react';
 
@@ -8,7 +8,7 @@ interface UsersListProps {
   isFriend: boolean;
 }
 
-function UsersList({ users: users, isFriend }: UsersListProps): ReactElement {
+function FriendsList({ users: users, isFriend }: UsersListProps): ReactElement {
   if (isFriend)
     return (
       <div className={friendsStyles.ctn__pre__friends}>
@@ -18,7 +18,7 @@ function UsersList({ users: users, isFriend }: UsersListProps): ReactElement {
               <h2>Friends</h2>
             </div>
             {users?.map((user) => (
-              <Line key={user.id} user={user} isFriend={isFriend} />
+              <FriendLine key={user.id} user={user} isFriend={isFriend} />
             ))}
           </>
         </div>
@@ -33,7 +33,7 @@ function UsersList({ users: users, isFriend }: UsersListProps): ReactElement {
               <h2>The Rest of the World</h2>
             </div>
             {users?.map((user) => (
-              <Line key={user.id} user={user} isFriend={isFriend} />
+              <FriendLine key={user.id} user={user} isFriend={isFriend} />
             ))}
           </>
         </div>
@@ -41,4 +41,4 @@ function UsersList({ users: users, isFriend }: UsersListProps): ReactElement {
     );
 }
 
-export default UsersList;
+export default FriendsList;

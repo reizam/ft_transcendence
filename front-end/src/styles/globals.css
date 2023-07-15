@@ -16,6 +16,7 @@
   --radius-container: 15px;
 
   --title-font: 'Games', sans-serif;
+  --title-size: 1.6em;
 
   /* Button Setup */
   --button-background-color: #1b1935;
@@ -47,6 +48,7 @@
   --font-normal: 400;
   --font-medium: 500;
   --font-semi-bold: 600;
+  --font-bold: 700;
 
   /*---- Toastify ----*/
   --toastify-color-light: #fff;

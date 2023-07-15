@@ -10,6 +10,7 @@ export interface IChannel {
   isProtected: boolean;
   ownerId: number;
   users: IChannelUser[];
+  bannedUserIds: number[];
   createdAt?: Date;
 }
 
@@ -47,6 +48,7 @@ export interface IChannelUser {
   userId: number;
   user: IChatUser;
   isAdmin: boolean;
+  mutedUntil?: Date | null;
 }
 
 export interface IChannelPage {
@@ -68,8 +70,30 @@ export interface IChannelPutParams {
   password?: string;
 }
 
+export interface IMessagePost {
+  channelId: number;
+  message: string;
+}
+
 export interface IChannelPostParams {
   users: number[];
   password?: string;
   isPrivate: boolean;
+}
+
+export enum Sanction {
+  KICK = 'kick',
+  BAN = 'ban',
+  UNBAN = 'unban',
+  MUTE = 'mute',
+  UNMUTE = 'unmute',
+  PROMOTE = 'promote',
+  DEMOTE = 'demote',
+}
+
+export interface IChannelUpdateParams {
+  sanction: Sanction;
+  userId: number;
+  channelId: number;
+  minutesToMute?: number;
 }

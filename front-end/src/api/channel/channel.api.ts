@@ -1,12 +1,20 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { getWithToken, postWithToken, putWithToken } from '@/api';
+import {
+  getWithToken,
+  postWithToken,
+  putWithToken,
+  updateWithToken,
+} from '@/api';
 import {
   IChannel,
   IChannelPage,
   IChannelPostParams,
   IChannelPutParams,
+  IChannelUpdateParams,
+  IChatUser,
   IMessage,
   IMessagePage,
+  IMessagePost,
 } from '@/api/channel/channel.types';
 import {
   UseInfiniteQueryOptions,
@@ -19,6 +27,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
+import axios from 'axios';
 import { toast } from 'react-toastify';
 
 const onFetchError = (err: Error): void => {
@@ -26,11 +35,11 @@ const onFetchError = (err: Error): void => {
   toast.error('Failed to fetch');
 };
 
-const onFetchSuccess = (data: IChannel): void => {
+const onFetchSuccess = (data: unknown): void => {
   console.log(data);
 };
 
-const defaultUserFetchConfig = {
+const defaultChannelFetchConfig = {
   refetchOnWindowFocus: false,
   onError: onFetchError,
   onSuccess: onFetchSuccess,
@@ -78,7 +87,7 @@ export const useChannelGet = (
 
       return data as IChannel;
     },
-    { ...defaultUserFetchConfig, ...options }
+    { ...defaultChannelFetchConfig, ...options }
   );
 
 export const useChannelPut = (
@@ -128,11 +137,6 @@ export const useChannelMessagesGet = (
     }
   );
 
-interface IMessagePost {
-  channelId: number;
-  message: string;
-}
-
 export const useSendMessagePost = (
   channelId: number
 ): UseMutationResult<IMessage, unknown, IMessagePost, unknown> => {
@@ -164,3 +168,51 @@ export const useChannelPost = (
     },
     options
   );
+
+export const useGetAllChatUsers = (
+  channelId: number,
+  options: UseQueryOptions<IChatUser[], Error>
+): UseQueryResult<IChatUser[], Error> =>
+  useQuery<IChatUser[], Error>(
+    ['CHAT', 'GET', 'USER', 'ALL'],
+    async () => {
+      const users = await getWithToken<IChatUser[]>(`/channel/allChatUsers`, {
+        params: {
+          channelId,
+        },
+      });
+
+      return users;
+    },
+    { ...options }
+  );
+
+export const useChannelUpdate = (
+  options?: UseMutationOptions<unknown, unknown, IChannelUpdateParams>
+) =>
+  useMutation<unknown, unknown, IChannelUpdateParams>(
+    async (params): Promise<unknown> => {
+      const data = await updateWithToken('/channel/sanction', params);
+
+      console.log({ data });
+      return data;
+    },
+    options
+  );
+
+export const printChannelError = (error: unknown): string => {
+  let errorMessage = 'Failed to update';
+  if (
+    axios.isAxiosError(error) &&
+    error.response?.data?.hasOwnProperty('message')
+  ) {
+    if (Array.isArray(error?.response?.data?.message)) {
+      errorMessage = error.response.data.message[0];
+    } else if (typeof error?.response?.data?.message === 'string') {
+      errorMessage = error.response.data.message;
+    }
+  } else if (error instanceof Error && error.message) {
+    errorMessage = error.message;
+  }
+  return errorMessage;
+};

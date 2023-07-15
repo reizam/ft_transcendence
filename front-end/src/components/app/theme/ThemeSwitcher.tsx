@@ -24,10 +24,12 @@ const ThemeSwitcher = (): ReactElement => {
 
   return (
     <div className={gameStyles.ctn__select__theme}>
-      <h3 className={gameStyles.cnt__theme__h3}>Themes</h3>
+      <div className={gameStyles.ctn_box_title}>
+        <div className={gameStyles.box_theme}>Themes</div>
+      </div>
       {Object.entries(ThemeStore).map(([key, theme]) => {
         return (
-          <div key={key}>
+          <div className={gameStyles.ctn_box} key={key}>
             <div className={gameStyles.box__theme}>
               <div className={gameStyles.name__theme}>{theme.name}</div>
               <div className={gameStyles.toggle__theme}>

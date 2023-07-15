@@ -1,7 +1,7 @@
 import { useBoolean } from '@/hooks/useBoolean';
 import { useCounter } from '@/hooks/useCounter';
 import { useInterval } from '@/hooks/useInterval';
-import { useCallback } from 'react';
+import { Dispatch, SetStateAction, useCallback } from 'react';
 
 interface CountdownOption {
   countStart: number;
@@ -13,6 +13,7 @@ interface CountdownControllers {
   startCountdown: () => void;
   stopCountdown: () => void;
   resetCountdown: () => void;
+  setCountdown: Dispatch<SetStateAction<number>>;
 }
 
 export function useCountdown(
@@ -33,6 +34,7 @@ export function useCountdown(
     increment,
     decrement,
     reset: resetCounter,
+    setCount: setCountdown,
   } = useCounter(countStart);
 
   const {
@@ -58,6 +60,7 @@ export function useCountdown(
       startCountdown,
       stopCountdown,
       resetCountdown,
+      setCountdown,
     } as CountdownControllers,
   ];
 }

@@ -172,7 +172,16 @@ export class RoomGateway {
   async onJoinGame(
     @ConnectedSocket() client: Socket,
     @MessageBody() gameId: number,
-  ): Promise<{ asPlayer: boolean; gameStarted: boolean } | WsResponse<string>> {
+  ): Promise<
+    | {
+        asPlayer: boolean;
+        isLeftPlayer: boolean;
+        playersReady: boolean;
+        gameStarted: boolean;
+        countdown: number;
+      }
+    | WsResponse<string>
+  > {
     // TODO:
     // Check if game exists, otherwise gameError
     // Add client to room
@@ -205,20 +214,49 @@ export class RoomGateway {
     if (!gameRoom)
       return { event: 'gameError', data: "This room doesn't exist" };
 
+    let playersReady = false;
     let gameStarted = false;
+    let countdown = 10;
+    const now = new Date().getTime();
+
     if (this.roomService.playersReady(gameRoom)) {
+      playersReady = true;
       if (gameRoom.game.status === GameState.WAITING) {
         this.gameGateway.startGame(gameRoom.game);
+      } else if (
+        gameRoom.game.launchedAt &&
+        now - gameRoom.game.launchedAt?.getTime() < 10000
+      ) {
+        countdown -= Math.trunc(
+          (now - gameRoom.game.launchedAt.getTime()) / 1000,
+        );
       } else {
         gameStarted = true;
       }
     }
-    // TODO:
-    // Send something else if game has started in order to let the
-    // spectators join and mount the right countdown or directly the game
-    if (user.id === gameInDB.playerOneId || user.id === gameInDB.playerTwoId)
-      return { asPlayer: true, gameStarted };
-    return { asPlayer: false, gameStarted };
+    if (user.id === gameInDB.playerOneId)
+      return {
+        asPlayer: true,
+        isLeftPlayer: true,
+        playersReady,
+        gameStarted,
+        countdown,
+      };
+    if (user.id === gameInDB.playerTwoId)
+      return {
+        asPlayer: true,
+        isLeftPlayer: false,
+        playersReady,
+        gameStarted,
+        countdown,
+      };
+    return {
+      asPlayer: false,
+      isLeftPlayer: false,
+      playersReady,
+      gameStarted,
+      countdown,
+    };
   }
 
   @SubscribeMessage('joinLocalGame')

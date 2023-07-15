@@ -3,6 +3,10 @@ import { useFormik } from 'formik';
 import React from 'react';
 import { toast } from 'react-toastify';
 import * as Yup from 'yup';
+import chatStyles from '@/styles/chat.module.css';
+import { IChannel, IChannelUser, IChatUser } from '@/api/channel/channel.types';
+import Line from '@/components/chat/line/Line';
+import { useGetAllChatUsers } from '@/api/channel/channel.api';
 
 const schema = Yup.object().shape({
   password: Yup.string(),
@@ -10,6 +14,8 @@ const schema = Yup.object().shape({
 });
 
 export type EditChannelFormValues = {
+  channel: IChannel;
+  users: IChannelUser[];
   withPassword: boolean;
   password: string;
 };
@@ -40,6 +46,34 @@ function EditChannelForm({
     }
   };
 
+  const isBanned = (
+    userId: number,
+    bannedUserIds: number[] | undefined
+  ): boolean => {
+    if (bannedUserIds?.find((id) => id === userId)) return true;
+    return false;
+  };
+
+  const {
+    data: allUsers,
+    isLoading: allUsersLoading,
+    isError: allUsersError,
+  } = useGetAllChatUsers(initialValues.channel.id, {
+    enabled: true,
+  });
+
+  const createDummyChannelUser = (user: IChatUser): IChannelUser => {
+    return {
+      ...user,
+      channelId: initialValues.channel.id,
+      userId: user.id,
+      user,
+      isAdmin: false,
+    };
+  };
+
+  console.log(values);
+
   return (
     <div className="flex flex-col items-center justify-between w-full h-full px-4 py-8 overflow-y-auto hide-scrollbar">
       <div className="flex flex-col items-center space-y-8 w-full">
@@ -69,6 +103,50 @@ function EditChannelForm({
           />
         )}
       </div>
+
+      <div className="flex flex-col items-center space-y-8 w-full">
+        <div className={chatStyles.ctn_user}>
+          <h2 className={chatStyles.h2_user}>Users</h2>
+          {initialValues.users?.map((user) => (
+            <Line
+              key={user.userId}
+              user={user}
+              isInChannel={true}
+              isBanned={isBanned(
+                user.userId,
+                initialValues.channel.bannedUserIds
+              )}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="flex flex-col items-center space-y-8 w-full">
+        <div className={chatStyles.ctn_user}>
+          <h2 className={chatStyles.h2_user}>The Rest of the World</h2>
+          {!allUsersLoading &&
+            !allUsersError &&
+            allUsers
+              .filter(
+                (chatUser) =>
+                  !initialValues.users.find(
+                    (channelUser) => channelUser.userId == chatUser.id
+                  )
+              )
+              .map((user) => (
+                <Line
+                  key={user.id}
+                  user={createDummyChannelUser(user)}
+                  isInChannel={false}
+                  isBanned={isBanned(
+                    user.id,
+                    initialValues.channel.bannedUserIds
+                  )}
+                />
+              ))}
+        </div>
+      </div>
+
       <div className="flex flex-row space-x-4 items-center">
         <button
           onClick={onLeave}

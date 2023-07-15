@@ -6,29 +6,35 @@ import {
   JoinProtectedChannelDto,
   PostChannelSendMessageDto,
   PutChannelDto,
+  sanctionUserDto,
 } from '@/channel/channel.dto';
 import { ChannelService } from '@/channel/channel.service';
 import {
   IChannel,
   IChannelPage,
+  IChatUser,
   IMessage,
   IMessagePage,
+  Sanction,
 } from '@/channel/types/channel.types';
 import { DUser } from '@/decorators/user.decorator';
 import {
   Body,
+  ConflictException,
   Controller,
   Get,
   InternalServerErrorException,
+  NotFoundException,
   Patch,
   Post,
   Put,
   Query,
   Res,
+  UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { User } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import { Response } from 'express';
 
 @UseGuards(AuthGuard('jwt'))
@@ -47,7 +53,7 @@ export class ChannelController {
       createChannelDto.password?.length ? createChannelDto.password : undefined,
     );
 
-    return channel as IChannel;
+    return channel;
   }
 
   @Post('message')
@@ -78,17 +84,19 @@ export class ChannelController {
   async getChannel(
     @Query('channelId') channelId: string,
     @DUser() user: User,
-  ): Promise<IChannel | null> {
+  ): Promise<IChannel> {
     const channel = await this.channelService.getChannel(
       user.id,
       Number(channelId),
     );
 
+    if (!channel) throw new NotFoundException();
     return channel;
   }
 
+  // TODO: Make it Patch
   @Post('leave')
-  async deleteChannel(
+  async leaveChannel(
     @Query('channelId') channelId: string,
     @DUser() user: User,
   ): Promise<boolean> {
@@ -97,6 +105,7 @@ export class ChannelController {
     return true;
   }
 
+  // TODO: Make it Patch
   @Put()
   async putChannel(
     @Body() putChannelDto: PutChannelDto,
@@ -147,13 +156,71 @@ export class ChannelController {
     @Res() res: Response,
   ): Promise<Response> {
     if (blockUserDto.id === user.id)
-      throw new InternalServerErrorException('You cannot block yourself');
+      throw new ConflictException('You cannot block yourself');
     await this.channelService
       .setBlockUser(user.id, blockUserDto.id, blockUserDto.toggleBlock)
       .catch((error) => {
         console.error({ error });
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          if (error.code === 'P2025')
+            throw new NotFoundException("Your profile wasn't found");
+          if (error.code === 'P2015')
+            throw new NotFoundException('User not found');
+        }
         throw new InternalServerErrorException();
       });
     return res.status(204).send();
+  }
+
+  @Patch('sanction')
+  async sanctionUser(
+    @Body() sanctionUserDto: sanctionUserDto,
+    @DUser() user: User,
+    @Res() res: Response,
+  ): Promise<Response> {
+    if (sanctionUserDto.userId === user.id)
+      throw new ConflictException('You cannot sanction yourself');
+    if (
+      sanctionUserDto.sanction === Sanction.KICK ||
+      sanctionUserDto.sanction === Sanction.DEMOTE ||
+      sanctionUserDto.sanction === Sanction.PROMOTE ||
+      sanctionUserDto.sanction === Sanction.UNMUTE ||
+      (sanctionUserDto.sanction === Sanction.MUTE &&
+        sanctionUserDto.minutesToMute)
+    ) {
+      await this.channelService.changeStatus(
+        user.id,
+        sanctionUserDto.userId,
+        sanctionUserDto.channelId,
+        sanctionUserDto.sanction,
+        sanctionUserDto.minutesToMute,
+      );
+      return res.status(204).send();
+    }
+
+    if (
+      sanctionUserDto.sanction === Sanction.BAN ||
+      sanctionUserDto.sanction === Sanction.UNBAN
+    ) {
+      await this.channelService.banOrUnban(
+        user.id,
+        sanctionUserDto.userId,
+        sanctionUserDto.channelId,
+        sanctionUserDto.sanction,
+      );
+      return res.status(204).send();
+    }
+    throw new UnprocessableEntityException();
+  }
+
+  @Get('allChatUsers')
+  async getAllUsers(
+    @Query('channelId') channelId: string,
+    @DUser() user: User,
+  ): Promise<IChatUser[]> {
+    return await this.channelService.getAllChatUsers(
+      user.id,
+      Number(channelId),
+    );
   }
 }

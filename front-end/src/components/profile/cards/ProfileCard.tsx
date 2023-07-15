@@ -11,6 +11,11 @@ import { toast } from 'react-toastify';
 import { deleteCookie, getCookie } from 'cookies-next';
 import { useSocket } from '@/providers/socket/socket.context';
 import { useRouter } from 'next/router';
+import { useGetFriends } from '@/api/friends/friends.get.api';
+import { useUpdateFriends } from '@/api/friends/friends.patch.api';
+import { TiUserAdd, TiUserDelete } from 'react-icons/ti';
+import { RiPingPongFill, RiMovieFill } from 'react-icons/ri';
+import { CgUnblock, CgBlock } from 'react-icons/cg';
 
 interface ProfileDataProps {
   profileData: ProfileData;
@@ -25,6 +30,12 @@ function ProfileCard({
   const [hasChallenged, setHasChallenged] = useState(false);
   const { mutate: updateMe } = useUpdateMe();
   const { mutate: blockUser } = useBlockUser();
+  const {
+    data: friendsData,
+    isLoading: isFriendsLoading,
+    isError: isFriendsError,
+  } = useGetFriends();
+  const { mutate: updateFriends } = useUpdateFriends();
   const { user } = useAuth();
   const { socket } = useSocket();
   const router = useRouter();
@@ -32,6 +43,11 @@ function ProfileCard({
   const isBlocked = React.useMemo(
     () => user?.blockedUsers.some((user) => user.id === profileData?.id),
     [user?.blockedUsers, profileData?.id]
+  );
+
+  const isFriend = React.useMemo(
+    () => !!friendsData?.friends.find((f) => f.id === profileData?.id),
+    [friendsData?.friends, profileData?.id]
   );
 
   const challengeUser = (challengedUser: {
@@ -46,7 +62,8 @@ function ProfileCard({
         toast.info(
           "Let's see if " +
             profileData.username +
-            ' is not too afraid to accept the challenge!'
+            ' is not too afraid to accept the challenge!',
+          { pauseOnFocusLoss: false }
         );
       }
     );
@@ -136,47 +153,83 @@ function ProfileCard({
           </EditButton>
         </div>
       ) : (
+        // TODO: Add Status, and disable buttons appropriately
+        // Also add a button to DM
         profileData.id !== user?.id && (
           <div className={dashStyles.dash__profile__btns}>
-            <div>
-              <button
-                onClick={(): void =>
-                  blockUser({ id: profileData.id, toggleBlock: !isBlocked })
-                }
-                className="bg-[var(--main-theme-color)] ring-[var(--container-color)] hover:ring-1 active:opacity-75
-                  rounded-full min-w-[10vw] aspect-[7/2] mt-1"
-              >
-                {isBlocked ? 'Unblock' : 'Block'}
-              </button>
-            </div>
-            <div>
-              <button
-                onClick={(): void =>
-                  challengeUser({
-                    id: profileData.id,
-                    username: profileData.username,
-                  })
-                }
-                className="bg-[var(--main-theme-color)] ring-[var(--container-color)] hover:ring-1 active:opacity-75
-                  rounded-full min-w-[10vw] aspect-[7/2] mt-10 disabled:opacity-75"
-                disabled={hasChallenged}
-              >
-                Challenge
-              </button>
-            </div>
-            <div>
-              <button
-                onClick={(): void =>
-                  watchUser({
-                    id: profileData.id,
-                    username: profileData.username,
-                  })
-                }
-                className="bg-[var(--main-theme-color)] ring-[var(--container-color)] hover:ring-1 active:opacity-75
-                  rounded-full min-w-[10vw] aspect-[7/2] mt-10"
-              >
-                Watch
-              </button>
+            <div className={dashStyles.ctn__four_buttons}>
+              <div className={dashStyles.ctn__two_buttons}>
+                <div className={dashStyles.ctn__one_button}>
+                  <button
+                    onClick={(): void =>
+                      isFriend
+                        ? updateFriends({
+                            operation: 'REMOVE',
+                            friendId: profileData.id,
+                          })
+                        : updateFriends({
+                            operation: 'ADD',
+                            friendId: profileData.id,
+                          })
+                    }
+                    className={dashStyles.style__button__pro}
+                    disabled={isFriendsLoading || isFriendsError}
+                    title="Add or Remove"
+                  >
+                    {isFriend ? (
+                      <TiUserDelete size="24px" />
+                    ) : (
+                      <TiUserAdd size="24px" />
+                    )}
+                  </button>
+                </div>
+                <div className={dashStyles.ctn__one_button}>
+                  <button
+                    onClick={(): void =>
+                      challengeUser({
+                        id: profileData.id,
+                        username: profileData.username,
+                      })
+                    }
+                    className={dashStyles.style__button__pro}
+                    disabled={hasChallenged}
+                    title="Let's play a match"
+                  >
+                    <RiPingPongFill size="24px" />
+                  </button>
+                </div>
+              </div>
+              <div className={dashStyles.ctn__two_buttons}>
+                <div className={dashStyles.ctn__one_button}>
+                  <button
+                    onClick={(): void =>
+                      watchUser({
+                        id: profileData.id,
+                        username: profileData.username,
+                      })
+                    }
+                    className={dashStyles.style__button__pro}
+                    title="Watch the game"
+                  >
+                    <RiMovieFill size="24px" />
+                  </button>
+                </div>
+                <div className={dashStyles.ctn__one_button}>
+                  <button
+                    onClick={(): void =>
+                      blockUser({ id: profileData.id, toggleBlock: !isBlocked })
+                    }
+                    className={dashStyles.style__button__pro}
+                    title="Block or Unblock"
+                  >
+                    {isBlocked ? (
+                      <CgUnblock size="24px" />
+                    ) : (
+                      <CgBlock size="24px" />
+                    )}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         )

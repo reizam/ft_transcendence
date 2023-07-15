@@ -3,6 +3,7 @@ import {
   IsArray,
   IsBoolean,
   IsInt,
+  IsIn,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -89,9 +90,27 @@ export class GetChannelsDto {
 export class BlockUserDto {
   @IsInt()
   @Min(1)
-  @Type(() => Number)
   readonly id: number;
 
   @IsBoolean()
   readonly toggleBlock: boolean;
+}
+
+export class sanctionUserDto {
+  @IsIn(['kick', 'mute', 'unmute', 'ban', 'unban', 'promote', 'demote'])
+  @IsString()
+  readonly sanction: string;
+
+  @IsInt()
+  @Min(1)
+  readonly userId: number;
+
+  @IsInt()
+  @Min(1)
+  readonly channelId: number;
+
+  @IsInt()
+  @Min(1)
+  @IsOptional()
+  readonly minutesToMute?: number;
 }

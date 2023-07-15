@@ -1,5 +1,6 @@
 import Layout from '@/components/app/layouts/Layout';
 import ThemeSwitcher from '@/components/app/theme/ThemeSwitcher';
+import { GameResult } from '@/components/game/GameResult';
 import Pong from '@/components/game/Pong';
 import Countdown from '@/components/utils/Countdown';
 import { Keyframes } from '@/components/utils/Keyframes';
@@ -15,17 +16,25 @@ import { toast } from 'react-toastify';
 
 const Game: NextPage = () => {
   const { primary: primaryColor } = useColors();
-  const [count, { startCountdown, stopCountdown, resetCountdown }] =
-    useCountdown({
-      countStart: 10,
-    });
+  const [
+    count,
+    { startCountdown, stopCountdown, resetCountdown, setCountdown },
+  ] = useCountdown({
+    countStart: 10,
+  });
 
   const { socket } = useSocket();
   const router = useRouter();
   const { id: gameId } = router.query;
 
   const [isPlayer, setIsPlayer] = useState<boolean>(false);
+  const [isLeftPlayer, setIsLeftPlayer] = useState<boolean>(false);
   const [startGame, setStartGame] = useState<boolean>(false);
+  const [winner, setWinner] = useState<{
+    id: number;
+    username: string;
+    profilePicture: string;
+  } | null>(null);
 
   useEffect(() => {
     if (count === 0) {
@@ -40,16 +49,24 @@ const Game: NextPage = () => {
       return;
     }
 
-    // TODO: For spectators, return something else if game has started
-    // in order to mount the Canvas
     const sendJoinGame = () => {
       socket?.volatile.emit(
         'joinGame',
         parseInt(gameId as string),
-        (ack: { asPlayer: boolean; gameStarted: boolean }) => {
+        (ack: {
+          asPlayer: boolean;
+          isLeftPlayer: boolean;
+          playersReady: boolean;
+          gameStarted: boolean;
+          countdown: number;
+        }) => {
           if (ack.asPlayer && !isPlayer) setIsPlayer(true);
           else if (!ack.asPlayer) setIsPlayer(false);
+          if (ack.isLeftPlayer && !isLeftPlayer) setIsLeftPlayer(true);
+          else if (!ack.isLeftPlayer) setIsLeftPlayer(false);
+          if (ack.playersReady) setTimeout(() => startCountdown(), 100);
           if (ack.gameStarted && !startGame) setStartGame(true);
+          if (ack.countdown !== 10) setCountdown(ack.countdown);
         }
       );
     };
@@ -113,11 +130,16 @@ const Game: NextPage = () => {
       window.removeEventListener('unhandledrejection', handleRejection);
     };
 
-    const handleEndGame = (): void => {
+    const handleEndGame = (winner: {
+      id: number;
+      username: string;
+      profilePicture: string;
+    }): void => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
       window.removeEventListener('unload', handleUnload);
       router.events.off('routeChangeStart', handleRouteChange);
       window.removeEventListener('unhandledrejection', handleRejection);
+      setWinner(winner);
     };
 
     const handlePlayerHasLeft = (player: string): void => {
@@ -172,18 +194,24 @@ const Game: NextPage = () => {
                 animation: 'neon-blink 3s infinite alternate',
               }}
             >
-              {startGame ? (
+              {startGame && !winner ? (
                 <Pong
                   gameId={parseInt(gameId as string)}
-                  isPlayer={true}
+                  isPlayer={isPlayer}
+                  isLeftPlayer={isLeftPlayer}
                   isLocal={false}
                 />
               ) : (
-                <Countdown count={count} total={10} color={primaryColor} />
+                <div className={gameStyles.ctn__countdown}>
+                  {!winner ? (
+                    <Countdown count={count} total={10} color={primaryColor} />
+                  ) : (
+                    <GameResult winner={winner}></GameResult>
+                  )}
+                </div>
               )}
             </div>
           </div>
-          <ThemeSwitcher />
         </div>
       </div>
     </Layout>
