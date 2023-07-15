@@ -28,7 +28,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import axios from 'axios';
-import { toast } from 'react-toastify';
+import { Id, toast } from 'react-toastify';
 
 const onFetchError = (err: Error): void => {
   console.error(err);
@@ -188,17 +188,54 @@ export const useGetAllChatUsers = (
   );
 
 export const useChannelUpdate = (
-  options?: UseMutationOptions<unknown, unknown, IChannelUpdateParams>
-) =>
-  useMutation<unknown, unknown, IChannelUpdateParams>(
-    async (params): Promise<unknown> => {
-      const data = await updateWithToken('/channel/sanction', params);
+  options?: UseMutationOptions<
+    unknown,
+    unknown,
+    IChannelUpdateParams,
+    Id | void
+  >
+) => {
+  const queryClient = useQueryClient();
+  const toastUpdateOptions = {
+    autoClose: 1000,
+    isLoading: false,
+  };
 
+  return useMutation({
+    mutationFn: async (params: IChannelUpdateParams) => {
+      const data = await updateWithToken('/channel/sanction', params);
       console.log({ data });
       return data;
     },
-    options
-  );
+    onMutate: () => toast.loading('Updating'),
+    onSuccess: (
+      _data: unknown,
+      _var: IChannelUpdateParams,
+      context?: Id | void
+    ) => {
+      context
+        ? toast.update(context, {
+            render: 'Updated',
+            type: 'success',
+            ...toastUpdateOptions,
+          })
+        : toast.dismiss();
+    },
+    onError: (err: unknown, _var: unknown, context?: Id | void) => {
+      context
+        ? toast.update(context, {
+            render: printChannelError(err),
+            type: 'error',
+            ...toastUpdateOptions,
+          })
+        : toast.dismiss();
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries(['PROFILE', 'GET', 'ME']);
+    },
+    ...options,
+  });
+};
 
 export const printChannelError = (error: unknown): string => {
   let errorMessage = 'Failed to update';

@@ -701,7 +701,10 @@ export class ChannelService {
     if (!requesterUser) throw new NotFoundException('Channel user not found');
     if (this.isBanned(requesterUser.userId, channel.bannedUserIds))
       throw new ForbiddenException('User is banned');
-    if (this.isBanned(targetUserId, channel.bannedUserIds))
+    if (
+      this.isBanned(targetUserId, channel.bannedUserIds) &&
+      sanction !== Sanction.UNBAN
+    )
       throw new ForbiddenException('User is already banned');
 
     const targetUser = channel.users.find(
