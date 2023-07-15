@@ -281,43 +281,50 @@ export class ChannelService {
   ): Promise<IChannel | null> {
     const fixedChannelId = Number(channelId);
 
-    const channel = await this.prisma.channel.findFirst({
+    const channelUser = await this.prisma.channelUser.upsert({
       where: {
-        id: fixedChannelId,
-        users: {
-          some: {
-            userId: userId,
-          },
+        channelId_userId: {
+          channelId: fixedChannelId,
+          userId: userId,
         },
       },
+      update: {},
+      create: {
+        channelId: fixedChannelId,
+        userId: userId,
+      },
       select: {
-        id: true,
-        ownerId: true,
-        isPrivate: true,
-        isProtected: true,
-        // owner: {
-        //   select: {
-        //     id: true,
-        //     // email: true,
-        //     // firstName: true,
-        //     // lastName: true,
-        //     profilePicture: true,
-        //     username: true,
-        //   },
-        // },
-        users: {
+        channel: {
           select: {
-            isAdmin: true,
-            userId: true,
-            channelId: true,
-            user: {
+            id: true,
+            ownerId: true,
+            isPrivate: true,
+            isProtected: true,
+            // owner: {
+            //   select: {
+            //     id: true,
+            //     // email: true,
+            //     // firstName: true,
+            //     // lastName: true,
+            //     profilePicture: true,
+            //     username: true,
+            //   },
+            // },
+            users: {
               select: {
-                id: true,
-                // email: true,
-                // firstName: true,
-                // lastName: true,
-                profilePicture: true,
-                username: true,
+                isAdmin: true,
+                userId: true,
+                channelId: true,
+                user: {
+                  select: {
+                    id: true,
+                    // email: true,
+                    // firstName: true,
+                    // lastName: true,
+                    profilePicture: true,
+                    username: true,
+                  },
+                },
               },
             },
           },
@@ -325,7 +332,7 @@ export class ChannelService {
       },
     });
 
-    return channel;
+    return channelUser.channel;
   }
 
   async createChannel(

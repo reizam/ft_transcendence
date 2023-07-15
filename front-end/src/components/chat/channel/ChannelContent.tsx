@@ -34,8 +34,6 @@ function ChannelContent({
     enabled: isNaN(channelId) === false && channelId !== null,
   });
 
-  // const hasJoined = React.useMemo(() => )
-
   const titles = React.useMemo(
     () =>
       channel
