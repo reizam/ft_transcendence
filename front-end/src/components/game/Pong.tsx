@@ -1,8 +1,7 @@
 import Canvas from '@/components/app/canvas/Canvas';
 import useColors from '@/hooks/useColors';
 import { useSocket } from '@/providers/socket/socket.context';
-import { useEffect, useRef } from 'react';
-import { toast } from 'react-toastify';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 
 interface PongProps {
   gameId: number;
@@ -11,74 +10,118 @@ interface PongProps {
   isLocal: boolean;
 }
 
+enum Role {
+  NONE = 0x00,
+  SPECTATOR = 0x01,
+  PLAYER = 0x10,
+  PLAYER1 = 0x11,
+  PLAYER2 = 0x12,
+}
+
+type GameState = {
+  ball: { x: number; y: number; radius: number };
+  player: {
+    [key: number]: {
+      paddleY: number;
+      fuseCount: number;
+      score: number;
+    };
+  };
+};
+
+type KeyFlags = { [key: string]: boolean };
+
+type GameParameters = {
+  frameInterval: number;
+  aspectRatio: number;
+  dimensions: {
+    width: number;
+    height: number;
+  };
+  paddle: {
+    width: number;
+    height: number;
+    offset: number;
+    speed: number;
+  };
+  ball: {
+    speed: number;
+    radius: number;
+  };
+  scoreLimit: number;
+  fuseCount: number;
+  keys: string[];
+};
+
+const parameters: GameParameters = {
+  frameInterval: 1000 / 120,
+  aspectRatio: 16 / 9,
+  dimensions: {
+    width: 1920,
+    height: 1080,
+  },
+  paddle: {
+    width: 20,
+    height: 250,
+    offset: 10,
+    speed: 15,
+  },
+  ball: {
+    speed: 8,
+    radius: 20,
+  },
+  scoreLimit: 10,
+  fuseCount: 3,
+  keys: [' ', '0', 'w', 's', 'ArrowUp', 'ArrowDown'],
+};
+
 const Pong = ({
   gameId,
   isPlayer,
   isLeftPlayer,
   isLocal,
 }: PongProps): JSX.Element => {
-  const { primary: primaryColor, secondary: secondaryColor } = useColors();
+  const colors = useColors();
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const { socket } = useSocket();
 
-  const parameters = {
-    frameInterval: 1000 / 120,
-    dimensions: {
-      width: 1920,
-      height: 1080,
-    },
-    paddle: {
-      width: 20,
-      height: 250,
-      offset: 10,
-      speed: 15,
-    },
-    ball: {
-      speed: 8,
-      radius: 20,
-    },
-    scoreLimit: 10,
-    keys: ['w', 's', 'ArrowUp', 'ArrowDown'],
-  };
-
-  const gameState = useRef({
-    paddleY: {
-      left: (parameters.dimensions.height - parameters.paddle.height) / 2,
-      right: (parameters.dimensions.height - parameters.paddle.height) / 2,
-    },
+  const gameState = useRef<GameState>({
     ball: {
       x: parameters.dimensions.width / 2,
       y: parameters.dimensions.height / 2,
       radius: parameters.ball.radius,
     },
-    score: { left: 0, right: 0 },
+    player: {
+      [Role.PLAYER1]: {
+        paddleY: (parameters.dimensions.height - parameters.paddle.height) / 2,
+        fuseCount: 3,
+        score: 0,
+      },
+      [Role.PLAYER2]: {
+        paddleY: (parameters.dimensions.height - parameters.paddle.height) / 2,
+        fuseCount: 3,
+        score: 0,
+      },
+    },
   });
 
-  const keyState = useRef<{ [key: string]: boolean }>({});
-
+  const keyState = useRef<KeyFlags>({});
   const frame = useRef(0);
   const ratio = useRef(1);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const handleResize = (): void => {
       const canvas = canvasRef.current;
+      if (!canvas) return;
+
       const div = canvas?.parentElement;
+      if (!div) return;
 
-      if (!canvas) {
-        toast.error('Canvas failed to mount');
-        return;
-      }
-      if (!div) {
-        toast.error('Canvas parent element failed to mount');
-        return;
-      }
-
-      const aspectRatio = 16 / 9;
-
+      ratio.current = div.clientWidth / parameters.dimensions.width;
       canvas.width = div.clientWidth;
-      canvas.height = div.clientWidth / aspectRatio;
+      canvas.height = div.clientWidth / parameters.aspectRatio;
     };
 
     window.addEventListener('resize', handleResize);
@@ -102,10 +145,10 @@ const Pong = ({
     // Draw the paddle for the player
     const drawPaddle = (): void => {
       // Draw the paddle on the left
-      context.fillStyle = primaryColor;
+      context.fillStyle = colors.primary;
       context.fillRect(
         parameters.paddle.offset * ratio.current,
-        gameState.current.paddleY.left * ratio.current,
+        gameState.current.player[Role.PLAYER1].paddleY * ratio.current,
         parameters.paddle.width * ratio.current,
         parameters.paddle.height * ratio.current
       );
@@ -115,7 +158,7 @@ const Pong = ({
           parameters.paddle.offset -
           parameters.paddle.width) *
           ratio.current,
-        gameState.current.paddleY.right * ratio.current,
+        gameState.current.player[Role.PLAYER2].paddleY * ratio.current,
         parameters.paddle.width * ratio.current,
         parameters.paddle.height * ratio.current
       );
@@ -133,24 +176,47 @@ const Pong = ({
         0,
         Math.PI * 2
       );
-      context.fillStyle = secondaryColor;
+      context.fillStyle = colors.secondary;
       context.fill();
       context.closePath();
     };
 
     const drawScore = (): void => {
       context.font = `${(context.canvas.height / 100) * 15}px Poppins`;
-      context.fillStyle = primaryColor + '60';
+      context.fillStyle = colors.primary + '60';
       context.fillText(
-        gameState.current.score.left.toString(),
+        gameState.current.player[Role.PLAYER1].score.toString(),
         (context.canvas.width * 25) / 100,
         context.canvas.height / 5
       );
       context.fillText(
-        gameState.current.score.right.toString(),
+        gameState.current.player[Role.PLAYER2].score.toString(),
         context.canvas.width - (context.canvas.width * 30) / 100,
         context.canvas.height / 5
       );
+    };
+
+    const drawHUD = (): void => {
+      context.fillStyle = colors.primary;
+      context.strokeStyle = colors.primary;
+      const fullRatio = ratio.current / 100;
+      const y = parameters.dimensions.height * 90 * fullRatio;
+      const w = parameters.dimensions.width * 1 * fullRatio;
+      const h = parameters.dimensions.height * 4 * fullRatio;
+      for (const player of [Role.PLAYER1, Role.PLAYER2]) {
+        let i = 0;
+        const offset = player === Role.PLAYER1 ? 5 : 90;
+        while (i < gameState.current.player[player].fuseCount) {
+          const x = (i * 2 + offset) * parameters.dimensions.width * fullRatio;
+          context.fillRect(x, y, w, h);
+          ++i;
+        }
+        while (i < parameters.fuseCount) {
+          const x = (i * 2 + offset) * parameters.dimensions.width * fullRatio;
+          context.strokeRect(x, y, w, h);
+          ++i;
+        }
+      }
     };
 
     socket?.on(
@@ -162,11 +228,14 @@ const Pong = ({
         },
         paddleY: { left: number; right: number }
       ) => {
-        gameState.current = { ...gameState.current, ...gameState_ };
+        gameState.current.ball = gameState_.ball;
+        gameState.current.player[Role.PLAYER1].score = gameState_.score.left;
+        gameState.current.player[Role.PLAYER2].score = gameState_.score.right;
+
         if (!isPlayer) {
-          gameState.current.paddleY = paddleY;
+          gameState.current.player[Role.PLAYER1].paddleY = paddleY.left;
+          gameState.current.player[Role.PLAYER2].paddleY = paddleY.right;
         }
-        ratio.current = context.canvas.width / parameters.dimensions.width;
       }
     );
 
@@ -179,6 +248,7 @@ const Pong = ({
         drawBall();
         drawPaddle();
         drawScore();
+        drawHUD();
         lastTime = now;
       }
       frame.current = window.requestAnimationFrame(draw);
@@ -190,7 +260,7 @@ const Pong = ({
       socket?.removeAllListeners('gameState');
       cancelAnimationFrame(frame.current);
     };
-  }, [socket, primaryColor, secondaryColor]);
+  }, [socket, colors]);
 
   useEffect(() => {
     if (!isPlayer) return;
@@ -218,65 +288,56 @@ const Pong = ({
     };
 
     const updatePaddles = (): void => {
+      const role = isLeftPlayer ? Role.PLAYER1 : Role.PLAYER2;
       if (isLocal) {
         if (keyState.current['w']) {
-          if (gameState.current.paddleY.left - parameters.paddle.speed < 0)
-            gameState.current.paddleY.left = 0;
-          else gameState.current.paddleY.left -= parameters.paddle.speed;
+          gameState.current.player[Role.PLAYER1].paddleY -=
+            parameters.paddle.speed;
+          if (gameState.current.player[Role.PLAYER1].paddleY < 0)
+            gameState.current.player[Role.PLAYER1].paddleY = 0;
         }
         if (keyState.current['s']) {
+          gameState.current.player[Role.PLAYER1].paddleY +=
+            parameters.paddle.speed;
           if (
-            gameState.current.paddleY.left + parameters.paddle.height >=
+            gameState.current.player[Role.PLAYER1].paddleY +
+              parameters.paddle.height >=
             parameters.dimensions.height
           )
-            gameState.current.paddleY.left =
+            gameState.current.player[Role.PLAYER1].paddleY =
               parameters.dimensions.height - parameters.paddle.height;
-          else gameState.current.paddleY.left += parameters.paddle.speed;
         }
         if (keyState.current['ArrowUp']) {
-          if (gameState.current.paddleY.right - parameters.paddle.speed < 0)
-            gameState.current.paddleY.right = 0;
-          else gameState.current.paddleY.right -= parameters.paddle.speed;
+          gameState.current.player[Role.PLAYER2].paddleY -=
+            parameters.paddle.speed;
+          if (gameState.current.player[Role.PLAYER2].paddleY < 0)
+            gameState.current.player[Role.PLAYER2].paddleY = 0;
         }
         if (keyState.current['ArrowDown']) {
+          gameState.current.player[Role.PLAYER2].paddleY +=
+            parameters.paddle.speed;
           if (
-            gameState.current.paddleY.right + parameters.paddle.height >=
+            gameState.current.player[Role.PLAYER2].paddleY +
+              parameters.paddle.height >=
             parameters.dimensions.height
           )
-            gameState.current.paddleY.right =
+            gameState.current.player[Role.PLAYER2].paddleY =
               parameters.dimensions.height - parameters.paddle.height;
-          else gameState.current.paddleY.right += parameters.paddle.speed;
         }
       } else {
         if (keyState.current['w'] || keyState.current['ArrowUp']) {
-          if (isLeftPlayer) {
-            if (gameState.current.paddleY.left - parameters.paddle.speed < 0)
-              gameState.current.paddleY.left = 0;
-            else gameState.current.paddleY.left -= parameters.paddle.speed;
-          } else {
-            if (gameState.current.paddleY.right - parameters.paddle.speed < 0)
-              gameState.current.paddleY.right = 0;
-            else gameState.current.paddleY.right -= parameters.paddle.speed;
-          }
+          gameState.current.player[role].paddleY -= parameters.paddle.speed;
+          if (gameState.current.player[role].paddleY < 0)
+            gameState.current.player[role].paddleY = 0;
         }
         if (keyState.current['s'] || keyState.current['ArrowDown']) {
-          if (isLeftPlayer) {
-            if (
-              gameState.current.paddleY.left + parameters.paddle.height >=
-              parameters.dimensions.height
-            )
-              gameState.current.paddleY.left =
-                parameters.dimensions.height - parameters.paddle.height;
-            else gameState.current.paddleY.left += parameters.paddle.speed;
-          } else {
-            if (
-              gameState.current.paddleY.right + parameters.paddle.height >=
-              parameters.dimensions.height
-            )
-              gameState.current.paddleY.right =
-                parameters.dimensions.height - parameters.paddle.height;
-            else gameState.current.paddleY.right += parameters.paddle.speed;
-          }
+          gameState.current.player[role].paddleY += parameters.paddle.speed;
+          if (
+            gameState.current.player[role].paddleY + parameters.paddle.height >=
+            parameters.dimensions.height
+          )
+            gameState.current.player[role].paddleY =
+              parameters.dimensions.height - parameters.paddle.height;
         }
       }
     };
@@ -290,10 +351,16 @@ const Pong = ({
         'move',
         {
           gameId: gameId,
-          data: { paddleY: gameState.current.paddleY },
+          data: {
+            paddleY: {
+              left: gameState.current.player[Role.PLAYER1].paddleY,
+              right: gameState.current.player[Role.PLAYER2].paddleY,
+            },
+          },
         },
         (data: { left: number; right: number }) => {
-          gameState.current.paddleY = data;
+          gameState.current.player[Role.PLAYER1].paddleY = data.left;
+          gameState.current.player[Role.PLAYER2].paddleY = data.right;
         }
       );
     }, 1000 / 120);
