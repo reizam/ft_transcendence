@@ -31,8 +31,7 @@ import axios from 'axios';
 import { Id, toast } from 'react-toastify';
 
 const onFetchError = (err: Error): void => {
-  console.error(err);
-  toast.error('Failed to fetch');
+  toast.error(printChannelError(err));
 };
 
 const onFetchSuccess = (data: unknown): void => {
@@ -230,8 +229,8 @@ export const useChannelUpdate = (
           })
         : toast.dismiss();
     },
-    onSettled: () => {
-      void queryClient.invalidateQueries(['PROFILE', 'GET', 'ME']);
+    onSettled: (_data, _err, params: IChannelUpdateParams) => {
+      void queryClient.invalidateQueries(['CHANNEL', 'GET', params.channelId]);
     },
     ...options,
   });
