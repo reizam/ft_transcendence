@@ -97,3 +97,9 @@ export interface IChannelUpdateParams {
   channelId: number;
   minutesToMute?: number;
 }
+
+export interface IChannelJoinParams {
+  channelId: number;
+  password?: string;
+  invitedId?: number;
+}

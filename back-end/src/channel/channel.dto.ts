@@ -9,6 +9,7 @@ import {
   IsString,
   Max,
   Min,
+  MinLength,
 } from 'class-validator';
 
 export class CreateChannelDto {
@@ -16,6 +17,7 @@ export class CreateChannelDto {
   readonly isPrivate: boolean;
 
   @IsString()
+  @MinLength(3)
   @IsOptional()
   readonly password?: string;
 
@@ -35,16 +37,23 @@ export class PutChannelDto {
   readonly withPassword: boolean;
 
   @IsString()
+  @MinLength(3)
   @IsOptional()
   readonly password?: string;
 }
 
-export class JoinProtectedChannelDto {
+export class JoinChannelDto {
   @IsInt()
   readonly channelId: number;
 
   @IsString()
+  @MinLength(3)
+  @IsOptional()
   readonly password: string;
+
+  @IsInt()
+  @IsOptional()
+  readonly invitedId: number;
 }
 
 export class PostChannelSendMessageDto {

@@ -1,10 +1,11 @@
 import BasicInput from '@/components/app/inputs/BasicInput';
 import { useFormik } from 'formik';
 import React from 'react';
+import { toast } from 'react-toastify';
 import * as Yup from 'yup';
 
 const schema = Yup.object().shape({
-  password: Yup.string().required(),
+  password: Yup.string().required('You must submit a password'),
 });
 
 export type ChannelPasswordValues = {
@@ -20,7 +21,7 @@ function ChannelPassword({
   initialValues,
   onSubmit,
 }: ChannelPasswordProps): React.ReactElement {
-  const { handleSubmit, values, handleChange, isValid } = useFormik({
+  const { handleSubmit, values, handleChange, isValid, errors } = useFormik({
     initialValues,
     onSubmit,
     validationSchema: schema,
@@ -30,8 +31,11 @@ function ChannelPassword({
     if (isValid) {
       handleSubmit();
     } else {
-      // show toast error
+      toast.error(errors?.password ?? 'Password error');
     }
+  };
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') onClick();
   };
 
   return (
@@ -43,6 +47,7 @@ function ChannelPassword({
         placeholder="Password"
         value={values.password}
         onChange={handleChange('password')}
+        onKeyPress={handleKeyDown}
       />
       <button
         type="submit"

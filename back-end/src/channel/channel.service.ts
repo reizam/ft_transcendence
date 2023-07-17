@@ -13,6 +13,7 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
@@ -68,30 +69,6 @@ export class ChannelService {
       await this.setOwner(channelId);
     }
   }
-
-  // async joinChannel(userId: number, channelId: number): Promise<void> {
-  //   const channel = await this.getChannel(channelId);
-
-  //   if (!channel) {
-  //     throw new Error('Channel not found');
-  //   }
-
-  //   await this.prisma.channel.update({
-  //     where: {
-  //       id: channelId,
-  //     },
-  //     data: {
-  //       users: {
-  //         connect: {
-  //           channelId_userId: {
-  //             channelId,
-  //             userId,
-  //           },
-  //         },
-  //       },
-  //     },
-  //   });
-  // }
 
   async setOwner(channelId: number, newOwnerId?: number): Promise<void> {
     if (newOwnerId !== undefined) {
@@ -273,27 +250,69 @@ export class ChannelService {
     userId: number,
     channelId: number,
     password: string,
-  ): Promise<boolean> {
+  ): Promise<IChannel> {
     const fixedChannelId = Number(channelId);
-
     const channel = await this.prisma.channel.findFirst({
       where: {
         id: fixedChannelId,
       },
     });
 
-    if (!channel) throw new Error(`Channel [id: ${channelId}] not found`);
-    if (!channel.password)
-      throw new Error(`Channel [id: ${channelId}] not protected`);
-
-    if (!compareSync(password, channel.password)) {
-      Logger.warn(`${userId} failed to authenticate to channel ${channelId}`);
-      return false;
+    if (!channel)
+      throw new NotFoundException(`Channel [id: ${channelId}] not found`);
+    if (!channel.password) {
+      return await this.joinChannel(userId, channelId);
     }
+    if (!compareSync(password, channel.password)) {
+      Logger.warn(
+        `User ${userId} failed to authenticate to channel ${channelId}`,
+      );
+      throw new UnauthorizedException('Wrong password');
+    }
+    return await this.joinChannel(userId, channelId);
+  }
 
-    await this.createChannelUser(userId, channelId);
+  async joinChannel(userId: number, channelId: number): Promise<IChannel> {
+    const channelUser = await this.prisma.channelUser.upsert({
+      where: {
+        channelId_userId: {
+          channelId: channelId,
+          userId: userId,
+        },
+      },
+      update: {},
+      create: {
+        channelId: channelId,
+        userId: userId,
+      },
+      select: {
+        channel: {
+          select: {
+            id: true,
+            ownerId: true,
+            isPrivate: true,
+            isProtected: true,
+            users: {
+              select: {
+                isAdmin: true,
+                userId: true,
+                channelId: true,
+                user: {
+                  select: {
+                    id: true,
+                    profilePicture: true,
+                    username: true,
+                  },
+                },
+              },
+            },
+            bannedUserIds: true,
+          },
+        },
+      },
+    });
 
-    return true;
+    return channelUser.channel;
   }
 
   async getChannel(

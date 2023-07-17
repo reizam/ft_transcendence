@@ -7,6 +7,7 @@ import {
 } from '@/api';
 import {
   IChannel,
+  IChannelJoinParams,
   IChannelPage,
   IChannelPostParams,
   IChannelPutParams,
@@ -231,6 +232,27 @@ export const useChannelUpdate = (
     },
     onSettled: (_data, _err, params: IChannelUpdateParams) => {
       void queryClient.invalidateQueries(['CHANNEL', 'GET', params.channelId]);
+    },
+    ...options,
+  });
+};
+
+export const useChannelJoin = (
+  options?: UseMutationOptions<IChannel, unknown, IChannelJoinParams, unknown>
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (params: IChannelJoinParams) => {
+      const data = await postWithToken<IChannel>('/channel/join', params);
+      return data;
+    },
+    onSuccess: (data: IChannel, params: IChannelJoinParams) => {
+      void queryClient.invalidateQueries(['CHANNELS', 'GET']);
+      void queryClient.invalidateQueries(['CHANNEL', 'GET', params.channelId]);
+    },
+    onError: (err: unknown, _var: unknown) => {
+      toast.error(printChannelError(err));
     },
     ...options,
   });

@@ -3,7 +3,7 @@ import {
   CreateChannelDto,
   GetChannelMessagesDto,
   GetChannelsDto,
-  JoinProtectedChannelDto,
+  JoinChannelDto,
   PostChannelSendMessageDto,
   PutChannelDto,
   sanctionUserDto,
@@ -22,6 +22,7 @@ import {
   Body,
   ConflictException,
   Controller,
+  ForbiddenException,
   Get,
   InternalServerErrorException,
   NotFoundException,
@@ -69,15 +70,34 @@ export class ChannelController {
   }
 
   @Post('join')
-  async joinProtectedChannel(
-    @Body() data: JoinProtectedChannelDto,
+  async joinChannel(
+    @Body() data: JoinChannelDto,
     @DUser() user: User,
-  ): Promise<boolean> {
-    return await this.channelService.joinProtectedChannel(
+  ): Promise<IChannel> {
+    const channel = await this.channelService.getChannel(
       user.id,
-      data.channelId,
-      data.password,
+      Number(data.channelId),
     );
+
+    if (!channel)
+      throw new NotFoundException('Channel not found, or incorrect permission');
+    if (channel.users.find((channelUser) => channelUser.userId === user.id))
+      return channel;
+    if (channel.isProtected)
+      return await this.channelService.joinProtectedChannel(
+        user.id,
+        data.channelId,
+        data.password,
+      );
+    if (channel.isPrivate) {
+      if (!data.invitedId)
+        throw new ConflictException('You must provide the invitedId');
+      return await this.channelService.joinChannel(
+        data.invitedId,
+        data.channelId,
+      );
+    }
+    return await this.channelService.joinChannel(user.id, data.channelId);
   }
 
   @Get()
@@ -90,7 +110,10 @@ export class ChannelController {
       Number(channelId),
     );
 
-    if (!channel) throw new NotFoundException();
+    if (!channel)
+      throw new NotFoundException('Channel not found, or incorrect permission');
+    if (this.channelService.isBanned(user.id, channel.bannedUserIds))
+      throw new ForbiddenException('You are banned from this channel');
     return channel;
   }
 

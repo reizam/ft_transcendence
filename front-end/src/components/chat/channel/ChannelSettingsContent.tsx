@@ -10,6 +10,7 @@ import EditChannelForm, {
 import ChatLayout from '@/components/chat/layouts/ChatLayout';
 import { useAuth } from '@/providers/auth/auth.context';
 import { generateChannelTitles, isAdmin } from '@/utils/channel.util';
+import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
@@ -23,8 +24,8 @@ function ChannelSettingsContent({
   channelId,
 }: ChannelSettingsContentProps): React.ReactElement {
   const router = useRouter();
-
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const { data: channel, isLoading } = useChannelGet(channelId, {
     enabled: isNaN(channelId) === false && channelId !== null,
@@ -32,6 +33,7 @@ function ChannelSettingsContent({
 
   const { mutate: leaveChannel, isLoading: leaving } = useLeaveChannelDelete({
     onSuccess: () => {
+      void queryClient.invalidateQueries(['CHANNEL', 'GET', channelId]);
       void router.push('/chat');
     },
   });
