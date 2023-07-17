@@ -16,6 +16,7 @@ import { useUpdateFriends } from '@/api/friends/friends.patch.api';
 import { TiUserAdd, TiUserDelete } from 'react-icons/ti';
 import { RiPingPongFill, RiMovieFill } from 'react-icons/ri';
 import { CgUnblock, CgBlock } from 'react-icons/cg';
+import StatusInfo from '@/components/friends/line/StatusInfo';
 
 interface ProfileDataProps {
   profileData: ProfileData;
@@ -159,6 +160,10 @@ function ProfileCard({
           <div className={dashStyles.dash__profile__btns}>
             <div className={dashStyles.ctn__four_buttons}>
               <div className={dashStyles.ctn__two_buttons}>
+                {/* <StatusInfo status={user.status} /> */}
+                online
+              </div>
+              <div className={dashStyles.ctn__two_buttons}>
                 <div className={dashStyles.ctn__one_button}>
                   <button
                     onClick={(): void =>
@@ -229,6 +234,9 @@ function ProfileCard({
                     )}
                   </button>
                 </div>
+              </div>
+              <div className={dashStyles.ctn__one_long_button}>
+                <button></button>
               </div>
             </div>
           </div>

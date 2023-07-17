@@ -320,18 +320,27 @@
 }
 
 .ctn__four_buttons {
+  border: 1px solid white;
   display: flex;
   flex-wrap: wrap;
-  margin-top: 10%;
+  margin-top: 2%;
 }
 
 .ctn__two_buttons {
+  border: 1px solid salmon;
   width: 100%;
   display: flex;
 }
 
 .ctn__one_button {
+  border: 1px solid blue;
   width: 50%;
+}
+∏
+.ctn__one_long_button {
+  border: 1px solid greenyellow;
+  display: flex;
+  width: 100%;
 }
 
 .style__button__pro {
@@ -349,7 +358,6 @@
 .style__button__pro:hover {
   opacity: calc(95%);
   border: 1px solid var(--container-color);
-  
 }
 
 @media (max-width: 1100px) {
@@ -474,16 +482,15 @@
     display: flex;
     margin-top: 0;
   }
-  
+
   .ctn__two_buttons {
     width: 50%;
     display: flex;
   }
-  
+
   .ctn__one_button {
     width: 50%;
   }
-
 }
 
 @media (max-width: 450px) {
