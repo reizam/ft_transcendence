@@ -319,7 +319,7 @@
   color: aliceblue;
 }
 
-.ctn__four_buttons {
+ .ctn__four_buttons {
   display: flex;
   flex-wrap: wrap;
   margin-top: 2%;
