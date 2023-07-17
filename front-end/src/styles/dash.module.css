@@ -320,26 +320,21 @@
 }
 
 .ctn__four_buttons {
-  border: 1px solid white;
   display: flex;
   flex-wrap: wrap;
   margin-top: 2%;
 }
 
 .ctn__two_buttons {
-  border: 1px solid salmon;
   width: 100%;
   display: flex;
 }
 
 .ctn__one_button {
-  border: 1px solid blue;
   width: 50%;
 }
-∏
+
 .ctn__one_long_button {
-  border: 1px solid greenyellow;
-  display: flex;
   width: 100%;
 }
 
@@ -349,10 +344,10 @@
   align-items: center;
   background-color: var(--main-theme-color);
   color: var(--container-color);
-  width: 5vw;
-  aspect-ratio: 7/3;
+  width: 4vw;
+  aspect-ratio: 5/2;
   border-radius: var(--radius-container);
-  margin: 15% auto;
+  margin: 5% auto;
 }
 
 .style__button__pro:hover {
