@@ -12,13 +12,11 @@
 
     /*  --  LIST_CTN    --  */
     .ctn_list {
-        /* border: 2px salmon solid; */
         display: flex;
     }
 
         /*  --  NAME_CTN    --  */
         .ctn_user_name {
-            /* border: 1px solid blue; */
             width: 40%;
             display: flex;
             align-items: center;
@@ -26,7 +24,6 @@
 
         /*  --  BUTTON_CTN    --  */
         .ctn_list_btn {
-            /* border: 1px solid salmon; */
             width: 60%;
             display: flex;
             background-color: var(--background);
@@ -34,14 +31,16 @@
         }
 
         .ctn_btn {
-            /* border: 1px solid greenyellow; */
             margin-left: 2%;
         }
 
         .style_btn_desactivate {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             background-color: var(--background);
-            width: 70px;
-            aspect-ratio: 3/2;
+            width: 40px;
+            aspect-ratio: 1/1;
             border: 1px solid var(--container-color);
             border-radius: 9999px;
         }
@@ -52,11 +51,14 @@
         }
 
         .style_btn_activate {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             background-color: var(--container-color);
             color: var(--background);
             font-weight: 600;
-            width: 70px;
-            aspect-ratio: 3/2;
+            width: 40px;
+            aspect-ratio: 1/1;
             border: 1px solid var(--container-color);
             border-radius: 9999px;
         }

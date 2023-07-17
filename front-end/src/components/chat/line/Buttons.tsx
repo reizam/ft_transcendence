@@ -5,6 +5,13 @@ import Modal from '@/components/chat/mute/Mute';
 import { useAuth } from '@/providers/auth/auth.context';
 import { useChannelUpdate } from '@/api/channel/channel.api';
 import { useBlockUser } from '@/api/user/user.patch.api';
+import { FaUser, FaUserShield, FaMicrophone, FaMicrophoneSlash } from 'react-icons/fa';
+import { LiaHandMiddleFingerSolid, LiaHandPeace } from 'react-icons/lia';
+import { ImCross } from 'react-icons/im';
+import { CgBlock, CgUnblock } from 'react-icons/cg';
+import { AiFillMessage } from 'react-icons/ai';
+import { TiUserAdd } from 'react-icons/ti';
+import { RiPingPongFill } from 'react-icons/ri';
 
 interface ButtonsProps {
   user: IChannelUser;
@@ -45,8 +52,9 @@ function GetAdminButton(user: IChannelUser): ReactElement {
         <button
           className={chatStyles.style_btn_activate}
           onClick={handleDemote}
+          name="Admin"
         >
-          Admin
+          <FaUser size='24px' />
         </button>
       </div>
     );
@@ -56,8 +64,9 @@ function GetAdminButton(user: IChannelUser): ReactElement {
         <button
           className={chatStyles.style_btn_desactivate}
           onClick={handlePromote}
+          name="Admin"
         >
-          Admin
+          <FaUserShield size='24px' />
         </button>
       </div>
     );
@@ -103,8 +112,9 @@ function GetMuteButton(asMuted: boolean, user: IChannelUser): ReactElement {
         <button
           className={chatStyles.style_btn_activate}
           onClick={handleUnmute}
+          name="Mute"
         >
-          Unmute
+          <FaMicrophone size='24px' />
         </button>
       </div>
     );
@@ -115,8 +125,9 @@ function GetMuteButton(asMuted: boolean, user: IChannelUser): ReactElement {
           <button
             className={chatStyles.style_btn_desactivate}
             onClick={() => setShowModal(true)}
+            name="Unmute"
           >
-            Mute
+            <FaMicrophoneSlash size='24px' />
           </button>
         </div>
         <Modal
@@ -162,8 +173,12 @@ function GetBanButton(asBanned: boolean, user: IChannelUser): ReactElement {
   if (isBanned) {
     return (
       <div className={chatStyles.ctn_btn}>
-        <button className={chatStyles.style_btn_activate} onClick={handleUnban}>
-          Unban
+        <button
+          className={chatStyles.style_btn_activate}
+          onClick={handleUnban}
+          name="Unban"
+        >
+          <LiaHandPeace size='24px' />
         </button>
       </div>
     );
@@ -173,8 +188,9 @@ function GetBanButton(asBanned: boolean, user: IChannelUser): ReactElement {
         <button
           className={chatStyles.style_btn_desactivate}
           onClick={handleBan}
+          name="Ban"
         >
-          Ban
+          <LiaHandMiddleFingerSolid size='24px' />
         </button>
       </div>
     );
@@ -193,8 +209,12 @@ function GetKickButton(user: IChannelUser): ReactElement {
 
   return (
     <div className={chatStyles.ctn_btn}>
-      <button className={chatStyles.style_btn_desactivate} onClick={handleKick}>
-        Kick
+      <button
+        className={chatStyles.style_btn_desactivate}
+        onClick={handleKick}
+        name="Kick"
+      >
+        <ImCross />
       </button>
     </div>
   );
@@ -212,8 +232,9 @@ function GetBlockButton(isBlocked: boolean, user: IChannelUser): ReactElement {
             onClick={(): void =>
               blockUser({ id: user.userId, toggleBlock: !isBlocked })
             }
+            name="Unblock"
           >
-            Unblock
+            <CgUnblock size="24px" />
           </button>
         </div>
       );
@@ -225,12 +246,52 @@ function GetBlockButton(isBlocked: boolean, user: IChannelUser): ReactElement {
             onClick={(): void =>
               blockUser({ id: user.userId, toggleBlock: !isBlocked })
             }
+            name="Block"
           >
-            Block
+            <CgBlock size='24px' />
           </button>
         </div>
       );
   }
+}
+
+function  GetMessageButton(): ReactElement {
+  return (
+    <div className={chatStyles.ctn_btn}>
+        <button
+          className={chatStyles.style_btn_desactivate}
+          name="Private Message"
+        >
+          <AiFillMessage size="24px" />
+        </button>
+    </div>
+  )
+}
+
+function  GetAddButton(): ReactElement {
+  return (
+    <div className={chatStyles.ctn_btn}>
+      <button
+        className={chatStyles.style_btn_desactivate}
+        name="Add"
+      >
+        <TiUserAdd size="24px" />
+      </button>
+    </div>
+  )
+}
+
+function GetPlayMatch(): ReactElement {
+  return (
+    <div className={chatStyles.ctn_btn}>
+      <button
+        className={chatStyles.style_btn_desactivate}
+        name="Launch a Game"
+      >
+        <RiPingPongFill size="24px" />
+      </button>
+    </div>
+  )
 }
 
 function Buttons({ user, isInChannel, isBanned }: ButtonsProps): ReactElement {
@@ -265,6 +326,9 @@ function Buttons({ user, isInChannel, isBanned }: ButtonsProps): ReactElement {
     return (
       <div className={chatStyles.ctn_list_btn}>
         {isInChannel && GetAdminButton(user)}
+        {!isInChannel && GetAddButton()}
+        {isInChannel && GetPlayMatch()}
+        {isInChannel && GetMessageButton()}
         {isInChannel && GetMuteButton(isMuted(user.mutedUntil), user)}
         {isInChannel && GetKickButton(user)}
         {GetBanButton(isBanned, user)}
