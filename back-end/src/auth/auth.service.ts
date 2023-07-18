@@ -2,6 +2,7 @@ import { IUser } from '@/auth/types/auth.types';
 import { IJWTPayload } from '@/auth/types/jwt.types';
 import { PrismaService } from '@/prisma/prisma.service';
 import { WithWasJustCreated } from '@/profile/types/profile.types';
+import { Status } from '@/user/types/user.types';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import type { User } from '@prisma/client';
@@ -72,6 +73,7 @@ export class AuthService {
             'data:image/jpg;base64,' +
             Buffer.from(image.data).toString('base64'),
           has2FA: false,
+          status: Status.ONLINE,
         },
         include: {
           matchHistory: true,

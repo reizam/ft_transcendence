@@ -1,23 +1,24 @@
 import { ReactElement } from 'react';
 import friendsStyles from '@/styles/friends.module.css';
+import { Status } from '@/api/user/user.types';
 
 interface StatusProps {
-  status: string;
+  status: Status;
 }
 
-function GetColor(status: string): ReactElement {
+function GetColor(status: Status): ReactElement {
   switch (status) {
-    case 'Offline':
+    case Status.OFFLINE:
       return (
         <span className={`${friendsStyles.badge} ${friendsStyles.red}`}></span>
       );
-    case 'Online':
+    case Status.ONLINE:
       return (
         <span
           className={`${friendsStyles.badge} ${friendsStyles.green}`}
         ></span>
       );
-    case 'In-Game':
+    case Status.IN_GAME:
       return (
         <span
           className={`${friendsStyles.badge} ${friendsStyles.orange}`}

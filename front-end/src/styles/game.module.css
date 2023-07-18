@@ -51,13 +51,20 @@
 
 .style__button {
   background-color: var(--main-theme-color);
-  width: 30vw;
+  width: 25vw;
   aspect-ratio: 6 / 1;
-  border-radius: var(--radius-container);
+  border-radius: 9999px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .style__button:hover {
   opacity: calc(95%);
   border: 1px solid var(--container-color);
+}
+
+.style_part_one {
+  margin-right: 3%;
 }
 
 .ctn__countdown {

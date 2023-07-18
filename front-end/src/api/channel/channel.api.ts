@@ -13,6 +13,7 @@ import {
   IChannelPutParams,
   IChannelUpdateParams,
   IChatUser,
+  IJoinDMParams,
   IMessage,
   IMessagePage,
   IMessagePost,
@@ -250,6 +251,27 @@ export const useChannelJoin = (
     onSuccess: (data: IChannel, params: IChannelJoinParams) => {
       void queryClient.invalidateQueries(['CHANNELS', 'GET']);
       void queryClient.invalidateQueries(['CHANNEL', 'GET', params.channelId]);
+    },
+    onError: (err: unknown, _var: unknown) => {
+      toast.error(printChannelError(err));
+    },
+    ...options,
+  });
+};
+
+export const useDMJoin = (
+  options?: UseMutationOptions<IChannel, unknown, IJoinDMParams, unknown>
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (params: IJoinDMParams) => {
+      const data = await postWithToken<IChannel>('/channel/joinDM', params);
+      return data;
+    },
+    onSuccess: (data: IChannel, params: IJoinDMParams) => {
+      void queryClient.invalidateQueries(['CHANNELS', 'GET']);
+      void queryClient.invalidateQueries(['CHANNEL', 'GET', data.id]);
     },
     onError: (err: unknown, _var: unknown) => {
       toast.error(printChannelError(err));

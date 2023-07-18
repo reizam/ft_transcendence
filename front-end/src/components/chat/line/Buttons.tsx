@@ -5,94 +5,75 @@ import Modal from '@/components/chat/mute/Mute';
 import { useAuth } from '@/providers/auth/auth.context';
 import { useChannelUpdate } from '@/api/channel/channel.api';
 import { useBlockUser } from '@/api/user/user.patch.api';
+import {
+  FaUser,
+  FaUserShield,
+  FaMicrophone,
+  FaMicrophoneSlash,
+} from 'react-icons/fa';
+import { LiaHandMiddleFingerSolid, LiaHandPeace } from 'react-icons/lia';
+import { ImCross } from 'react-icons/im';
+import { CgBlock, CgUnblock } from 'react-icons/cg';
+import { AiFillMessage } from 'react-icons/ai';
+import { TiUserAdd } from 'react-icons/ti';
+import { RiPingPongFill } from 'react-icons/ri';
 
 interface ButtonsProps {
   user: IChannelUser;
   isInChannel: boolean;
   isBanned: boolean;
+  isPrivateChannel: boolean;
 }
 
 function GetAdminButton(user: IChannelUser): ReactElement {
   const [isAdmin, setIsAdmin] = useState(user.isAdmin);
-
-  const { mutate: demote } = useChannelUpdate({});
-  const handleDemote = () => {
-    demote(
+  const { mutate: updateStatus } = useChannelUpdate({});
+  const changeStatus = (newStatus: Sanction) => {
+    updateStatus(
       {
-        sanction: Sanction.DEMOTE,
+        sanction: newStatus,
         userId: user.userId,
         channelId: user.channelId,
       },
-      { onSuccess: () => setIsAdmin(false) }
+      { onSuccess: () => setIsAdmin(!isAdmin) }
     );
   };
 
-  const { mutate: promote } = useChannelUpdate();
-  const handlePromote = () => {
-    promote(
-      {
-        sanction: Sanction.PROMOTE,
-        userId: user.userId,
-        channelId: user.channelId,
-      },
-      { onSuccess: () => setIsAdmin(true) }
-    );
-  };
-
-  if (isAdmin) {
-    return (
-      <div className={chatStyles.ctn_btn}>
-        <button
-          className={chatStyles.style_btn_activate}
-          onClick={handleDemote}
-        >
-          Admin
-        </button>
-      </div>
-    );
-  } else {
-    return (
-      <div className={chatStyles.ctn_btn}>
-        <button
-          className={chatStyles.style_btn_desactivate}
-          onClick={handlePromote}
-        >
-          Admin
-        </button>
-      </div>
-    );
-  }
+  return (
+    <div className={chatStyles.ctn_btn}>
+      <button
+        className={
+          isAdmin
+            ? chatStyles.style_btn_activate
+            : chatStyles.style_btn_desactivate
+        }
+        onClick={() =>
+          changeStatus(isAdmin ? Sanction.DEMOTE : Sanction.PROMOTE)
+        }
+        title={isAdmin ? 'Demote' : 'Promote'}
+      >
+        {isAdmin ? <FaUser size="24px" /> : <FaUserShield size="24px" />}
+      </button>
+    </div>
+  );
 }
 
 function GetMuteButton(asMuted: boolean, user: IChannelUser): ReactElement {
   const [showModal, setShowModal] = useState(false);
   const [isMuted, setIsMuted] = useState(asMuted);
-
-  const { mutate: unmute } = useChannelUpdate();
-  const handleUnmute = () => {
-    unmute(
-      {
-        sanction: Sanction.UNMUTE,
-        userId: user.userId,
-        channelId: user.channelId,
-      },
-      { onSuccess: () => setIsMuted(false) }
-    );
-  };
-
   const [muteInMinutes, setMuteInMinutes] = useState<string>('');
-  const { mutate: mute } = useChannelUpdate();
-  const handleMute = () => {
-    mute(
+  const { mutate: updateMute } = useChannelUpdate();
+  const changeMute = (sanction: Sanction) => {
+    updateMute(
       {
-        sanction: Sanction.MUTE,
+        sanction,
         userId: user.userId,
         channelId: user.channelId,
-        minutesToMute: parseInt(muteInMinutes),
+        minutesToMute: isMuted ? undefined : parseInt(muteInMinutes),
       },
       {
-        onSuccess: () => setIsMuted(true),
-        onSettled: () => setShowModal(false),
+        onSuccess: () => setIsMuted(!isMuted),
+        onSettled: isMuted ? undefined : () => setShowModal(false),
       }
     );
   };
@@ -102,9 +83,10 @@ function GetMuteButton(asMuted: boolean, user: IChannelUser): ReactElement {
       <div className={chatStyles.ctn_btn}>
         <button
           className={chatStyles.style_btn_activate}
-          onClick={handleUnmute}
+          onClick={() => changeMute(Sanction.UNMUTE)}
+          title="Unmute"
         >
-          Unmute
+          <FaMicrophone size="24px" />
         </button>
       </div>
     );
@@ -115,8 +97,9 @@ function GetMuteButton(asMuted: boolean, user: IChannelUser): ReactElement {
           <button
             className={chatStyles.style_btn_desactivate}
             onClick={() => setShowModal(true)}
+            title="Mute"
           >
-            Mute
+            <FaMicrophoneSlash size="24px" />
           </button>
         </div>
         <Modal
@@ -124,7 +107,7 @@ function GetMuteButton(asMuted: boolean, user: IChannelUser): ReactElement {
           isVisible={showModal}
           valueInMinutes={muteInMinutes}
           setMuteInMinutes={setMuteInMinutes}
-          onClick={handleMute}
+          onClick={() => changeMute(Sanction.MUTE)}
           onClose={() => setShowModal(false)}
         />
       </Fragment>
@@ -134,51 +117,37 @@ function GetMuteButton(asMuted: boolean, user: IChannelUser): ReactElement {
 
 function GetBanButton(asBanned: boolean, user: IChannelUser): ReactElement {
   const [isBanned, setIsBanned] = useState(asBanned);
-
-  const { mutate: unban } = useChannelUpdate();
-  const handleUnban = () => {
-    unban(
+  const { mutate: updateBan } = useChannelUpdate();
+  const changeBan = (sanction: Sanction) => {
+    updateBan(
       {
-        sanction: Sanction.UNBAN,
+        sanction,
         userId: user.userId,
         channelId: user.channelId,
       },
-      { onSuccess: () => setIsBanned(false) }
+      { onSuccess: () => setIsBanned(!isBanned) }
     );
   };
 
-  const { mutate: ban } = useChannelUpdate();
-  const handleBan = () => {
-    ban(
-      {
-        sanction: Sanction.BAN,
-        userId: user.userId,
-        channelId: user.channelId,
-      },
-      { onSuccess: () => setIsBanned(true) }
-    );
-  };
-
-  if (isBanned) {
-    return (
-      <div className={chatStyles.ctn_btn}>
-        <button className={chatStyles.style_btn_activate} onClick={handleUnban}>
-          Unban
-        </button>
-      </div>
-    );
-  } else {
-    return (
-      <div className={chatStyles.ctn_btn}>
-        <button
-          className={chatStyles.style_btn_desactivate}
-          onClick={handleBan}
-        >
-          Ban
-        </button>
-      </div>
-    );
-  }
+  return (
+    <div className={chatStyles.ctn_btn}>
+      <button
+        className={
+          isBanned
+            ? chatStyles.style_btn_activate
+            : chatStyles.style_btn_desactivate
+        }
+        onClick={() => changeBan(isBanned ? Sanction.UNBAN : Sanction.BAN)}
+        title={isBanned ? 'Unban' : 'Ban'}
+      >
+        {isBanned ? (
+          <LiaHandPeace size="24px" />
+        ) : (
+          <LiaHandMiddleFingerSolid size="24px" />
+        )}
+      </button>
+    </div>
+  );
 }
 
 function GetKickButton(user: IChannelUser): ReactElement {
@@ -193,8 +162,12 @@ function GetKickButton(user: IChannelUser): ReactElement {
 
   return (
     <div className={chatStyles.ctn_btn}>
-      <button className={chatStyles.style_btn_desactivate} onClick={handleKick}>
-        Kick
+      <button
+        className={chatStyles.style_btn_desactivate}
+        onClick={handleKick}
+        title="Kick"
+      >
+        <ImCross />
       </button>
     </div>
   );
@@ -203,37 +176,70 @@ function GetKickButton(user: IChannelUser): ReactElement {
 function GetBlockButton(isBlocked: boolean, user: IChannelUser): ReactElement {
   const { mutate: blockUser } = useBlockUser();
 
-  switch (isBlocked) {
-    case true:
-      return (
-        <div className={chatStyles.ctn_btn}>
-          <button
-            className={chatStyles.style_btn_activate}
-            onClick={(): void =>
-              blockUser({ id: user.userId, toggleBlock: !isBlocked })
-            }
-          >
-            Unblock
-          </button>
-        </div>
-      );
-    default:
-      return (
-        <div className={chatStyles.ctn_btn}>
-          <button
-            className={chatStyles.style_btn_desactivate}
-            onClick={(): void =>
-              blockUser({ id: user.userId, toggleBlock: !isBlocked })
-            }
-          >
-            Block
-          </button>
-        </div>
-      );
-  }
+  return (
+    <div className={chatStyles.ctn_btn}>
+      <button
+        className={
+          isBlocked
+            ? chatStyles.style_btn_activate
+            : chatStyles.style_btn_desactivate
+        }
+        onClick={(): void =>
+          blockUser({ id: user.userId, toggleBlock: !isBlocked })
+        }
+        title={isBlocked ? 'Unblock' : 'Block'}
+      >
+        {isBlocked ? <CgUnblock size="24px" /> : <CgBlock size="24px" />}
+      </button>
+    </div>
+  );
 }
 
-function Buttons({ user, isInChannel, isBanned }: ButtonsProps): ReactElement {
+function GetMessageButton(): ReactElement {
+  return (
+    <div className={chatStyles.ctn_btn}>
+      <button
+        className={chatStyles.style_btn_desactivate}
+        title="Private Message"
+      >
+        <AiFillMessage size="24px" />
+      </button>
+    </div>
+  );
+}
+
+function GetAddButton(): ReactElement {
+  return (
+    <div className={chatStyles.ctn_btn}>
+      <button
+        className={chatStyles.style_btn_desactivate}
+        title="Add in channel"
+      >
+        <TiUserAdd size="24px" />
+      </button>
+    </div>
+  );
+}
+
+function GetPlayMatch(): ReactElement {
+  return (
+    <div className={chatStyles.ctn_btn}>
+      <button
+        className={chatStyles.style_btn_desactivate}
+        title="Let's play a match"
+      >
+        <RiPingPongFill size="24px" />
+      </button>
+    </div>
+  );
+}
+
+function Buttons({
+  user,
+  isInChannel,
+  isBanned,
+  isPrivateChannel,
+}: ButtonsProps): ReactElement {
   const { user: socketUser } = useAuth();
   const isBlocked = React.useMemo(
     () => socketUser?.blockedUsers.some((u) => u.id === user?.userId),
@@ -265,6 +271,9 @@ function Buttons({ user, isInChannel, isBanned }: ButtonsProps): ReactElement {
     return (
       <div className={chatStyles.ctn_list_btn}>
         {isInChannel && GetAdminButton(user)}
+        {!isInChannel && isPrivateChannel && GetAddButton()}
+        {isInChannel && GetPlayMatch()}
+        {isInChannel && GetMessageButton()}
         {isInChannel && GetMuteButton(isMuted(user.mutedUntil), user)}
         {isInChannel && GetKickButton(user)}
         {GetBanButton(isBanned, user)}

@@ -1,7 +1,10 @@
+import { Status } from '@/api/user/user.types';
+
 export interface IChatUser {
   id: number;
   username: string;
   profilePicture: string;
+  status: Status;
 }
 
 export interface IChannel {
@@ -103,4 +106,8 @@ export interface IChannelJoinParams {
   channelId: number;
   password?: string;
   invitedId?: number;
+}
+
+export interface IJoinDMParams {
+  otherUserId: number;
 }

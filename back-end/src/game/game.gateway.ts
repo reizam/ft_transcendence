@@ -29,6 +29,8 @@ export class GameGateway {
     if (game.status === GameState.STOPPED) {
       this.schedulerRegistry.deleteInterval(`${game.id}`);
       game.finishedAt = new Date();
+      this.gameService.updateUserStatus(game.playerOneId);
+      this.gameService.updateUserStatus(game.playerTwoId);
 
       const winnerId =
         game.playerOneScore > game.playerTwoScore

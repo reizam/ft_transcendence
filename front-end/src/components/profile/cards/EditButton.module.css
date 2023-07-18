@@ -2,7 +2,7 @@
   background-color: var(--main-theme-color);
   width: 10vw;
   aspect-ratio: 7 / 2;
-  border-radius: var(--radius-container);
+  border-radius: 99999px;
 }
 
 .style__button:hover {

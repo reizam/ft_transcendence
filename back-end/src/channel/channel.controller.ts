@@ -225,7 +225,7 @@ export class ChannelController {
       (sanctionUserDto.sanction === Sanction.MUTE &&
         sanctionUserDto.minutesToMute)
     ) {
-      await this.channelService.changeStatus(
+      await this.channelService.changeSanctionOrPrivileges(
         user.id,
         sanctionUserDto.userId,
         sanctionUserDto.channelId,

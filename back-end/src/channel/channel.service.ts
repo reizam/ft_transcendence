@@ -9,6 +9,7 @@ import {
 } from '@/channel/types/channel.types';
 import { PrismaService } from '@/prisma/prisma.service';
 import {
+  ConflictException,
   ForbiddenException,
   Injectable,
   Logger,
@@ -35,13 +36,18 @@ export class ChannelService {
     if (typeof channelOrId === 'number') {
       channel = await this.getChannel(userId, channelOrId);
       if (!channel) {
-        throw new Error('Channel not found, or incorrect permission');
+        throw new NotFoundException(
+          'Channel not found, or incorrect permission',
+        );
       }
       channelId = channelOrId;
     } else {
       channel = channelOrId;
       channelId = channel.id;
     }
+
+    if (channel.isDM)
+      throw new ConflictException('You cannot leave a DM channel');
 
     await this.prisma.channel.update({
       where: {
@@ -304,6 +310,7 @@ export class ChannelService {
                     id: true,
                     profilePicture: true,
                     username: true,
+                    status: true,
                   },
                 },
               },
@@ -320,12 +327,23 @@ export class ChannelService {
   async joinDMChannel(userId: number, otherUserId: number): Promise<IChannel> {
     let channel: IChannel | null = await this.prisma.channel.findFirst({
       where: {
-        users: {
-          some: {
-            AND: [{ userId: userId }, { userId: otherUserId }],
+        AND: [
+          {
+            users: {
+              some: {
+                userId: userId,
+              },
+            },
           },
-        },
-        isDM: true,
+          {
+            users: {
+              some: {
+                userId: otherUserId,
+              },
+            },
+          },
+          { isDM: true },
+        ],
       },
       select: {
         id: true,
@@ -344,6 +362,7 @@ export class ChannelService {
                 id: true,
                 profilePicture: true,
                 username: true,
+                status: true,
               },
             },
           },
@@ -401,6 +420,7 @@ export class ChannelService {
                 id: true,
                 profilePicture: true,
                 username: true,
+                status: true,
               },
             },
           },
@@ -444,6 +464,7 @@ export class ChannelService {
                 id: true,
                 profilePicture: true,
                 username: true,
+                status: true,
               },
             },
           },
@@ -526,6 +547,7 @@ export class ChannelService {
                 id: true,
                 profilePicture: true,
                 username: true,
+                status: true,
               },
             },
           },
@@ -673,7 +695,7 @@ export class ChannelService {
     });
   }
 
-  async changeStatus(
+  async changeSanctionOrPrivileges(
     requesterUserId: number,
     targetUserId: number,
     channelId: number,
@@ -813,6 +835,7 @@ export class ChannelService {
         id: true,
         username: true,
         profilePicture: true,
+        status: true,
       },
     });
   }

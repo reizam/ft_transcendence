@@ -34,6 +34,8 @@ model User {
   channels          ChannelUser[]
   messages          Message[]
 
+  status            String        // offline, online, in-game
+
   elo               Int           @default(1000)
   wins              Int           @default(0)
   draws             Int           @default(0)

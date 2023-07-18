@@ -1,68 +1,70 @@
 /*  --  USER_CTN    --  */
 .ctn_user {
-    /* border: 2px solid green; */
-    width: 80%;
+  /* border: 2px solid green; */
+  width: 80%;
 }
 
 .h2_user {
-    border-bottom: 1px solid var(--container-color);
-    font-family: var(--title-font);
-    margin-bottom: 2%;
+  border-bottom: 1px solid var(--container-color);
+  font-family: var(--title-font);
+  margin-bottom: 2%;
 }
 
-    /*  --  LIST_CTN    --  */
-    .ctn_list {
-        /* border: 2px salmon solid; */
-        display: flex;
-    }
+/*  --  LIST_CTN    --  */
+.ctn_list {
+  display: flex;
+}
 
-        /*  --  NAME_CTN    --  */
-        .ctn_user_name {
-            /* border: 1px solid blue; */
-            width: 40%;
-            display: flex;
-            align-items: center;
-        }
+/*  --  NAME_CTN    --  */
+.ctn_user_name {
+  width: 40%;
+  display: flex;
+  align-items: center;
+}
 
-        /*  --  BUTTON_CTN    --  */
-        .ctn_list_btn {
-            /* border: 1px solid salmon; */
-            width: 60%;
-            display: flex;
-            background-color: var(--background);
-            justify-content: right;
-        }
+/*  --  BUTTON_CTN    --  */
+.ctn_list_btn {
+  width: 60%;
+  display: flex;
+  background-color: var(--background);
+  justify-content: right;
+}
 
-        .ctn_btn {
-            /* border: 1px solid greenyellow; */
-            margin-left: 2%;
-        }
+.ctn_btn {
+  margin-left: 2%;
+}
 
-        .style_btn_desactivate {
-            background-color: var(--background);
-            width: 70px;
-            aspect-ratio: 3/2;
-            border: 1px solid var(--container-color);
-            border-radius: 9999px;
-        }
+.style_btn_desactivate {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--background);
+  width: 40px;
+  aspect-ratio: 1/1;
+  border: 1px solid var(--container-color);
+  border-radius: 9999px;
+}
 
-        .style_btn_desactivate:hover {
-            background-color: var(--container-color);
-            color: var(--background);
-        }
+.style_btn_desactivate:hover {
+  background-color: var(--container-color);
+  color: var(--background);
+}
 
-        .style_btn_activate {
-            background-color: var(--container-color);
-            color: var(--background);
-            font-weight: 600;
-            width: 70px;
-            aspect-ratio: 3/2;
-            border: 1px solid var(--container-color);
-            border-radius: 9999px;
-        }
+.style_btn_activate {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--container-color);
+  color: var(--background);
+  font-weight: 600;
+  width: 40px;
+  aspect-ratio: 1/1;
+  border: 1px solid var(--container-color);
+  border-radius: 9999px;
+}
 
-        .style_btn_activate:hover {
-            background-color: var(--background);
-            color: var(--container-color);
-            font-weight: 500;
-        }
+.style_btn_activate:hover {
+  background-color: var(--background);
+  color: var(--container-color);
+  font-weight: 500;
+}

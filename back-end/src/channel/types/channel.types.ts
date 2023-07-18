@@ -2,6 +2,7 @@ export interface IChatUser {
   id: number;
   username: string;
   profilePicture: string;
+  status: string;
 }
 
 export interface IChannel {

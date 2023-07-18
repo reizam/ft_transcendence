@@ -16,6 +16,9 @@ import { useUpdateFriends } from '@/api/friends/friends.patch.api';
 import { TiUserAdd, TiUserDelete } from 'react-icons/ti';
 import { RiPingPongFill, RiMovieFill } from 'react-icons/ri';
 import { CgUnblock, CgBlock } from 'react-icons/cg';
+import { AiFillMessage } from 'react-icons/ai';
+import StatusInfo from '@/components/friends/line/StatusInfo';
+import { useDMJoin } from '@/api/channel/channel.api';
 
 interface ProfileDataProps {
   profileData: ProfileData;
@@ -36,6 +39,7 @@ function ProfileCard({
     isError: isFriendsError,
   } = useGetFriends();
   const { mutate: updateFriends } = useUpdateFriends();
+  const { mutate: joinDM } = useDMJoin();
   const { user } = useAuth();
   const { socket } = useSocket();
   const router = useRouter();
@@ -76,6 +80,17 @@ function ProfileCard({
   }): void => {
     socket?.volatile.emit('watchGame', challengedUser, (gameId: string) =>
       router.push('/game/' + gameId)
+    );
+  };
+
+  const handleJoinDM = () => {
+    joinDM(
+      { otherUserId: profileData.id },
+      {
+        onSuccess: (channel) => {
+          router.push('/chat/channel/' + channel.id);
+        },
+      }
     );
   };
 
@@ -153,11 +168,12 @@ function ProfileCard({
           </EditButton>
         </div>
       ) : (
-        // TODO: Add Status, and disable buttons appropriately
-        // Also add a button to DM
         profileData.id !== user?.id && (
           <div className={dashStyles.dash__profile__btns}>
             <div className={dashStyles.ctn__four_buttons}>
+              <div className={dashStyles.ctn__one_long_button}>
+                <StatusInfo status={profileData.status} />
+              </div>
               <div className={dashStyles.ctn__two_buttons}>
                 <div className={dashStyles.ctn__one_button}>
                   <button
@@ -229,6 +245,15 @@ function ProfileCard({
                     )}
                   </button>
                 </div>
+              </div>
+              <div className={dashStyles.ctn__one_long_button}>
+                <button
+                  onClick={handleJoinDM}
+                  className={dashStyles.style__button__pro}
+                  title="Chat in private"
+                >
+                  <AiFillMessage size="24px" />
+                </button>
               </div>
             </div>
           </div>

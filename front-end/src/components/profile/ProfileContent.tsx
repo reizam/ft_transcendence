@@ -25,6 +25,7 @@ function ProfileContent({
           lastName: userData.lastName,
           profilePicture: userData.profilePicture,
           has2FA: userData.has2FA,
+          status: userData.status,
         }}
         canEdit={canEdit}
       />
