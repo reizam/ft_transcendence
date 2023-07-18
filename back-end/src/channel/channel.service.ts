@@ -292,11 +292,13 @@ export class ChannelService {
             ownerId: true,
             isPrivate: true,
             isProtected: true,
+            isDM: true,
             users: {
               select: {
                 isAdmin: true,
                 userId: true,
                 channelId: true,
+                mutedUntil: true,
                 user: {
                   select: {
                     id: true,
@@ -315,13 +317,54 @@ export class ChannelService {
     return channelUser.channel;
   }
 
+  async joinDMChannel(userId: number, otherUserId: number): Promise<IChannel> {
+    let channel: IChannel | null = await this.prisma.channel.findFirst({
+      where: {
+        users: {
+          some: {
+            AND: [{ userId: userId }, { userId: otherUserId }],
+          },
+        },
+        isDM: true,
+      },
+      select: {
+        id: true,
+        ownerId: true,
+        isPrivate: true,
+        isProtected: true,
+        isDM: true,
+        users: {
+          select: {
+            isAdmin: true,
+            userId: true,
+            channelId: true,
+            mutedUntil: true,
+            user: {
+              select: {
+                id: true,
+                profilePicture: true,
+                username: true,
+              },
+            },
+          },
+        },
+        bannedUserIds: true,
+      },
+    });
+
+    if (!channel) {
+      channel = await this.createChannel(userId, true, undefined, otherUserId);
+    }
+    return channel;
+  }
+
   async getChannel(
     userId: number,
     channelId: number,
   ): Promise<IChannel | null> {
     const fixedChannelId = Number(channelId);
 
-    const where = {
+    const where: Prisma.ChannelWhereInput = {
       OR: [
         {
           id: fixedChannelId,
@@ -337,7 +380,7 @@ export class ChannelService {
           isPrivate: false,
         },
       ],
-    } as Prisma.ChannelWhereInput;
+    };
 
     const channel = await this.prisma.channel.findFirst({
       where,
@@ -346,6 +389,7 @@ export class ChannelService {
         ownerId: true,
         isPrivate: true,
         isProtected: true,
+        isDM: true,
         users: {
           select: {
             isAdmin: true,
@@ -372,18 +416,20 @@ export class ChannelService {
     ownerUserId: number,
     isPrivate: boolean,
     password?: string,
+    otherUserId?: number,
   ): Promise<IChannel> {
     const channel = await this.prisma.channel.create({
       data: {
         isPrivate,
         ownerId: ownerUserId,
-        isProtected: password ? true : false,
-        password: password ? hashSync(password, 10) : null,
+        isProtected: !!password ? true : false,
+        password: !!password ? hashSync(password, 10) : null,
+        isDM: !!otherUserId ? true : false,
         users: {
-          create: {
-            userId: ownerUserId,
-            isAdmin: true,
-          },
+          create: [
+            { userId: ownerUserId, isAdmin: true },
+            ...(otherUserId ? [{ userId: otherUserId, isAdmin: true }] : []),
+          ],
         },
         bannedUserIds: [],
       },
@@ -468,6 +514,7 @@ export class ChannelService {
         ownerId: true,
         isPrivate: true,
         isProtected: true,
+        isDM: true,
         users: {
           select: {
             isAdmin: true,

@@ -8,6 +8,7 @@ export interface IChannel {
   id: number;
   isPrivate: boolean;
   isProtected: boolean;
+  isDM: boolean;
   ownerId: number;
   users: IChannelUser[];
   bannedUserIds: number[];

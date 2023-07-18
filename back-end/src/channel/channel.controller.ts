@@ -4,6 +4,7 @@ import {
   GetChannelMessagesDto,
   GetChannelsDto,
   JoinChannelDto,
+  JoinDMDto,
   PostChannelSendMessageDto,
   PutChannelDto,
   sanctionUserDto,
@@ -98,6 +99,19 @@ export class ChannelController {
       );
     }
     return await this.channelService.joinChannel(user.id, data.channelId);
+  }
+
+  @Post('joinDM')
+  async joinDMChannel(
+    @Body() data: JoinDMDto,
+    @DUser() user: User,
+  ): Promise<IChannel> {
+    const channel = await this.channelService.joinDMChannel(
+      user.id,
+      Number(data.otherUserId),
+    );
+
+    return channel;
   }
 
   @Get()

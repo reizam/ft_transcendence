@@ -64,6 +64,7 @@ model Channel {
   id                Int           @id @default(autoincrement())
 
   isPrivate         Boolean       @default(false)
+  isDM              Boolean       @default(false)
 
   ownerId           Int
   owner             User          @relation(fields: [ownerId], references: [id])

@@ -56,6 +56,11 @@ export class JoinChannelDto {
   readonly invitedId: number;
 }
 
+export class JoinDMDto {
+  @IsInt()
+  readonly otherUserId: number;
+}
+
 export class PostChannelSendMessageDto {
   @IsString()
   @IsNotEmpty()
