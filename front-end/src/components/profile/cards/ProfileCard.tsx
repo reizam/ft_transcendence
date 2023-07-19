@@ -19,6 +19,7 @@ import { CgUnblock, CgBlock } from 'react-icons/cg';
 import { AiFillMessage } from 'react-icons/ai';
 import StatusInfo from '@/components/friends/line/StatusInfo';
 import { useDMJoin } from '@/api/channel/channel.api';
+import { Status } from '@/api/user/user.types';
 
 interface ProfileDataProps {
   profileData: ProfileData;
@@ -199,35 +200,51 @@ function ProfileCard({
                     )}
                   </button>
                 </div>
-                <div className={dashStyles.ctn__one_button}>
-                  <button
-                    onClick={(): void =>
-                      challengeUser({
-                        id: profileData.id,
-                        username: profileData.username,
-                      })
-                    }
-                    className={dashStyles.style__button__pro}
-                    disabled={hasChallenged}
-                    title="Let's play a match"
-                  >
-                    <RiPingPongFill size="24px" />
-                  </button>
-                </div>
+                {profileData.status === Status.OFFLINE ||
+                profileData.status === Status.ONLINE ? (
+                  <div className={dashStyles.ctn__one_button}>
+                    <button
+                      onClick={(): void =>
+                        challengeUser({
+                          id: profileData.id,
+                          username: profileData.username,
+                        })
+                      }
+                      className={dashStyles.style__button__pro}
+                      disabled={
+                        profileData.status === Status.OFFLINE || hasChallenged
+                      }
+                      title="Let's play a match"
+                    >
+                      <RiPingPongFill size="24px" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className={dashStyles.ctn__one_button}>
+                    <button
+                      onClick={(): void =>
+                        watchUser({
+                          id: profileData.id,
+                          username: profileData.username,
+                        })
+                      }
+                      className={dashStyles.style__button__pro}
+                      title="Watch the game"
+                    >
+                      <RiMovieFill size="24px" />
+                    </button>
+                  </div>
+                )}
               </div>
+
               <div className={dashStyles.ctn__two_buttons}>
                 <div className={dashStyles.ctn__one_button}>
                   <button
-                    onClick={(): void =>
-                      watchUser({
-                        id: profileData.id,
-                        username: profileData.username,
-                      })
-                    }
+                    onClick={handleJoinDM}
                     className={dashStyles.style__button__pro}
-                    title="Watch the game"
+                    title="Chat in private"
                   >
-                    <RiMovieFill size="24px" />
+                    <AiFillMessage size="24px" />
                   </button>
                 </div>
                 <div className={dashStyles.ctn__one_button}>
@@ -245,15 +262,6 @@ function ProfileCard({
                     )}
                   </button>
                 </div>
-              </div>
-              <div className={dashStyles.ctn__one_long_button}>
-                <button
-                  onClick={handleJoinDM}
-                  className={dashStyles.style__button__pro}
-                  title="Chat in private"
-                >
-                  <AiFillMessage size="24px" />
-                </button>
               </div>
             </div>
           </div>

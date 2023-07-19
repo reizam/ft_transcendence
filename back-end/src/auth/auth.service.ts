@@ -126,4 +126,17 @@ export class AuthService {
       }),
     };
   }
+
+  async updateOfflineUsers(): Promise<void> {
+    await this.prisma.user.updateMany({
+      where: {
+        status: {
+          not: Status.OFFLINE,
+        },
+      },
+      data: {
+        status: Status.OFFLINE,
+      },
+    });
+  }
 }

@@ -12,50 +12,52 @@ export class SocketUserService {
 
   private onlineUsers: ISocketUser[] = [];
 
-  addUser(user: ISocketUser): void {
+  async addUser(user: ISocketUser): Promise<void> {
     this.onlineUsers.push(user);
-    this.prisma.game
-      .findFirst({
-        where: {
-          players: {
-            some: {
-              id: user.id,
-            },
-          },
-          status: {
-            in: ['WAITING', 'playing'],
-            mode: 'insensitive',
+
+    const game = await this.prisma.game.findFirst({
+      where: {
+        players: {
+          some: {
+            id: user.id,
           },
         },
-      })
-      .then((game: Game | null) => {
-        const status = !!game ? Status.IN_GAME : Status.ONLINE;
-        this.prisma.user.update({
-          where: {
-            id: user.id,
-          },
-          data: {
-            status,
-          },
-        });
-      });
+        status: {
+          in: ['WAITING', 'playing'],
+          mode: 'insensitive',
+        },
+      },
+    });
+    const status = !!game ? Status.IN_GAME : Status.ONLINE;
+
+    await this.prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        status,
+      },
+    });
   }
 
-  removeUser(clientId: string): void {
-    this.onlineUsers = this.onlineUsers.filter((user) => {
-      if (user.clientId !== clientId) {
-        return true;
-      } else {
-        this.prisma.user.update({
-          where: {
-            id: user.id,
-          },
-          data: {
-            status: Status.OFFLINE,
-          },
-        });
-        return false;
-      }
+  async removeUser(clientId: string): Promise<void> {
+    const removedUserIndex = this.onlineUsers.findIndex(
+      (user) => user.clientId === clientId,
+    );
+
+    if (removedUserIndex < 0) return;
+
+    const removedUser = this.onlineUsers.splice(removedUserIndex, 1);
+
+    if (removedUser.length < 1) return;
+
+    await this.prisma.user.update({
+      where: {
+        id: removedUser[0].id,
+      },
+      data: {
+        status: Status.OFFLINE,
+      },
     });
   }
 

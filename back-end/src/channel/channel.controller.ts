@@ -82,7 +82,10 @@ export class ChannelController {
 
     if (!channel)
       throw new NotFoundException('Channel not found, or incorrect permission');
-    if (channel.users.find((channelUser) => channelUser.userId === user.id))
+    if (
+      !data.invitedId &&
+      channel.users.find((channelUser) => channelUser.userId === user.id)
+    )
       return channel;
     if (channel.isProtected)
       return await this.channelService.joinProtectedChannel(

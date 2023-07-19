@@ -1,5 +1,5 @@
 import muteStyles from '@/components/chat/mute/mute.module.css';
-import { ReactElement } from 'react';
+import { ReactElement, useEffect } from 'react';
 import { IChatUser } from '@/api/channel/channel.types';
 import { ImCross } from 'react-icons/im';
 
@@ -30,12 +30,18 @@ function Mute({
     setMuteInMinutes(e.target.value);
   };
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      onClick();
-    } else if (e.key === 'Escape') {
-      onClose();
-    }
+    if (e.key === 'Enter') onClick();
   };
+
+  useEffect(() => {
+    const handleWindowKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleWindowKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleWindowKeyDown);
+    };
+  }, [onClose]);
 
   return (
     <div className={muteStyles.ctn_pck_box} id="wrapper" onClick={handleClose}>
