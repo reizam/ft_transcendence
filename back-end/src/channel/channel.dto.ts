@@ -110,7 +110,7 @@ export class BlockUserDto {
   readonly toggleBlock: boolean;
 }
 
-export class sanctionUserDto {
+export class SanctionUserDto {
   @IsIn(['kick', 'mute', 'unmute', 'ban', 'unban', 'promote', 'demote'])
   @IsString()
   readonly sanction: string;

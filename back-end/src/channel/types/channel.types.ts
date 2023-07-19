@@ -20,7 +20,7 @@ export interface IMessage {
   id: number;
   channelId: number;
   userId: number;
-  user: any;
+  user: IChatUser;
   message: string;
   gameId: number | null;
   own?: boolean;

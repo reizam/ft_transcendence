@@ -7,7 +7,7 @@ import {
   JoinDMDto,
   PostChannelSendMessageDto,
   PutChannelDto,
-  sanctionUserDto,
+  SanctionUserDto,
 } from '@/channel/channel.dto';
 import { ChannelService } from '@/channel/channel.service';
 import {
@@ -214,7 +214,7 @@ export class ChannelController {
 
   @Patch('sanction')
   async sanctionUser(
-    @Body() sanctionUserDto: sanctionUserDto,
+    @Body() sanctionUserDto: SanctionUserDto,
     @DUser() user: User,
     @Res() res: Response,
   ): Promise<Response> {

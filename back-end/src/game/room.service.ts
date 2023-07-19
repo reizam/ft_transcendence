@@ -171,7 +171,7 @@ export class RoomService {
           playerOneIndex: number,
           playerTwo: Player,
           playerTwoIndex: number,
-        ) => {
+        ): void => {
           this.playerQueue.splice(Math.min(playerOneIndex, playerTwoIndex), 2);
           this.playerQueue.splice(0, 1);
           console.log({ playerOne });
@@ -249,7 +249,7 @@ export class RoomService {
         }
       };
 
-      findMatchingPlayer();
+      void findMatchingPlayer();
     });
   }
 
@@ -261,7 +261,7 @@ export class RoomService {
   ): GameRoom | undefined {
     const room: GameRoom | undefined = this.rooms[game.id];
 
-    client.join(String(game.id));
+    void client.join(String(game.id));
     if (!room) {
       this.rooms[game.id] = {
         isLocal,
@@ -300,7 +300,7 @@ export class RoomService {
   ): GameRoom | undefined {
     const room: GameRoom | undefined = this.rooms[gameId];
 
-    client.leave(String(gameId));
+    void client.leave(String(gameId));
     if (room) {
       const i = room.userIds.findIndex((id) => id === userId);
 

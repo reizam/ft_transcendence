@@ -11,7 +11,7 @@ import {
 import { Game } from '@prisma/client';
 import { Server, Socket } from 'socket.io';
 import { GameGateway } from './game.gateway';
-import { GameState, Player } from './types/game.types';
+import { GameState } from './types/game.types';
 import { ISocketUser } from '@/socket/types/socket.types';
 
 @WebSocketGateway()
@@ -45,20 +45,20 @@ export class RoomGateway {
         .timeout(10000)
         .to(res.players[0].socketId)
         .to(res.players[1].socketId)
-        .volatile.emit('foundGame', (err: unknown, _resp: string) => {
-          if (err) {
+        .volatile.emit('foundGame', (err: unknown) => {
+          if (err && res.players) {
             this.server
-              .to(res.players![0].socketId)
-              .to(res.players![1].socketId)
+              .to(res.players[0].socketId)
+              .to(res.players[1].socketId)
               .volatile.emit(
                 'joinTimeout',
                 "Your opponent is taking a shit. Let's find someone else",
               );
-            this.roomService.deleteGame(game.id);
-          } else {
+            void this.roomService.deleteGame(game.id);
+          } else if (res.players) {
             this.server
-              .to(res.players![0].socketId)
-              .to(res.players![1].socketId)
+              .to(res.players[0].socketId)
+              .to(res.players[1].socketId)
               .volatile.emit('joinGame', game.id);
           }
         });
@@ -116,7 +116,7 @@ export class RoomGateway {
       .timeout(15000)
       .emit('challengedBy', user.username, (err: unknown, ack: string[]) => {
         if (err || ack[0]?.toLowerCase() !== 'accept') {
-          this.roomService.deleteGame(game?.id ?? -1);
+          void this.roomService.deleteGame(game?.id ?? -1);
           client?.emit(
             'challengeError',
             `${

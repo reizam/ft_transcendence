@@ -49,7 +49,7 @@ export class FriendsService {
     return nonFriends;
   }
 
-  async isFriend(userId: number, friendId: number): Promise<Boolean> {
+  async isFriend(userId: number, friendId: number): Promise<boolean> {
     const count = await this.prisma.user.count({
       where: {
         id: userId,
@@ -63,7 +63,7 @@ export class FriendsService {
     return count > 0;
   }
 
-  async addFriend(userId: number, friendId: number) {
+  async addFriend(userId: number, friendId: number): Promise<void> {
     if ((await this.isFriend(userId, friendId)) == true) return;
     const friend = await this.prisma.user.findUnique({
       where: {
@@ -89,7 +89,7 @@ export class FriendsService {
     });
   }
 
-  async removeFriend(userId: number, friendId: number) {
+  async removeFriend(userId: number, friendId: number): Promise<void> {
     if ((await this.isFriend(userId, friendId)) == false) return;
     const friend = await this.prisma.user.findUnique({
       where: {
@@ -101,7 +101,7 @@ export class FriendsService {
       throw new Error('Friend not found');
     }
 
-    const updateUser = await this.prisma.user.update({
+    await this.prisma.user.update({
       where: {
         id: userId,
       },

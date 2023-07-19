@@ -157,6 +157,7 @@ export class ChannelService {
             id: true,
             username: true,
             profilePicture: true,
+            status: true,
           },
         },
       },
@@ -196,6 +197,7 @@ export class ChannelService {
             id: true,
             username: true,
             profilePicture: true,
+            status: true,
           },
         },
       },
@@ -442,9 +444,9 @@ export class ChannelService {
       data: {
         isPrivate,
         ownerId: ownerUserId,
-        isProtected: !!password ? true : false,
-        password: !!password ? hashSync(password, 10) : null,
-        isDM: !!otherUserId ? true : false,
+        isProtected: password ? true : false,
+        password: password ? hashSync(password, 10) : null,
+        isDM: otherUserId ? true : false,
         users: {
           create: [
             { userId: ownerUserId, isAdmin: true },

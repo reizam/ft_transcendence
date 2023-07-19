@@ -3,7 +3,7 @@ import { ISocketUser } from '@/socket/types/socket.types';
 import { Status } from '@/user/types/user.types';
 import { Injectable } from '@nestjs/common';
 import { ConnectedSocket } from '@nestjs/websockets';
-import { Game, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import { Socket } from 'socket.io';
 
 @Injectable()
@@ -28,7 +28,7 @@ export class SocketUserService {
         },
       },
     });
-    const status = !!game ? Status.IN_GAME : Status.ONLINE;
+    const status = game ? Status.IN_GAME : Status.ONLINE;
 
     await this.prisma.user.update({
       where: {

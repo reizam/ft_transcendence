@@ -1,28 +1,14 @@
-import { DUser } from '@/decorators/user.decorator';
-import { PrismaService } from '@/prisma/prisma.service';
-import {
-  Body,
-  Controller,
-  InternalServerErrorException,
-  Post,
-  Res,
-  UnprocessableEntityException,
-  UseGuards,
-} from '@nestjs/common';
-import { User } from '@prisma/client';
-import { Response } from 'express';
-import { RoomService } from './room.service';
+import { Controller, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { CreateGame } from './types/game.types';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('game')
 export class GameController {
-  constructor(
-    private roomService: RoomService,
-    private prisma: PrismaService,
-  ) {}
-
+  // constructor(
+  //   private roomService: RoomService,
+  //   private prisma: PrismaService,
+  // ) {}
+  //
   // Route for testing purposes
   // @Patch('finish')
   // async updateStats(@Body() resultDto: ResultDto): Promise<void> {
@@ -44,7 +30,6 @@ export class GameController {
   //     });
   //   }
   // }
-
   // @Post('createGame')
   // async createGame(
   //   @DUser() user: User,
@@ -52,20 +37,16 @@ export class GameController {
   //   @Res() res: Response,
   // ): Promise<Response> {
   //   console.log({ createGameDto });
-
   //   if (user.id === createGameDto.challengedId)
   //     throw new UnprocessableEntityException('You cannot challenge yourself');
-
   //   const gameId = await this.roomService
   //     .getOrCreateGame(user.id, createGameDto.challengedId)
   //     .catch((error: any) => {
   //       console.error({ error });
   //       throw new InternalServerErrorException();
   //     });
-
   //   return res.status(200).json({ gameId: gameId });
   // }
-
   // @Patch(':id')
   // async launchGame(
   //   @DUser() user: User,
@@ -75,7 +56,6 @@ export class GameController {
   //   await this.gameService.joinGame(id, user.id);
   //   return res.status(204).send();
   // }
-
   // @Patch('launch')
   // async launchGame(
   //   @Body() launchGameDto: LaunchGame,

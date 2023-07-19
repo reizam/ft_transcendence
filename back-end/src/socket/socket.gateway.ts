@@ -19,7 +19,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private roomGateway: RoomGateway,
   ) {}
 
-  async handleConnection(client: Socket, ...args: any[]): Promise<void> {
+  async handleConnection(client: Socket): Promise<void> {
     const user: ISocketUser = {
       id: client.data.user.id,
       clientId: client.id,
@@ -31,7 +31,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client.on('disconnecting', () => {
       client.rooms.forEach((roomId) => {
         if (roomId !== client.id)
-          this.roomGateway.onLeaveGame(client, parseInt(roomId));
+          void this.roomGateway.onLeaveGame(client, parseInt(roomId));
       });
     });
 

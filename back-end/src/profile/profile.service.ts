@@ -96,7 +96,10 @@ export class ProfileService {
     });
   }
 
-  async updateUserAchievements(userId: number, newAchievements: string[]) {
+  async updateUserAchievements(
+    userId: number,
+    newAchievements: string[],
+  ): Promise<void> {
     await this.prisma.user.update({
       where: {
         id: userId,

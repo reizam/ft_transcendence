@@ -8,6 +8,14 @@ import { HttpAdapterHost } from '@nestjs/core';
 import { BaseWsExceptionFilter, WsException } from '@nestjs/websockets';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 
+interface IResponseBody {
+  statusCode: number;
+  message?: string;
+  errorCode?: string;
+  errorDetails?: unknown;
+  path: string;
+}
+
 @Catch()
 export class AllExceptionsFilter extends BaseWsExceptionFilter {
   constructor(private readonly httpAdapterHost: HttpAdapterHost) {
@@ -27,20 +35,24 @@ export class AllExceptionsFilter extends BaseWsExceptionFilter {
       exception instanceof HttpException
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
-    const responseBody = {
+    const responseBody: IResponseBody = {
       statusCode: httpStatus,
-      ...(exception instanceof Error
-        ? {
-            message: (exception as Error)?.message,
-            errorCode: (exception as PrismaClientKnownRequestError)?.code,
-            errorDetails: (exception as PrismaClientKnownRequestError)?.meta,
-          }
-        : {}),
-      ...(exception instanceof HttpException
-        ? { message: (exception as any)?.response?.message }
-        : {}),
       path: httpAdapter.getRequestUrl(ctx.getRequest()),
     };
+
+    if (exception instanceof Error) {
+      responseBody.message = exception.message;
+      if (exception instanceof PrismaClientKnownRequestError) {
+        responseBody.errorCode = exception.code;
+        responseBody.errorDetails = exception.meta;
+      }
+    } else if (exception instanceof HttpException) {
+      const response = exception.getResponse();
+      responseBody.message =
+        typeof response === 'string'
+          ? response
+          : (response as { message: string })?.message;
+    }
 
     httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
   }

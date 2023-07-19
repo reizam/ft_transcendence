@@ -29,8 +29,8 @@ export class GameGateway {
     if (game.status === GameState.STOPPED) {
       this.schedulerRegistry.deleteInterval(`${game.id}`);
       game.finishedAt = new Date();
-      this.gameService.updateUserStatus(game.playerOneId);
-      this.gameService.updateUserStatus(game.playerTwoId);
+      void this.gameService.updateUserStatus(game.playerOneId);
+      void this.gameService.updateUserStatus(game.playerTwoId);
 
       const winnerId =
         game.playerOneScore > game.playerTwoScore
@@ -52,7 +52,7 @@ export class GameGateway {
         if (res) {
           this.roomService
             .recordGame(game)
-            .catch((_e: unknown) => {
+            .catch(() => {
               this.server
                 .to(String(game.id))
                 .volatile.emit('gameError', 'The game could not be saved');
