@@ -10,9 +10,12 @@ const socket = io(BACKEND_URL, {
   query: {
     token: cookie,
   },
+  autoConnect: false,
 });
 socket.on('connect', () => {
   socket.sendBuffer = [];
 });
+
+if (cookie) socket.connect();
 
 export default socket;
