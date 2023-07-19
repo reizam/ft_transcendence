@@ -1,9 +1,11 @@
+import { Status } from '@/api/user/user.types';
+
 export interface IUserDataSummary {
   id: number;
   username: string;
   profilePicture: string;
   elo: number;
-  status: 'Online' | 'Offline' | 'In-Game';
+  status: Status;
 }
 
 export interface IUserFriends {

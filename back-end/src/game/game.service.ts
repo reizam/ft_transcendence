@@ -1,8 +1,16 @@
 import { GameInfos, GameParameters, GameState } from '@/game/types/game.types';
+import { PrismaService } from '@/prisma/prisma.service';
+import { Status } from '@/user/types/user.types';
+import { UserService } from '@/user/user.service';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class GameService {
+  constructor(
+    private prisma: PrismaService,
+    private userService: UserService,
+  ) {}
+
   static parameters: GameParameters = {
     dimensions: {
       width: 1920,
@@ -67,5 +75,19 @@ export class GameService {
       this.reset(game);
       return GameState.STOPPED;
     } else return GameState.INGAME;
+  }
+
+  async updateUserStatus(userId: number): Promise<void> {
+    const onlineIds: number[] = this.userService.getOnlineIds();
+    const status = onlineIds.includes(userId) ? Status.ONLINE : Status.OFFLINE;
+
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        status,
+      },
+    });
   }
 }

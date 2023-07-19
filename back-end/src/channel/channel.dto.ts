@@ -3,11 +3,13 @@ import {
   IsArray,
   IsBoolean,
   IsInt,
+  IsIn,
   IsNotEmpty,
   IsOptional,
   IsString,
   Max,
   Min,
+  MinLength,
 } from 'class-validator';
 
 export class CreateChannelDto {
@@ -15,6 +17,7 @@ export class CreateChannelDto {
   readonly isPrivate: boolean;
 
   @IsString()
+  @MinLength(3)
   @IsOptional()
   readonly password?: string;
 
@@ -34,8 +37,28 @@ export class PutChannelDto {
   readonly withPassword: boolean;
 
   @IsString()
+  @MinLength(3)
   @IsOptional()
   readonly password?: string;
+}
+
+export class JoinChannelDto {
+  @IsInt()
+  readonly channelId: number;
+
+  @IsString()
+  @MinLength(3)
+  @IsOptional()
+  readonly password: string;
+
+  @IsInt()
+  @IsOptional()
+  readonly invitedId: number;
+}
+
+export class JoinDMDto {
+  @IsInt()
+  readonly otherUserId: number;
 }
 
 export class PostChannelSendMessageDto {
@@ -87,7 +110,11 @@ export class BlockUserDto {
   readonly toggleBlock: boolean;
 }
 
-export class KickUserDto {
+export class sanctionUserDto {
+  @IsIn(['kick', 'mute', 'unmute', 'ban', 'unban', 'promote', 'demote'])
+  @IsString()
+  readonly sanction: string;
+
   @IsInt()
   @Min(1)
   readonly userId: number;
@@ -95,4 +122,9 @@ export class KickUserDto {
   @IsInt()
   @Min(1)
   readonly channelId: number;
+
+  @IsInt()
+  @Min(1)
+  @IsOptional()
+  readonly minutesToMute?: number;
 }

@@ -1,7 +1,7 @@
-import React from 'react';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
 import BasicInput from '@/components/app/inputs/BasicInput';
+import { useFormik } from 'formik';
+import React from 'react';
+import * as Yup from 'yup';
 
 const schema = Yup.object().shape({
   users: Yup.array().of(Yup.string().required()),

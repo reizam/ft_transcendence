@@ -18,7 +18,7 @@ function CreateChannelContent(): React.ReactElement {
   const onSubmit = (values: ChannelFormValues): void => {
     createChannel({
       isPrivate: values.isPrivate,
-      password: values.password,
+      password: values.password || undefined,
       users: values.users,
     });
   };

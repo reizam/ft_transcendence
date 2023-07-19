@@ -2,7 +2,6 @@ import { FortyTwoStrategy } from '@/auth/strategy/fortytwo.strategy';
 import { AuthController } from '@/auth/auth.controller';
 import { AuthService } from '@/auth/auth.service';
 import { JwtStrategy } from '@/auth/strategy/jwt.strategy';
-import { UserService } from '@/user/user.service';
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
@@ -25,7 +24,7 @@ import { SocketModule } from '@/socket/socket.module';
     HttpModule,
     SocketModule,
   ],
-  providers: [AuthService, UserService, JwtStrategy, FortyTwoStrategy],
+  providers: [AuthService, JwtStrategy, FortyTwoStrategy],
   exports: [AuthService],
   controllers: [AuthController],
 })

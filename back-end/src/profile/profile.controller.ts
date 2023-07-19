@@ -1,6 +1,5 @@
 import { AuthService } from '@/auth/auth.service';
 import { DUser } from '@/decorators/user.decorator';
-import { PrismaService } from '@/prisma/prisma.service';
 import { ProfileService } from '@/profile/profile.service';
 import { UpdateProfile } from '@/profile/types/profile.types';
 import { exclude } from '@/utils/exclude';
@@ -26,7 +25,6 @@ import { Response } from 'express';
 export class ProfileController {
   constructor(
     private profileService: ProfileService,
-    private prisma: PrismaService,
     private authService: AuthService,
   ) {}
 

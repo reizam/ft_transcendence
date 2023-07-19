@@ -26,18 +26,10 @@ export class FriendsController {
     @DUser() user: User,
     @Res() res: Response,
   ): Promise<Response> {
-    const inGameIds = await this.friendsService.getInGameIds();
-    const onlineIds = this.friendsService.getOnlineIds();
-    const friends = await this.friendsService.getFriends(
-      user.id,
-      inGameIds,
-      onlineIds,
-    );
+    const friends = await this.friendsService.getFriends(user.id);
     const nonFriends = await this.friendsService.getNonFriends(
       user.id,
       friends,
-      inGameIds,
-      onlineIds,
     );
     return res.status(200).json({ friends: friends, nonFriends: nonFriends });
   }

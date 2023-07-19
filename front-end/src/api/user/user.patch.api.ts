@@ -5,7 +5,7 @@ import {
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
+import axios from 'axios';
 import { createElement } from 'react';
 import { Id, toast } from 'react-toastify';
 
@@ -47,10 +47,10 @@ export const useBlockUser = (): UseMutationResult<
           })
         : toast.dismiss();
     },
-    onError: (_data: unknown, _var: unknown, context?: Id) => {
+    onError: (err: unknown, _var: unknown, context?: Id) => {
       context
         ? toast.update(context, {
-            render: 'Failed to update',
+            render: printProfileError(err),
             type: 'error',
             ...toastUpdateOptions,
           })
@@ -135,10 +135,7 @@ export const useUpdateMe = (): UseMutationResult<
     onError: (err: unknown, _variables: UpdateProfile, context?: IContext) => {
       if (context !== undefined) {
         toast.update(context.id, {
-          render: `${
-            ((err as AxiosError)?.response?.data as any)?.message ??
-            'Failed to update'
-          }`,
+          render: printProfileError(err),
           type: 'error',
           autoClose: 2000,
           isLoading: false,
@@ -157,4 +154,21 @@ export const useUpdateMe = (): UseMutationResult<
       void queryClient.invalidateQueries(['PROFILE', 'GET', 'ME']);
     },
   });
+};
+
+export const printProfileError = (error: unknown): string => {
+  let errorMessage = 'Failed to update';
+  if (
+    axios.isAxiosError(error) &&
+    error.response?.data?.hasOwnProperty('message')
+  ) {
+    if (Array.isArray(error?.response?.data?.message)) {
+      errorMessage = error.response.data.message[0];
+    } else if (typeof error?.response?.data?.message === 'string') {
+      errorMessage = error.response.data.message;
+    }
+  } else if (error instanceof Error && error.message) {
+    errorMessage = error.message;
+  }
+  return errorMessage;
 };

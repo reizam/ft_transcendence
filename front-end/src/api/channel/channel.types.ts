@@ -1,13 +1,17 @@
+import { Status } from '@/api/user/user.types';
+
 export interface IChatUser {
   id: number;
   username: string;
   profilePicture: string;
+  status: Status;
 }
 
 export interface IChannel {
   id: number;
   isPrivate: boolean;
   isProtected: boolean;
+  isDM: boolean;
   ownerId: number;
   users: IChannelUser[];
   bannedUserIds: number[];
@@ -48,7 +52,7 @@ export interface IChannelUser {
   userId: number;
   user: IChatUser;
   isAdmin: boolean;
-  mutedUntil?: Date;
+  mutedUntil?: Date | null;
 }
 
 export interface IChannelPage {
@@ -70,8 +74,40 @@ export interface IChannelPutParams {
   password?: string;
 }
 
+export interface IMessagePost {
+  channelId: number;
+  message: string;
+}
+
 export interface IChannelPostParams {
   users: number[];
   password?: string;
   isPrivate: boolean;
+}
+
+export enum Sanction {
+  KICK = 'kick',
+  BAN = 'ban',
+  UNBAN = 'unban',
+  MUTE = 'mute',
+  UNMUTE = 'unmute',
+  PROMOTE = 'promote',
+  DEMOTE = 'demote',
+}
+
+export interface IChannelUpdateParams {
+  sanction: Sanction;
+  userId: number;
+  channelId: number;
+  minutesToMute?: number;
+}
+
+export interface IChannelJoinParams {
+  channelId: number;
+  password?: string;
+  invitedId?: number;
+}
+
+export interface IJoinDMParams {
+  otherUserId: number;
 }

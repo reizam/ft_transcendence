@@ -2,6 +2,7 @@ import { IUser } from '@/auth/types/auth.types';
 import { IJWTPayload } from '@/auth/types/jwt.types';
 import { PrismaService } from '@/prisma/prisma.service';
 import { WithWasJustCreated } from '@/profile/types/profile.types';
+import { Status } from '@/user/types/user.types';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import type { User } from '@prisma/client';
@@ -11,10 +12,6 @@ import { authenticator } from 'otplib';
 @Injectable()
 export class AuthService {
   constructor(private jwtService: JwtService, private prisma: PrismaService) {}
-
-  async validateChatUser(channelId: number, password: string): Promise<void> {
-    return;
-  }
 
   async validateUser(profile: IJWTPayload): Promise<User | null> {
     const user = await this.prisma.user.findFirst({
@@ -76,6 +73,7 @@ export class AuthService {
             'data:image/jpg;base64,' +
             Buffer.from(image.data).toString('base64'),
           has2FA: false,
+          status: Status.ONLINE,
         },
         include: {
           matchHistory: true,
@@ -127,5 +125,18 @@ export class AuthService {
         expiresIn: '24d',
       }),
     };
+  }
+
+  async updateOfflineUsers(): Promise<void> {
+    await this.prisma.user.updateMany({
+      where: {
+        status: {
+          not: Status.OFFLINE,
+        },
+      },
+      data: {
+        status: Status.OFFLINE,
+      },
+    });
   }
 }

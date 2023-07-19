@@ -19,13 +19,13 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private roomGateway: RoomGateway,
   ) {}
 
-  handleConnection(client: Socket, ...args: any[]): void {
+  async handleConnection(client: Socket, ...args: any[]): Promise<void> {
     const user: ISocketUser = {
       id: client.data.user.id,
       clientId: client.id,
     };
 
-    this.socketUserService.addUser(user);
+    await this.socketUserService.addUser(user);
 
     // TODO: does it need to be async and awaited?
     client.on('disconnecting', () => {
@@ -42,8 +42,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     );
   }
 
-  handleDisconnect(client: Socket): void {
-    this.socketUserService.removeUser(client.id);
+  async handleDisconnect(client: Socket): Promise<void> {
+    await this.socketUserService.removeUser(client.id);
 
     console.log(
       'Client disconnected: ',

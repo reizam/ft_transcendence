@@ -2,12 +2,14 @@ export interface IChatUser {
   id: number;
   username: string;
   profilePicture: string;
+  status: string;
 }
 
 export interface IChannel {
   id: number;
   isPrivate: boolean;
   isProtected: boolean;
+  isDM: boolean;
   ownerId: number;
   users: IChannelUser[];
   bannedUserIds: number[];
@@ -29,7 +31,7 @@ export interface IChannelUser {
   userId: number;
   user: IChatUser;
   isAdmin: boolean;
-  mutedUntil?: Date;
+  mutedUntil?: Date | null;
 }
 
 export interface IMessagePage {
@@ -46,4 +48,14 @@ export interface IChannelPage {
   limit: number;
   hasNextPage: boolean;
   totalCount: number;
+}
+
+export enum Sanction {
+  KICK = 'kick',
+  BAN = 'ban',
+  UNBAN = 'unban',
+  MUTE = 'mute',
+  UNMUTE = 'unmute',
+  PROMOTE = 'promote',
+  DEMOTE = 'demote',
 }

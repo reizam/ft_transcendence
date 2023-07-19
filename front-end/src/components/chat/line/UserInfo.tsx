@@ -1,14 +1,25 @@
 import chatStyles from '@/styles/chat.module.css';
-
+import { FaCrown } from 'react-icons/fa';
 import { ReactElement } from 'react';
 import { IChatUser } from '@/api/channel/channel.types';
 
 interface UserInfoProps {
   user: IChatUser;
+  isOwner: boolean;
 }
 
-function UserInfo({ user: user }: UserInfoProps): ReactElement {
-  return <div className={chatStyles.ctn_user_name}>{user?.username}</div>;
+function UserInfo({ user, isOwner }: UserInfoProps): ReactElement {
+  return (
+    <div className={chatStyles.ctn_user_name}>
+      {user?.username}
+      {isOwner ? (
+        <>
+          &nbsp;&nbsp;
+          <FaCrown size="15px" />
+        </>
+      ) : null}
+    </div>
+  );
 }
 
 export default UserInfo;

@@ -3,17 +3,33 @@ import { IChannelUser } from '@/api/channel/channel.types';
 import { ReactElement } from 'react';
 import UserInfo from '@/components/chat/line/UserInfo';
 import Buttons from '@/components/chat/line/Buttons';
+import StatusInfo from '@/components/friends/line/StatusInfo';
 
 interface LineProps {
   user: IChannelUser;
+  isOwner: boolean;
+  isInChannel: boolean;
   isBanned: boolean;
+  isPrivateChannel: boolean;
 }
 
-function Line({ user, isBanned }: LineProps): ReactElement {
+function Line({
+  user,
+  isOwner,
+  isInChannel,
+  isBanned,
+  isPrivateChannel,
+}: LineProps): ReactElement {
   return (
     <div className={chatStyles.ctn_list}>
-      <UserInfo user={user.user} />
-      <Buttons user={user} isBanned={isBanned} />
+      <UserInfo user={user.user} isOwner={isOwner} />
+      <StatusInfo status={user.user.status} />
+      <Buttons
+        user={user}
+        isInChannel={isInChannel}
+        isBanned={isBanned}
+        isPrivateChannel={isPrivateChannel}
+      />
     </div>
   );
 }

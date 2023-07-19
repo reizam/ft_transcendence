@@ -9,8 +9,10 @@ import { JwtSocket } from '@/socket/jwt-socket.adapter';
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
   const httpAdapter = app.get(HttpAdapterHost);
+  const authService = app.get(AuthService);
 
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
+  await authService.updateOfflineUsers();
   app.useWebSocketAdapter(new JwtSocket(app, app.get(AuthService)));
   app.use(json({ limit: '5mb' }));
   app.enableCors({

@@ -9,6 +9,8 @@ import { RiPingPongFill, RiMovieFill } from 'react-icons/ri';
 import { useSocket } from '@/providers/socket/socket.context';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
+import { Status } from '@/api/user/user.types';
+import { useDMJoin } from '@/api/channel/channel.api';
 
 interface ButtonsProps {
   user: IUserDataSummary;
@@ -51,9 +53,9 @@ function GetStatusButton(user: IUserDataSummary, status: string): ReactElement {
   };
 
   switch (status) {
-    case 'Offline':
+    case Status.OFFLINE:
       return <div></div>;
-    case 'Online':
+    case Status.ONLINE:
       return (
         <div className={friendsStyles.button__ctn}>
           <button
@@ -71,7 +73,7 @@ function GetStatusButton(user: IUserDataSummary, status: string): ReactElement {
           </button>
         </div>
       );
-    case 'In-Game':
+    case Status.IN_GAME:
       return (
         <div className={friendsStyles.button__ctn}>
           <button
@@ -131,20 +133,30 @@ function GetSocialButton(
 }
 
 function FriendButtons({ user, status, isFriend }: ButtonsProps): ReactElement {
+  const { mutate: joinDM } = useDMJoin();
+  const router = useRouter();
+  const handleJoinDM = () => {
+    joinDM(
+      { otherUserId: user.id },
+      {
+        onSuccess: (channel) => {
+          router.push('/chat/channel/' + channel.id);
+        },
+      }
+    );
+  };
+
   return (
     <div className={friendsStyles.buttons__ctn}>
       {GetSocialButton(user, isFriend)}
       <div className={friendsStyles.button__ctn}>
-        {/* TODO: Go to private chat (create one, or join existing) */}
-        <Link href="/chat">
-          <button
-            className={friendsStyles.style__button__1}
-            onClick={() => null}
-            title="Chat in private"
-          >
-            <AiFillMessage size="24px" />
-          </button>
-        </Link>
+        <button
+          className={friendsStyles.style__button__1}
+          onClick={handleJoinDM}
+          title="Chat in private"
+        >
+          <AiFillMessage size="24px" />
+        </button>
       </div>
       {GetStatusButton(user, status)}
     </div>

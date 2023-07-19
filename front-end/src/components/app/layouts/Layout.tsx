@@ -11,12 +11,12 @@ const navbarItems: NavbarItemProps[] = [
     icon: <FaUser size={24} />,
   },
   {
-    href: '/chat',
-    icon: <BsChatTextFill size={24} />,
-  },
-  {
     href: '/game',
     icon: <FaGamepad size={24} />,
+  },
+  {
+    href: '/chat',
+    icon: <BsChatTextFill size={24} />,
   },
   {
     href: '/friends',

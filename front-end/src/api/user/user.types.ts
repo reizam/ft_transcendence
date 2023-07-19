@@ -8,6 +8,7 @@ export interface IUserData {
   lastName: string;
   has2FA: boolean;
   profilePicture: string;
+  status: Status;
   matchHistory: Game[];
   elo: number;
   wins: number;
@@ -21,3 +22,9 @@ export interface IUserData {
 export type UpdateProfile = Partial<
   Pick<IUserData, 'username' | 'has2FA' | 'profilePicture'>
 >;
+
+export enum Status {
+  ONLINE = 'online',
+  IN_GAME = 'in-game',
+  OFFLINE = 'offline',
+}

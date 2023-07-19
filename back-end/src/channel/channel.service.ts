@@ -2,23 +2,33 @@ import {
   IChannel,
   IChannelPage,
   IChannelUser,
+  IChatUser,
   IMessage,
   IMessagePage,
+  Sanction,
 } from '@/channel/types/channel.types';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+  UnauthorizedException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { hashSync } from 'bcrypt';
+import { compareSync, hashSync } from 'bcrypt';
 
 @Injectable()
 export class ChannelService {
   constructor(private prisma: PrismaService) {}
 
-  async leaveChannel(userId: number, channelId: number): Promise<void>;
   async leaveChannel(userId: number, channel: IChannel): Promise<void>;
+  async leaveChannel(userId: number, channelId: number): Promise<void>;
   async leaveChannel(
     userId: number,
-    channelOrId: number | IChannel,
+    channelOrId: IChannel | number,
   ): Promise<void> {
     let channel: IChannel | null;
     let channelId: number;
@@ -26,13 +36,18 @@ export class ChannelService {
     if (typeof channelOrId === 'number') {
       channel = await this.getChannel(userId, channelOrId);
       if (!channel) {
-        throw new Error('Channel not found, or incorrect permission');
+        throw new NotFoundException(
+          'Channel not found, or incorrect permission',
+        );
       }
       channelId = channelOrId;
     } else {
       channel = channelOrId;
       channelId = channel.id;
     }
+
+    if (channel.isDM)
+      throw new ConflictException('You cannot leave a DM channel');
 
     await this.prisma.channel.update({
       where: {
@@ -60,30 +75,6 @@ export class ChannelService {
       await this.setOwner(channelId);
     }
   }
-
-  // async joinChannel(userId: number, channelId: number): Promise<void> {
-  //   const channel = await this.getChannel(channelId);
-
-  //   if (!channel) {
-  //     throw new Error('Channel not found');
-  //   }
-
-  //   await this.prisma.channel.update({
-  //     where: {
-  //       id: channelId,
-  //     },
-  //     data: {
-  //       users: {
-  //         connect: {
-  //           channelId_userId: {
-  //             channelId,
-  //             userId,
-  //           },
-  //         },
-  //       },
-  //     },
-  //   });
-  // }
 
   async setOwner(channelId: number, newOwnerId?: number): Promise<void> {
     if (newOwnerId !== undefined) {
@@ -145,9 +136,8 @@ export class ChannelService {
   ): Promise<IMessage> {
     const channel = await this.getChannel(userId, channelId);
 
-    if (!channel) {
-      throw new Error('Channel not found');
-    }
+    if (!channel) throw new Error('Channel not found');
+    if (this.isMuted(userId, channel.users)) throw new Error('User is muted');
 
     return await this.prisma.message.create({
       data: {
@@ -246,13 +236,154 @@ export class ChannelService {
     return this.isAdminWithChannel(userId, channel);
   }
 
+  async createChannelUser(userId: number, channelId: number): Promise<void> {
+    await this.prisma.channel.update({
+      where: {
+        id: channelId,
+      },
+      data: {
+        users: {
+          create: {
+            userId,
+            isAdmin: false,
+          },
+        },
+      },
+    });
+  }
+
+  async joinProtectedChannel(
+    userId: number,
+    channelId: number,
+    password: string,
+  ): Promise<IChannel> {
+    const fixedChannelId = Number(channelId);
+    const channel = await this.prisma.channel.findFirst({
+      where: {
+        id: fixedChannelId,
+      },
+    });
+
+    if (!channel)
+      throw new NotFoundException(`Channel [id: ${channelId}] not found`);
+    if (!channel.password) {
+      return await this.joinChannel(userId, channelId);
+    }
+    if (!compareSync(password, channel.password)) {
+      Logger.warn(
+        `User ${userId} failed to authenticate to channel ${channelId}`,
+      );
+      throw new UnauthorizedException('Wrong password');
+    }
+    return await this.joinChannel(userId, channelId);
+  }
+
+  async joinChannel(userId: number, channelId: number): Promise<IChannel> {
+    const channelUser = await this.prisma.channelUser.upsert({
+      where: {
+        channelId_userId: {
+          channelId: channelId,
+          userId: userId,
+        },
+      },
+      update: {},
+      create: {
+        channelId: channelId,
+        userId: userId,
+      },
+      select: {
+        channel: {
+          select: {
+            id: true,
+            ownerId: true,
+            isPrivate: true,
+            isProtected: true,
+            isDM: true,
+            users: {
+              select: {
+                isAdmin: true,
+                userId: true,
+                channelId: true,
+                mutedUntil: true,
+                user: {
+                  select: {
+                    id: true,
+                    profilePicture: true,
+                    username: true,
+                    status: true,
+                  },
+                },
+              },
+            },
+            bannedUserIds: true,
+          },
+        },
+      },
+    });
+
+    return channelUser.channel;
+  }
+
+  async joinDMChannel(userId: number, otherUserId: number): Promise<IChannel> {
+    let channel: IChannel | null = await this.prisma.channel.findFirst({
+      where: {
+        AND: [
+          {
+            users: {
+              some: {
+                userId: userId,
+              },
+            },
+          },
+          {
+            users: {
+              some: {
+                userId: otherUserId,
+              },
+            },
+          },
+          { isDM: true },
+        ],
+      },
+      select: {
+        id: true,
+        ownerId: true,
+        isPrivate: true,
+        isProtected: true,
+        isDM: true,
+        users: {
+          select: {
+            isAdmin: true,
+            userId: true,
+            channelId: true,
+            mutedUntil: true,
+            user: {
+              select: {
+                id: true,
+                profilePicture: true,
+                username: true,
+                status: true,
+              },
+            },
+          },
+        },
+        bannedUserIds: true,
+      },
+    });
+
+    if (!channel) {
+      channel = await this.createChannel(userId, true, undefined, otherUserId);
+    }
+    return channel;
+  }
+
   async getChannel(
     userId: number,
     channelId: number,
   ): Promise<IChannel | null> {
     const fixedChannelId = Number(channelId);
 
-    const where = {
+    const where: Prisma.ChannelWhereInput = {
       OR: [
         {
           id: fixedChannelId,
@@ -268,7 +399,7 @@ export class ChannelService {
           isPrivate: false,
         },
       ],
-    } as Prisma.ChannelWhereInput;
+    };
 
     const channel = await this.prisma.channel.findFirst({
       where,
@@ -277,16 +408,19 @@ export class ChannelService {
         ownerId: true,
         isPrivate: true,
         isProtected: true,
+        isDM: true,
         users: {
           select: {
             isAdmin: true,
             userId: true,
             channelId: true,
+            mutedUntil: true,
             user: {
               select: {
                 id: true,
                 profilePicture: true,
                 username: true,
+                status: true,
               },
             },
           },
@@ -302,18 +436,20 @@ export class ChannelService {
     ownerUserId: number,
     isPrivate: boolean,
     password?: string,
+    otherUserId?: number,
   ): Promise<IChannel> {
     const channel = await this.prisma.channel.create({
       data: {
         isPrivate,
         ownerId: ownerUserId,
-        isProtected: password ? true : false,
-        password: password ? hashSync(password, 10) : null,
+        isProtected: !!password ? true : false,
+        password: !!password ? hashSync(password, 10) : null,
+        isDM: !!otherUserId ? true : false,
         users: {
-          create: {
-            userId: ownerUserId,
-            isAdmin: true,
-          },
+          create: [
+            { userId: ownerUserId, isAdmin: true },
+            ...(otherUserId ? [{ userId: otherUserId, isAdmin: true }] : []),
+          ],
         },
         bannedUserIds: [],
       },
@@ -328,6 +464,7 @@ export class ChannelService {
                 id: true,
                 profilePicture: true,
                 username: true,
+                status: true,
               },
             },
           },
@@ -335,13 +472,12 @@ export class ChannelService {
       },
     });
 
-    return channel as IChannel;
+    return channel;
   }
 
   async updateChannel(
     userId: number,
     channelId: number,
-    withPassword: boolean,
     password?: string,
   ): Promise<boolean> {
     const channel = await this.getChannel(userId, channelId);
@@ -399,16 +535,19 @@ export class ChannelService {
         ownerId: true,
         isPrivate: true,
         isProtected: true,
+        isDM: true,
         users: {
           select: {
             isAdmin: true,
             userId: true,
             channelId: true,
+            mutedUntil: true,
             user: {
               select: {
                 id: true,
                 profilePicture: true,
                 username: true,
+                status: true,
               },
             },
           },
@@ -461,28 +600,243 @@ export class ChannelService {
     }
   }
 
-  hasPrivileges(
-    requesterUser: IChannelUser,
-    targetUser: IChannelUser,
-    ownerId: number,
-  ): boolean {
-    const requesterRole = this.getRole(requesterUser, ownerId);
-    const targetRole = this.getRole(targetUser, ownerId);
-    return requesterRole > targetRole;
+  isMuted(userId: number, channelUsers: IChannelUser[]): boolean {
+    const channelUser = channelUsers.find(
+      (channelUser) => channelUser.userId == userId,
+    );
+    if (!channelUser?.mutedUntil) return false;
+    return Date.now() < channelUser.mutedUntil.getTime();
   }
 
   isBanned(userId: number, bannedUserIds: number[]): boolean {
     return bannedUserIds.includes(userId);
   }
 
-  getRole(user: IChannelUser, ownerId: number): number {
+  getRole(user: IChannelUser | undefined, ownerId: number): number {
     enum Role {
       User = 0,
       Admin,
       Owner,
     }
+    if (!user) return Role.User;
     if (user.userId == ownerId) return Role.Owner;
     else if (user.isAdmin) return Role.Admin;
     return Role.User;
+  }
+
+  hasPrivileges(
+    requesterUser: IChannelUser,
+    targetUser: IChannelUser | undefined,
+    ownerId: number,
+  ): boolean {
+    const requesterRole = this.getRole(requesterUser, ownerId);
+    const targetRole = this.getRole(targetUser, ownerId);
+
+    return requesterRole > targetRole;
+  }
+
+  async muteUser(
+    userId: number,
+    channel: IChannel,
+    minutesToAdd: number,
+  ): Promise<void> {
+    await this.prisma.channelUser.update({
+      where: {
+        channelId_userId: {
+          channelId: channel.id,
+          userId,
+        },
+      },
+      data: {
+        mutedUntil: new Date(Date.now() + minutesToAdd * 60000),
+      },
+    });
+  }
+
+  async unmuteUser(userId: number, channel: IChannel): Promise<void> {
+    await this.prisma.channelUser.update({
+      where: {
+        channelId_userId: {
+          channelId: channel.id,
+          userId,
+        },
+      },
+      data: {
+        mutedUntil: null,
+      },
+    });
+  }
+
+  async promoteUser(userId: number, channel: IChannel): Promise<void> {
+    await this.prisma.channelUser.update({
+      where: {
+        channelId_userId: {
+          channelId: channel.id,
+          userId,
+        },
+      },
+      data: {
+        isAdmin: true,
+      },
+    });
+  }
+
+  async demoteUser(userId: number, channel: IChannel): Promise<void> {
+    await this.prisma.channelUser.update({
+      where: {
+        channelId_userId: {
+          channelId: channel.id,
+          userId,
+        },
+      },
+      data: {
+        isAdmin: false,
+      },
+    });
+  }
+
+  async changeSanctionOrPrivileges(
+    requesterUserId: number,
+    targetUserId: number,
+    channelId: number,
+    sanction: string,
+    minutesToMute?: number,
+  ): Promise<void> {
+    const channel = await this.getChannel(requesterUserId, channelId);
+    if (!channel)
+      throw new NotFoundException('Channel not found, or incorrect permission');
+
+    const requesterUser = channel.users.find(
+      (channelUser) => channelUser.userId == requesterUserId,
+    );
+    const targetUser = channel.users.find(
+      (channelUser) => channelUser.userId === targetUserId,
+    );
+    if (!requesterUser || !targetUser)
+      throw new NotFoundException('Channel user not found');
+
+    if (
+      this.isBanned(requesterUser.userId, channel.bannedUserIds) ||
+      this.isBanned(targetUser.userId, channel.bannedUserIds)
+    )
+      throw new ForbiddenException('User is banned');
+    if (!this.hasPrivileges(requesterUser, targetUser, channel.ownerId))
+      throw new ForbiddenException("You don't have the required privileges");
+
+    if (sanction === Sanction.KICK) {
+      await this.leaveChannel(targetUserId, channel).catch((error) => {
+        console.error({ error });
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          if (error.code === 'P2015')
+            throw new NotFoundException('User not found');
+        }
+        throw error;
+      });
+    } else if (sanction === Sanction.MUTE && minutesToMute) {
+      await this.muteUser(targetUserId, channel, minutesToMute);
+    } else if (sanction === Sanction.UNMUTE) {
+      await this.unmuteUser(targetUserId, channel);
+    } else if (sanction === Sanction.PROMOTE) {
+      await this.promoteUser(targetUserId, channel);
+    } else if (sanction === Sanction.DEMOTE) {
+      await this.demoteUser(targetUserId, channel);
+    } else {
+      throw new UnprocessableEntityException();
+    }
+  }
+
+  async addToBannedList(userId: number, channel: IChannel): Promise<void> {
+    const newBannedList = [...channel.bannedUserIds, userId];
+
+    await this.prisma.channel.update({
+      where: {
+        id: channel.id,
+      },
+      data: {
+        bannedUserIds: newBannedList,
+      },
+    });
+  }
+
+  async removeFromBannedList(userId: number, channel: IChannel): Promise<void> {
+    const newBannedList = channel.bannedUserIds.filter(
+      (bannedUser) => bannedUser !== userId,
+    );
+
+    await this.prisma.channel.update({
+      where: {
+        id: channel.id,
+      },
+      data: {
+        bannedUserIds: newBannedList,
+      },
+    });
+  }
+
+  async banOrUnban(
+    requesterUserId: number,
+    targetUserId: number,
+    channelId: number,
+    sanction: string,
+  ): Promise<void> {
+    const channel = await this.getChannel(requesterUserId, channelId);
+    if (!channel)
+      throw new NotFoundException('Channel not found, or incorrect permission');
+
+    const requesterUser = channel.users.find(
+      (channelUser) => channelUser.userId == requesterUserId,
+    );
+    if (!requesterUser) throw new NotFoundException('Channel user not found');
+    if (this.isBanned(requesterUser.userId, channel.bannedUserIds))
+      throw new ForbiddenException('User is banned');
+    if (
+      this.isBanned(targetUserId, channel.bannedUserIds) &&
+      sanction !== Sanction.UNBAN
+    )
+      throw new ForbiddenException('User is already banned');
+
+    const targetUser = channel.users.find(
+      (channelUser) => channelUser.userId === targetUserId,
+    );
+    if (!this.hasPrivileges(requesterUser, targetUser, channel.ownerId))
+      throw new ForbiddenException("You don't have the required privileges");
+
+    if (sanction === Sanction.BAN) {
+      if (targetUser) {
+        await this.leaveChannel(targetUserId, channel).catch((error) => {
+          console.error({ error });
+          if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === 'P2015')
+              throw new NotFoundException('User not found');
+          }
+          throw error;
+        });
+      }
+      await this.addToBannedList(targetUserId, channel);
+    } else if (sanction === Sanction.UNBAN) {
+      await this.removeFromBannedList(targetUserId, channel);
+    } else {
+      throw new UnprocessableEntityException();
+    }
+  }
+
+  async getAllChatUsers(
+    userId: number,
+    channelId: number,
+  ): Promise<IChatUser[]> {
+    const channel = await this.getChannel(userId, channelId);
+
+    if (!channel)
+      throw new NotFoundException('Channel not found, or incorrect permission');
+    if (!channel.users.find((channelUser) => channelUser.userId == userId))
+      throw new NotFoundException('Channel user not found');
+    return this.prisma.user.findMany({
+      select: {
+        id: true,
+        username: true,
+        profilePicture: true,
+        status: true,
+      },
+    });
   }
 }

@@ -15,6 +15,5 @@ export type UserSummary = {
   username: string;
   elo: number;
   profilePicture: string;
+  status: string;
 };
-
-export type WithStatus<T> = T & { status?: 'Online' | 'Offline' | 'In-Game' };
