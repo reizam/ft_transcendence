@@ -440,6 +440,8 @@
 
   .dash__title {
     font-size: large;
+    margin-top: 2vh;
+    margin-bottom: 2vh;
   }
 
   .stats__info__title {
@@ -476,7 +478,7 @@
   }
 
   .ctn__stats {
-    margin-top: 15%;
+    margin-top: 8%;
   }
 
   .ctn__four_buttons {

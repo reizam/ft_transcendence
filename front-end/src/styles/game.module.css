@@ -132,6 +132,15 @@
   text-align: center;
 }
 
+.ctn__select__theme h3 {
+  text-align: center;
+  font-family: var(--title-font);
+}
+
+.toggle__theme {
+  width: 40%;
+}
+
 .ctn_box {
   margin-right: 2%;
   display: flex;
@@ -172,4 +181,55 @@
 
 .paint_color {
   color: var(--main-theme-color);
+}
+
+/*  --  COUNTDOWN CSS --  */
+
+.ctn__result {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.ctn__result_img {
+  display: flex;
+  padding: 5% 20%;
+  margin: auto;
+}
+
+.ctn__result_txt {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  justify-content: center;
+}
+
+.result_h2 {
+  font-family: var(--title-font);
+  font-size: 1.5em;
+}
+
+.ctn__result_txt_title {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.ctn__result_txt_text {
+  display: flex;
+}
+
+@media (max-width: 1000px) {
+  .box__theme {
+    flex-direction: column;
+    margin-bottom: 0;
+  }
+
+  .name__theme {
+    text-align: center;
+    width: 100%;
+  }
+
+  .toggle__theme {
+    width: 100%;
+  }
 }
