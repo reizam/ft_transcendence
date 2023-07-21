@@ -5,9 +5,7 @@ services:
     container_name: api-node
     build:
       context: ../../back-end
-      dockerfile: ../docker/dev/requirements/api-node/Dockerfile
-    volumes:
-      - ../../back-end/src:/app/src
+      dockerfile: ../docker/prod/requirements/api-node/Dockerfile
     environment:
       DATABASE_URL: ${DATABASE_URL}
       JWT_SECRET: ${JWT_SECRET}
@@ -32,11 +30,9 @@ services:
     container_name: web-node
     build:
       context: ../../front-end
-      dockerfile: ../docker/dev/requirements/web-node/Dockerfile
-    volumes:
-      - ../../front-end/src:/app/src
+      dockerfile: ../docker/prod/requirements/web-node/Dockerfile
     environment:
-      BACKEND_URL: http://localhost:3000
+      BACKEND_URL: ${BACKEND_URL}
     ports:
       - "4000:4000"
     depends_on:

@@ -18,4 +18,6 @@ COPY . ./
 
 EXPOSE 4000
 
-CMD ["npm", "run", "dev", "--", "--port", "4000"]
+RUN npm run build
+
+CMD ["npm", "run", "start", "--", "--port", "4000"]
