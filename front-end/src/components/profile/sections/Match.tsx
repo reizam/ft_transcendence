@@ -1,6 +1,7 @@
 import dashStyles from '@/styles/dash.module.css';
 import { ReactElement } from 'react';
 import { Game } from '@components/profile/types/profile.type';
+import Link from 'next/link';
 
 interface GameProps {
   game: Game;
@@ -44,22 +45,26 @@ function Match({ game }: GameProps): ReactElement {
         className={dashStyles.pict__player}
         data-title={game.players[0]?.username}
       >
-        <img
-          className={dashStyles.img__player}
-          src={game.players[0]?.profilePicture}
-          alt={game.players[0]?.username}
-        />
+        <Link href={`/profile/${game.players[0].id}`}>
+          <img
+            className={dashStyles.img__player}
+            src={game.players[0]?.profilePicture}
+            alt={game.players[0]?.username}
+          />
+        </Link>
       </div>
       {showScore(game)}
       <div
         className={dashStyles.pict__player}
         data-title={game.players[1]?.username}
       >
-        <img
-          className={dashStyles.img__player}
-          src={game.players[1]?.profilePicture}
-          alt={game.players[1]?.username}
-        />
+        <Link href={`/profile/${game.players[1].id}`}>
+          <img
+            className={dashStyles.img__player}
+            src={game.players[1]?.profilePicture}
+            alt={game.players[1]?.username}
+          />
+        </Link>
       </div>
     </div>
   );
