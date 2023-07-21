@@ -49,6 +49,7 @@ function BasicInput({
       className={className}
       checked={checked}
       accept={accept}
+      autoComplete="off"
     />
   );
 }
