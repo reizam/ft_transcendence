@@ -46,11 +46,13 @@ function Match({ game }: GameProps): ReactElement {
         data-title={game.players[0]?.username}
       >
         <Link href={`/profile/${game.players[0].id}`}>
-          <img
-            className={dashStyles.img__player}
-            src={game.players[0]?.profilePicture}
-            alt={game.players[0]?.username}
-          />
+          <picture>
+            <img
+              className={dashStyles.img__player}
+              src={game.players[0]?.profilePicture}
+              alt={game.players[0]?.username}
+            />
+          </picture>
         </Link>
       </div>
       {showScore(game)}
@@ -59,11 +61,13 @@ function Match({ game }: GameProps): ReactElement {
         data-title={game.players[1]?.username}
       >
         <Link href={`/profile/${game.players[1].id}`}>
-          <img
-            className={dashStyles.img__player}
-            src={game.players[1]?.profilePicture}
-            alt={game.players[1]?.username}
-          />
+          <picture>
+            <img
+              className={dashStyles.img__player}
+              src={game.players[1]?.profilePicture}
+              alt={game.players[1]?.username}
+            />
+          </picture>
         </Link>
       </div>
     </div>

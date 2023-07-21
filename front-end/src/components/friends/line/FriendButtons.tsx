@@ -28,18 +28,14 @@ function GetStatusButton(user: IUserDataSummary, status: string): ReactElement {
     username: string;
   }): void => {
     setHasChallenged(true);
-    socket?.volatile.emit(
-      'createChallengeGame',
-      challengedUser,
-      (_ack: string) => {
-        toast.info(
-          "Let's see if " +
-            user.username +
-            ' is not too afraid to accept the challenge!',
-          { pauseOnFocusLoss: false }
-        );
-      }
-    );
+    socket?.volatile.emit('createChallengeGame', challengedUser, () => {
+      toast.info(
+        "Let's see if " +
+          user.username +
+          ' is not too afraid to accept the challenge!',
+        { pauseOnFocusLoss: false }
+      );
+    });
     setTimeout(() => setHasChallenged(false), 15000);
   };
 
@@ -111,7 +107,9 @@ function GetSocialButton(
       <div className={friendsStyles.button__ctn}>
         <button
           className={friendsStyles.style__button__1}
-          onClick={() => mutate({ operation: 'REMOVE', friendId: user.id })}
+          onClick={(): void =>
+            mutate({ operation: 'REMOVE', friendId: user.id })
+          }
           title="Remove friend"
         >
           <TiUserDelete size="24px" />
@@ -123,7 +121,7 @@ function GetSocialButton(
       <div className={friendsStyles.button__ctn}>
         <button
           className={friendsStyles.style__button__1}
-          onClick={() => mutate({ operation: 'ADD', friendId: user.id })}
+          onClick={(): void => mutate({ operation: 'ADD', friendId: user.id })}
           title="Add friend"
         >
           <TiUserAdd size="24px" />
@@ -135,12 +133,12 @@ function GetSocialButton(
 function FriendButtons({ user, status, isFriend }: ButtonsProps): ReactElement {
   const { mutate: joinDM } = useDMJoin();
   const router = useRouter();
-  const handleJoinDM = () => {
+  const handleJoinDM = (): void => {
     joinDM(
       { otherUserId: user.id },
       {
         onSuccess: (channel) => {
-          router.push('/chat/channel/' + channel.id);
+          void router.push('/chat/channel/' + channel.id);
         },
       }
     );

@@ -20,21 +20,20 @@ function Mute({
   onClick,
   onClose,
 }: MuteProps): ReactElement {
-  if (!isVisible) return <></>;
-
-  const handleClose = (e: any) => {
-    if (e.target.id === 'wrapper') onClose();
+  const handleClose = (e: React.MouseEvent<HTMLDivElement>): void => {
+    if (e.target instanceof HTMLDivElement && e.target.id === 'wrapper')
+      onClose();
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setMuteInMinutes(e.target.value);
   };
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter') onClick();
   };
 
   useEffect(() => {
-    const handleWindowKeyDown = (e: KeyboardEvent) => {
+    const handleWindowKeyDown = (e: KeyboardEvent): void => {
       if (e.key === 'Escape') onClose();
     };
     window.addEventListener('keydown', handleWindowKeyDown);
@@ -43,12 +42,12 @@ function Mute({
     };
   }, [onClose]);
 
-  return (
+  return isVisible ? (
     <div className={muteStyles.ctn_pck_box} id="wrapper" onClick={handleClose}>
       <div className={muteStyles.ctn_box}>
         <div className={muteStyles.ctn_header}>
           <div className={muteStyles.ctn_escape}>
-            <button onClick={() => onClose()}>
+            <button onClick={(): void => onClose()}>
               <ImCross />
             </button>
           </div>
@@ -80,6 +79,8 @@ function Mute({
         </div>
       </div>
     </div>
+  ) : (
+    <></>
   );
 }
 

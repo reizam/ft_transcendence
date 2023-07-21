@@ -55,17 +55,19 @@ function ProfileAvatar({
     fileReader.readAsDataURL(selectedFile);
   };
 
-  const renderImage = () => (
-    <img
-      className={`${dashStyles.img__prof} ${
-        isEditing ? dashStyles.editing__pointer : ''
-      }`}
-      src={src}
-      alt="ProfileAvatar"
-      style={{
-        boxShadow: isEditing ? '0 0 40px 7px var(--main-theme-color)' : '',
-      }}
-    />
+  const renderImage = (): JSX.Element => (
+    <picture>
+      <img
+        className={`${dashStyles.img__prof} ${
+          isEditing ? dashStyles.editing__pointer : ''
+        }`}
+        src={src}
+        alt="ProfileAvatar"
+        style={{
+          boxShadow: isEditing ? '0 0 40px 7px var(--main-theme-color)' : '',
+        }}
+      />
+    </picture>
   );
 
   return (

@@ -60,18 +60,14 @@ function ProfileCard({
     username: string;
   }): void => {
     setHasChallenged(true);
-    socket?.volatile.emit(
-      'createChallengeGame',
-      challengedUser,
-      (_ack: string) => {
-        toast.info(
-          "Let's see if " +
-            profileData.username +
-            ' is not too afraid to accept the challenge!',
-          { pauseOnFocusLoss: false }
-        );
-      }
-    );
+    socket?.volatile.emit('createChallengeGame', challengedUser, () => {
+      toast.info(
+        "Let's see if " +
+          profileData.username +
+          ' is not too afraid to accept the challenge!',
+        { pauseOnFocusLoss: false }
+      );
+    });
     setTimeout(() => setHasChallenged(false), 15000);
   };
 
@@ -84,20 +80,20 @@ function ProfileCard({
     );
   };
 
-  const handleJoinDM = () => {
+  const handleJoinDM = (): void => {
     joinDM(
       { otherUserId: profileData.id },
       {
         onSuccess: (channel) => {
-          router.push('/chat/channel/' + channel.id);
+          void router.push('/chat/channel/' + channel.id);
         },
       }
     );
   };
 
   useEffect(() => {
-    const toastId: string = 'newUserPrompt';
-    const promptUser = () => {
+    const toastId = 'newUserPrompt';
+    const promptUser = (): void => {
       toast.info(
         <div>
           Welcome dear friend!
@@ -112,7 +108,7 @@ function ProfileCard({
         sameSite: 'strict',
       });
     };
-    let promptTimer: NodeJS.Timeout = 0 as any;
+    let promptTimer: NodeJS.Timeout | undefined = undefined;
     const isNewUserCookie = getCookie('newUser', {
       sameSite: 'strict',
     });

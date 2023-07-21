@@ -9,7 +9,7 @@ interface ThemeProps {
 function Theme({ onClick }: ThemeProps): React.ReactElement {
   const [clicked, setCliked] = useState(false);
 
-  const handleClick = () => {
+  const handleClick = (): void => {
     setCliked(!clicked);
     onClick();
   };

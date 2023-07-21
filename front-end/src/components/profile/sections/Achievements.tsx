@@ -3,10 +3,10 @@ import { ReactElement } from 'react';
 import { IconContext } from 'react-icons';
 import { AiOutlineAim } from 'react-icons/ai';
 import { FaQuestion } from 'react-icons/fa';
-import { TbPingPong } from 'react-icons/tb';
+// import { TbPingPong } from 'react-icons/tb';
 import { IoSpeedometerOutline } from 'react-icons/io5';
 import {
-  GiLightningMask,
+  // GiLightningMask,
   GiRobotGolem,
   GiStrongMan,
   GiVacuumCleaner,

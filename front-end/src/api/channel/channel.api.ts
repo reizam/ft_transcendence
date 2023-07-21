@@ -252,7 +252,7 @@ export const useChannelJoin = (
       void queryClient.invalidateQueries(['CHANNELS', 'GET']);
       void queryClient.invalidateQueries(['CHANNEL', 'GET', params.channelId]);
     },
-    onError: (err: unknown, _var: unknown) => {
+    onError: (err: unknown) => {
       toast.error(printChannelError(err));
     },
     ...options,
@@ -269,11 +269,11 @@ export const useDMJoin = (
       const data = await postWithToken<IChannel>('/channel/joinDM', params);
       return data;
     },
-    onSuccess: (data: IChannel, params: IJoinDMParams) => {
+    onSuccess: (data: IChannel) => {
       void queryClient.invalidateQueries(['CHANNELS', 'GET']);
       void queryClient.invalidateQueries(['CHANNEL', 'GET', data.id]);
     },
-    onError: (err: unknown, _var: unknown) => {
+    onError: (err: unknown) => {
       toast.error(printChannelError(err));
     },
     ...options,
@@ -284,7 +284,8 @@ export const printChannelError = (error: unknown): string => {
   let errorMessage = 'Failed to update';
   if (
     axios.isAxiosError(error) &&
-    error.response?.data?.hasOwnProperty('message')
+    error.response?.data &&
+    'message' in error.response.data
   ) {
     if (Array.isArray(error?.response?.data?.message)) {
       errorMessage = error.response.data.message[0];

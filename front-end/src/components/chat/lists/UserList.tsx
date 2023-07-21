@@ -38,11 +38,11 @@ function UserList({ owner, admins, users }: UserListProps): React.ReactElement {
         <div className="flex flex-row items-start flex-wrap gap-1 w-full overflow-y-auto">
           {admins &&
             admins.map((admin) => (
-              <Link href={`/profile/${admin.userId}`}>
-                <ChannelUserItem
-                  key={`${'admin' + admin.userId}`}
-                  channelUser={admin}
-                />
+              <Link
+                key={`${'admin' + admin.userId}`}
+                href={`/profile/${admin.userId}`}
+              >
+                <ChannelUserItem channelUser={admin} />
               </Link>
             ))}
         </div>
@@ -52,8 +52,8 @@ function UserList({ owner, admins, users }: UserListProps): React.ReactElement {
           {users
             .filter((user) => !user.isAdmin)
             .map((user) => (
-              <Link href={`/profile/${user.userId}`}>
-                <ChannelUserItem key={user.userId} channelUser={user} />
+              <Link key={user.userId} href={`/profile/${user.userId}`}>
+                <ChannelUserItem channelUser={user} />
               </Link>
             ))}
         </div>

@@ -16,10 +16,13 @@ function UserInfo({ user: user }: UserInfoProps): ReactElement {
           className={friendsStyles.linkContainer}
         >
           <div className={friendsStyles.pict__prof}>
-            <img
-              className={friendsStyles.img__prof}
-              src={user?.profilePicture}
-            />
+            <picture>
+              <img
+                className={friendsStyles.img__prof}
+                src={user?.profilePicture}
+                alt={`${user.username} picture`}
+              />
+            </picture>
           </div>
           <div className={friendsStyles.user__name}>{user?.username}</div>
         </Link>

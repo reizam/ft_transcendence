@@ -36,7 +36,7 @@ interface ButtonsProps {
 function GetAdminButton(user: IChannelUser, isMe: boolean): ReactElement {
   const [isAdmin, setIsAdmin] = useState(user.isAdmin);
   const { mutate: updateStatus } = useChannelUpdate({});
-  const changeStatus = (newStatus: Sanction) => {
+  const changeStatus = (newStatus: Sanction): void => {
     updateStatus(
       {
         sanction: newStatus,
@@ -55,7 +55,7 @@ function GetAdminButton(user: IChannelUser, isMe: boolean): ReactElement {
             ? chatStyles.style_btn_activate
             : chatStyles.style_btn_desactivate
         }
-        onClick={() =>
+        onClick={(): void =>
           changeStatus(isAdmin ? Sanction.DEMOTE : Sanction.PROMOTE)
         }
         title={isAdmin ? 'Demote' : 'Promote'}
@@ -73,7 +73,7 @@ function GetMuteButton(asMuted: boolean, user: IChannelUser): ReactElement {
   const [isMuted, setIsMuted] = useState(asMuted);
   const [muteInMinutes, setMuteInMinutes] = useState<string>('');
   const { mutate: updateMute } = useChannelUpdate();
-  const changeMute = (sanction: Sanction) => {
+  const changeMute = (sanction: Sanction): void => {
     if (!muteInMinutes)
       toast.error('You must enter a value', { autoClose: 1000 });
     else
@@ -86,7 +86,7 @@ function GetMuteButton(asMuted: boolean, user: IChannelUser): ReactElement {
         },
         {
           onSuccess: () => setIsMuted(!isMuted),
-          onSettled: isMuted ? undefined : () => setShowModal(false),
+          onSettled: isMuted ? undefined : (): void => setShowModal(false),
         }
       );
   };
@@ -96,7 +96,7 @@ function GetMuteButton(asMuted: boolean, user: IChannelUser): ReactElement {
       <div className={chatStyles.ctn_btn}>
         <button
           className={chatStyles.style_btn_activate}
-          onClick={() => changeMute(Sanction.UNMUTE)}
+          onClick={(): void => changeMute(Sanction.UNMUTE)}
           title="Unmute"
         >
           <FaMicrophone size="20px" />
@@ -109,7 +109,7 @@ function GetMuteButton(asMuted: boolean, user: IChannelUser): ReactElement {
         <div className={chatStyles.ctn_btn}>
           <button
             className={chatStyles.style_btn_desactivate}
-            onClick={() => setShowModal(true)}
+            onClick={(): void => setShowModal(true)}
             title="Mute"
           >
             <FaMicrophoneSlash size="20px" />
@@ -120,8 +120,8 @@ function GetMuteButton(asMuted: boolean, user: IChannelUser): ReactElement {
           isVisible={showModal}
           valueInMinutes={muteInMinutes}
           setMuteInMinutes={setMuteInMinutes}
-          onClick={() => changeMute(Sanction.MUTE)}
-          onClose={() => setShowModal(false)}
+          onClick={(): void => changeMute(Sanction.MUTE)}
+          onClose={(): void => setShowModal(false)}
         />
       </Fragment>
     );
@@ -131,7 +131,7 @@ function GetMuteButton(asMuted: boolean, user: IChannelUser): ReactElement {
 function GetBanButton(asBanned: boolean, user: IChannelUser): ReactElement {
   const [isBanned, setIsBanned] = useState(asBanned);
   const { mutate: updateBan } = useChannelUpdate();
-  const changeBan = (sanction: Sanction) => {
+  const changeBan = (sanction: Sanction): void => {
     updateBan(
       {
         sanction,
@@ -150,7 +150,9 @@ function GetBanButton(asBanned: boolean, user: IChannelUser): ReactElement {
             ? chatStyles.style_btn_activate
             : chatStyles.style_btn_desactivate
         }
-        onClick={() => changeBan(isBanned ? Sanction.UNBAN : Sanction.BAN)}
+        onClick={(): void =>
+          changeBan(isBanned ? Sanction.UNBAN : Sanction.BAN)
+        }
         title={isBanned ? 'Unban' : 'Ban'}
       >
         {isBanned ? (
@@ -165,7 +167,7 @@ function GetBanButton(asBanned: boolean, user: IChannelUser): ReactElement {
 
 function GetKickButton(user: IChannelUser): ReactElement {
   const { mutate: kick } = useChannelUpdate();
-  const handleKick = () => {
+  const handleKick = (): void => {
     kick({
       sanction: Sanction.KICK,
       userId: user.userId,
@@ -211,12 +213,12 @@ function GetBlockButton(isBlocked: boolean, user: IChannelUser): ReactElement {
 function GetMessageButton(user: IChatUser): ReactElement {
   const router = useRouter();
   const { mutate: joinDM } = useDMJoin();
-  const handleJoinDM = () => {
+  const handleJoinDM = (): void => {
     joinDM(
       { otherUserId: user.id },
       {
         onSuccess: (channel) => {
-          router.push('/chat/channel/' + channel.id);
+          void router.push('/chat/channel/' + channel.id);
         },
       }
     );
@@ -242,7 +244,7 @@ function GetAddButton(user: IChannelUser): ReactElement {
     <div className={chatStyles.ctn_btn}>
       <button
         className={chatStyles.style_btn_desactivate}
-        onClick={() =>
+        onClick={(): void =>
           addToPrivateChannel(
             {
               channelId: user.channelId,
@@ -273,18 +275,14 @@ function GetMatchButton(user: IChatUser): ReactElement {
     username: string;
   }): void => {
     setHasChallenged(true);
-    socket?.volatile.emit(
-      'createChallengeGame',
-      challengedUser,
-      (_ack: string) => {
-        toast.info(
-          "Let's see if " +
-            user.username +
-            ' is not too afraid to accept the challenge!',
-          { pauseOnFocusLoss: false }
-        );
-      }
-    );
+    socket?.volatile.emit('createChallengeGame', challengedUser, () => {
+      toast.info(
+        "Let's see if " +
+          user.username +
+          ' is not too afraid to accept the challenge!',
+        { pauseOnFocusLoss: false }
+      );
+    });
     setTimeout(() => setHasChallenged(false), 15000);
   };
 

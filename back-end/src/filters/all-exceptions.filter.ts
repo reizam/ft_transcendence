@@ -40,18 +40,19 @@ export class AllExceptionsFilter extends BaseWsExceptionFilter {
       path: httpAdapter.getRequestUrl(ctx.getRequest()),
     };
 
-    if (exception instanceof Error) {
+    if (exception instanceof HttpException) {
+      const response = exception.getResponse();
+      if (typeof response === 'string') responseBody.message = response;
+      else if ('message' in response)
+        responseBody.message = Array.isArray(response.message)
+          ? response.message[0]
+          : response.message;
+    } else if (exception instanceof Error) {
       responseBody.message = exception.message;
       if (exception instanceof PrismaClientKnownRequestError) {
         responseBody.errorCode = exception.code;
         responseBody.errorDetails = exception.meta;
       }
-    } else if (exception instanceof HttpException) {
-      const response = exception.getResponse();
-      responseBody.message =
-        typeof response === 'string'
-          ? response
-          : (response as { message: string })?.message;
     }
 
     httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);

@@ -306,7 +306,7 @@ export class RoomService {
 
       if (i != -1) room.userIds.splice(i, 1);
     }
-    console.log(this.rooms);
+    console.log('rooms: ', this.rooms);
     return room;
   }
 

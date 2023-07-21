@@ -13,11 +13,13 @@ export const GameResult = ({ winner }: GameResultProps): JSX.Element => {
   return (
     <div className={gameStyles.ctn__result}>
       <div className={gameStyles.ctn__result_img}>
-        <img
-          className={dashStyles.img__prof}
-          src={winner.profilePicture}
-          alt="Winner picture"
-        />
+        <picture>
+          <img
+            className={dashStyles.img__prof}
+            src={winner.profilePicture}
+            alt="Winner picture"
+          />
+        </picture>
       </div>
       <div className={gameStyles.ctn__result_txt}>
         <div className={gameStyles.ctn__result_txt_title}>

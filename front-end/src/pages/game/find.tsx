@@ -14,9 +14,9 @@ function FindGame(): JSX.Element {
   const router = useRouter();
 
   useEffect(() => {
-    let timer1: NodeJS.Timeout = 0 as any;
-    let timer2: NodeJS.Timeout = 0 as any;
-    const handleFindError = (err: string) => {
+    let timer1: NodeJS.Timeout | undefined = undefined;
+    let timer2: NodeJS.Timeout | undefined = undefined;
+    const handleFindError = (err: string): void => {
       console.error(err);
       timer1 = setTimeout(() => toast.error(err ?? 'Unknown find error'), 200);
       timer2 = setTimeout(() => router.push('/game'), 1500);
@@ -25,9 +25,9 @@ function FindGame(): JSX.Element {
       setIsReady(false);
     };
 
-    let timer3: NodeJS.Timeout = 0 as any;
-    let timer4: NodeJS.Timeout = 0 as any;
-    const handleJoinTimeout = (err: string) => {
+    let timer3: NodeJS.Timeout | undefined = undefined;
+    let timer4: NodeJS.Timeout | undefined = undefined;
+    const handleJoinTimeout = (err: string): void => {
       console.error(err);
       timer3 = setTimeout(() => toast.error(err ?? 'Unknown find error'), 0);
       timer4 = setTimeout(() => router.push('/game/find'), 1500);
@@ -37,7 +37,7 @@ function FindGame(): JSX.Element {
     };
 
     const handleJoinGame = (gameId: number): void => {
-      router.push('/game/' + gameId);
+      void router.push('/game/' + gameId);
     };
 
     socket?.once('findError', handleFindError);
@@ -57,10 +57,10 @@ function FindGame(): JSX.Element {
   }, [socket, router]);
 
   useEffect(() => {
-    let timer5: NodeJS.Timeout = 0 as any;
-    let timer6: NodeJS.Timeout = 0 as any;
+    let timer5: NodeJS.Timeout | undefined = undefined;
+    let timer6: NodeJS.Timeout | undefined = undefined;
     let ackCallback: (ack: string) => void;
-    const handleFoundGame = (callback: (arg: string) => void) => {
+    const handleFoundGame = (callback: (arg: string) => void): void => {
       setFoundPlayer(true);
       timer5 = setTimeout(
         () => toast.error('Taking a shit? We let your opponent know about it'),
@@ -83,12 +83,12 @@ function FindGame(): JSX.Element {
   }, [socket, router, isReady]);
 
   useEffect(() => {
-    const sendFindGame = () => {
+    const sendFindGame = (): void => {
       socket?.volatile.emit('findGame');
     };
 
-    let timer7: NodeJS.Timeout = 0 as any;
-    const cancelFindGame = () => {
+    let timer7: NodeJS.Timeout | undefined = undefined;
+    const cancelFindGame = (): void => {
       toast.error(
         <div>
           No matching player :(
@@ -115,9 +115,9 @@ function FindGame(): JSX.Element {
     console.log('Third effect');
     if (socket?.connected === false) {
       toast.error('Server error');
-      router.push('/game');
+      void router.push('/game');
     }
-  }, [socket, socket?.connected]);
+  }, [socket, socket?.connected, router]);
 
   const onClick = (): void => {
     console.log({ isReady });
@@ -138,7 +138,7 @@ function FindGame(): JSX.Element {
             </>
           ) : !isReady ? (
             <button onClick={onClick} className={gameStyles.style__button}>
-              I'm ready!
+              {`I'm ready!`}
             </button>
           ) : (
             <>

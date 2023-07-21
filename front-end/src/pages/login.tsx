@@ -1,4 +1,4 @@
-import Layout, { Mode } from '@/components/app/layouts/Layout';
+import Layout from '@/components/app/layouts/Layout';
 import LoginContent from '@/components/login/LoginContent';
 import { withPublic } from '@/providers/auth/auth.routes';
 import { NextPage } from 'next';
