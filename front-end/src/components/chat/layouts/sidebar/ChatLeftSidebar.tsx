@@ -21,7 +21,7 @@ function ChatLeftSidebar({ screen }: ChatLeftSidebarProps): React.ReactElement {
         )}
         {screen === 'chat' && (
           <>
-            <Link onMouseDown={preventDefault} href="/chat/friends">
+            <Link onMouseDown={preventDefault} href="/friends">
               <FaUserFriends size={24} />
             </Link>
             <Link onMouseDown={preventDefault} href="/chat/channel/create">
