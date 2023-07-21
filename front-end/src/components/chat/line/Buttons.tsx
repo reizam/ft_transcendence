@@ -62,7 +62,7 @@ function GetAdminButton(user: IChannelUser, isMe: boolean): ReactElement {
         style={isMe ? { pointerEvents: 'none' } : {}}
         disabled={isMe}
       >
-        {isAdmin ? <FaUser size="24px" /> : <FaUserShield size="24px" />}
+        {isAdmin ? <FaUser size="20px" /> : <FaUserShield size="20px" />}
       </button>
     </div>
   );
@@ -99,7 +99,7 @@ function GetMuteButton(asMuted: boolean, user: IChannelUser): ReactElement {
           onClick={() => changeMute(Sanction.UNMUTE)}
           title="Unmute"
         >
-          <FaMicrophone size="24px" />
+          <FaMicrophone size="20px" />
         </button>
       </div>
     );
@@ -112,7 +112,7 @@ function GetMuteButton(asMuted: boolean, user: IChannelUser): ReactElement {
             onClick={() => setShowModal(true)}
             title="Mute"
           >
-            <FaMicrophoneSlash size="24px" />
+            <FaMicrophoneSlash size="20px" />
           </button>
         </div>
         <Modal
@@ -154,9 +154,9 @@ function GetBanButton(asBanned: boolean, user: IChannelUser): ReactElement {
         title={isBanned ? 'Unban' : 'Ban'}
       >
         {isBanned ? (
-          <LiaHandPeace size="24px" />
+          <LiaHandPeace size="20px" />
         ) : (
-          <LiaHandMiddleFingerSolid size="24px" />
+          <LiaHandMiddleFingerSolid size="20px" />
         )}
       </button>
     </div>
@@ -202,7 +202,7 @@ function GetBlockButton(isBlocked: boolean, user: IChannelUser): ReactElement {
         }
         title={isBlocked ? 'Unblock' : 'Block'}
       >
-        {isBlocked ? <CgUnblock size="24px" /> : <CgBlock size="24px" />}
+        {isBlocked ? <CgUnblock size="20px" /> : <CgBlock size="20px" />}
       </button>
     </div>
   );
@@ -229,7 +229,7 @@ function GetMessageButton(user: IChatUser): ReactElement {
         onClick={handleJoinDM}
         title="Private Message"
       >
-        <AiFillMessage size="24px" />
+        <AiFillMessage size="20px" />
       </button>
     </div>
   );
@@ -253,7 +253,7 @@ function GetAddButton(user: IChannelUser): ReactElement {
         }
         title="Add in channel"
       >
-        <TiUserAdd size="24px" />
+        <TiUserAdd size="20px" />
       </button>
     </div>
   );
@@ -313,9 +313,9 @@ function GetMatchButton(user: IChatUser): ReactElement {
         }
       >
         {user.status === Status.IN_GAME ? (
-          <RiMovieFill size="24px" />
+          <RiMovieFill size="20px" />
         ) : (
-          <RiPingPongFill size="24px" />
+          <RiPingPongFill size="20px" />
         )}
       </button>
     </div>

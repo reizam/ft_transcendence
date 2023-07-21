@@ -95,7 +95,6 @@
 
       .badge__ctn {
         width: 5%;
-        height: 100%;
         display: flex;
         align-items: center;
         justify-content: right;
@@ -103,8 +102,8 @@
       }
 
       .badge {
-        width: 12px;
-        height: 12px;
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
         margin-right: 5px;
       }

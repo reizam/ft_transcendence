@@ -13,6 +13,7 @@
 /*  --  LIST_CTN    --  */
 .ctn_list {
   display: flex;
+  margin-bottom: 5px;
 }
 
 /*  --  NAME_CTN    --  */
@@ -39,7 +40,7 @@
   justify-content: center;
   align-items: center;
   background-color: var(--background);
-  width: 40px;
+  width: 30px;
   aspect-ratio: 1/1;
   border: 1px solid var(--container-color);
   border-radius: 9999px;
@@ -57,7 +58,7 @@
   background-color: var(--container-color);
   color: var(--background);
   font-weight: 600;
-  width: 40px;
+  width: 30px;
   aspect-ratio: 1/1;
   border: 1px solid var(--container-color);
   border-radius: 9999px;

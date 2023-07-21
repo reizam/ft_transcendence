@@ -4,6 +4,7 @@ import { Status } from '@/api/user/user.types';
 
 interface StatusProps {
   status: Status;
+  withInfo: Boolean;
 }
 
 function GetColor(status: Status): ReactElement {
@@ -31,13 +32,17 @@ function GetColor(status: Status): ReactElement {
   }
 }
 
-function StatusInfo({ status }: StatusProps): ReactElement {
+function StatusInfo({ status, withInfo = true }: StatusProps): ReactElement {
+  if (withInfo)
+    return (
+      <>
+        <div className={friendsStyles.badge__ctn}>{GetColor(status)}</div>
+        <div className={friendsStyles.user__info}>{status}</div>
+      </>
+    );
   return (
-    <>
-      <div className={friendsStyles.badge__ctn}>{GetColor(status)}</div>
-      <div className={friendsStyles.user__info}>{status}</div>
-    </>
-  );
+        <div className={friendsStyles.badge__ctn}>{GetColor(status)}</div>
+    );
 }
 
 export default StatusInfo;
