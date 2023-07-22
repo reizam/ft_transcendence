@@ -144,9 +144,12 @@ export const useSendMessagePost = (
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (body: IMessagePost) => {
-      const data = await postWithToken('/channel/message', body);
+      const data = await postWithToken<IMessage>('/channel/message', body);
 
-      return data as IMessage;
+      return data;
+    },
+    onError: (err: unknown) => {
+      toast.error(printChannelError(err));
     },
     onSettled: () => {
       void queryClient.invalidateQueries([

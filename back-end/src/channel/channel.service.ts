@@ -136,8 +136,21 @@ export class ChannelService {
   ): Promise<IMessage> {
     const channel = await this.getChannel(userId, channelId);
 
-    if (!channel) throw new Error('Channel not found');
-    if (this.isMuted(userId, channel.users)) throw new Error('User is muted');
+    if (!channel)
+      throw new NotFoundException('Channel not found, or incorrect permission');
+
+    const mutedRemaining = this.mutedRemaining(userId, channel.users);
+    if (mutedRemaining) {
+      const minutes = mutedRemaining.getMinutes();
+      const seconds = minutes > 0 ? 0 : mutedRemaining.getSeconds();
+
+      throw new ForbiddenException(
+        'You are muted during ' +
+          (seconds
+            ? seconds.toString() + ' seconds'
+            : minutes.toString() + ' minutes'),
+      );
+    }
 
     return await this.prisma.message.create({
       data: {
@@ -172,9 +185,8 @@ export class ChannelService {
   ): Promise<IMessagePage> {
     const channel = await this.getChannel(userId, channelId);
 
-    if (!channel) {
-      throw new Error('Channel not found');
-    }
+    if (!channel)
+      throw new NotFoundException('Channel not found, or incorrect permission');
 
     const where = {
       channelId,
@@ -231,9 +243,8 @@ export class ChannelService {
   async isAdmin(userId: number, channelId: number): Promise<boolean> {
     const channel = await this.getChannel(userId, channelId);
 
-    if (!channel) {
-      throw new Error('Channel not found');
-    }
+    if (!channel)
+      throw new NotFoundException('Channel not found, or incorrect permission');
 
     return this.isAdminWithChannel(userId, channel);
   }
@@ -484,13 +495,11 @@ export class ChannelService {
   ): Promise<boolean> {
     const channel = await this.getChannel(userId, channelId);
 
-    if (!channel) {
-      throw new Error('Channel not found');
-    }
+    if (!channel)
+      throw new NotFoundException('Channel not found, or incorrect permission');
 
-    if (!this.isAdminWithChannel(userId, channel)) {
-      throw new Error('You are not the admin of this channel');
-    }
+    if (!this.isAdminWithChannel(userId, channel))
+      throw new ForbiddenException('You are not the admin of this channel');
 
     await this.prisma.channel.update({
       where: {
@@ -602,12 +611,18 @@ export class ChannelService {
     }
   }
 
-  isMuted(userId: number, channelUsers: IChannelUser[]): boolean {
+  mutedRemaining(userId: number, channelUsers: IChannelUser[]): Date | null {
     const channelUser = channelUsers.find(
       (channelUser) => channelUser.userId == userId,
     );
-    if (!channelUser?.mutedUntil) return false;
-    return Date.now() < channelUser.mutedUntil.getTime();
+
+    if (!channelUser) throw new NotFoundException('Channel user not found');
+    if (!channelUser.mutedUntil) return null;
+
+    const timeMuted: number = channelUser.mutedUntil.getTime() - Date.now();
+
+    if (timeMuted < 0) return null;
+    return new Date(timeMuted);
   }
 
   isBanned(userId: number, bannedUserIds: number[]): boolean {
