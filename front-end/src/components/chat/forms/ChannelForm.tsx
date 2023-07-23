@@ -54,8 +54,8 @@ function ChannelForm({
           onClick={onChannelTypeChange(false)}
           className={
             !values.isPrivate
-              ? 'bg-gray-500 text-black w-full antialiased py-2 rounded-full ease-in-out duration-200'
-              : 'bg-white text-black w-full antialiased py-2 rounded-full ease-in-out duration-200'
+              ? 'text-white w-full antialiased py-2 rounded-full ease-in-out duration-200 border-purple border-4'
+              : 'text-white w-full antialiased py-2 rounded-full ease-in-out duration-200 border-white border-2'
           }
         >
           Public
@@ -64,8 +64,8 @@ function ChannelForm({
           onClick={onChannelTypeChange(true)}
           className={
             values.isPrivate
-              ? 'bg-gray-500 text-black w-full antialiased py-2 rounded-full ease-in-out duration-200'
-              : 'bg-white text-black w-full antialiased py-2 rounded-full ease-in-out duration-200'
+              ? 'text-white w-full antialiased py-2 rounded-full ease-in-out duration-200 border-purple border-4'
+              : 'text-white w-full antialiased py-2 rounded-full ease-in-out duration-200 border-white border-2'
           }
         >
           Private
