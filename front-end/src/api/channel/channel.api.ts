@@ -136,7 +136,7 @@ export const useChannelMessagesGet = (
     {
       getNextPageParam: (lastPage) =>
         lastPage.hasNextPage ? lastPage.page + 1 : undefined,
-      onSuccess: () => {
+      onSettled: () => {
         void queryClient.invalidateQueries(['CHANNELS', 'GET']);
       },
       ...options,

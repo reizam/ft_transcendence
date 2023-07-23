@@ -74,7 +74,7 @@ function GetMuteButton(asMuted: boolean, user: IChannelUser): ReactElement {
   const [muteInMinutes, setMuteInMinutes] = useState<string>('');
   const { mutate: updateMute } = useChannelUpdate();
   const changeMute = (sanction: Sanction): void => {
-    if (!muteInMinutes)
+    if (!muteInMinutes && !asMuted)
       toast.error('You must enter a value', { autoClose: 1000 });
     else
       updateMute(
