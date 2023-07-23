@@ -27,12 +27,12 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy42, '42') {
   ): Promise<WithWasJustCreated<User>> {
     const user: WithWasJustCreated<User> =
       await this.authService.validateOrCreateUser({
-        fortytwoId: profile.id as number,
-        username: profile.login as string,
-        firstName: profile.first_name as string,
-        lastName: profile.last_name as string,
-        profilePicture: profile.image.link as string,
-        email: profile.email as string,
+        fortytwoId: profile.id,
+        username: profile.login,
+        firstName: profile.first_name,
+        lastName: profile.last_name,
+        profilePicture: profile.image.link,
+        email: profile.email,
       });
     return user;
   }

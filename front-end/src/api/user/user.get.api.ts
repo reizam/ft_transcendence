@@ -29,9 +29,9 @@ export const useGetMe = (
   useQuery<IUserData, Error>(
     ['PROFILE', 'GET', 'ME', ...additionalQueryId],
     async () => {
-      const data = await getWithToken('/profile');
+      const data = await getWithToken<IUserData>('/profile');
 
-      return data as IUserData;
+      return data;
     },
     { ...defaultUserFetchConfig, ...options }
   );
@@ -40,9 +40,9 @@ export const useGetUser = (id?: string): UseQueryResult<IUserData, Error> =>
   useQuery(
     ['PROFILE', 'GET', id],
     async () => {
-      const data = await getWithToken(`/profile/${id}`);
+      const data = await getWithToken<IUserData>(`/profile/${id}`);
 
-      return data as IUserData;
+      return data;
     },
     { ...defaultUserFetchConfig, enabled: !!id }
   );

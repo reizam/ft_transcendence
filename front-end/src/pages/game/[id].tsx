@@ -94,14 +94,20 @@ const Game: NextPage = () => {
       return confirmationMessage;
     };
     const handleUnload = (): void => {
-      socket?.volatile.emit('leaveGame', parseInt(gameId as string));
+      socket?.volatile.emit(
+        'leaveGame',
+        parseInt(gameId ? (gameId as string) : '0')
+      );
     };
 
     const handleRouteChange = (): void => {
       if (!window.confirm('Are you sure you want to leave the game?')) {
         throw 'routeChange aborted';
       } else {
-        socket?.volatile.emit('leaveGame', parseInt(gameId as string));
+        socket?.volatile.emit(
+          'leaveGame',
+          parseInt(gameId ? (gameId as string) : '0')
+        );
       }
     };
     const handleRejection = (e: PromiseRejectionEvent): void => {
@@ -188,7 +194,7 @@ const Game: NextPage = () => {
                 animation: 'neon-blink 3s infinite alternate',
               }}
             >
-              {startGame && !winner ? (
+              {startGame && !winner && gameId ? (
                 <Pong
                   gameId={parseInt(gameId as string)}
                   isPlayer={isPlayer}
