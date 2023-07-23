@@ -17,13 +17,13 @@ function MessageList({
   channelId,
   user,
 }: MessageListProps): React.ReactElement {
-  const { data, hasNextPage, fetchNextPage } = useChannelMessagesGet(
+  const { data, hasNextPage, fetchNextPage, refetch } = useChannelMessagesGet(
     channelId,
     25,
     {
       enabled: isNaN(channelId) === false && channelId !== null,
       refetchOnWindowFocus: false,
-      refetchInterval: 1000 * 5,
+      refetchInterval: 1000 * 10,
       staleTime: Infinity,
     }
   );
@@ -45,6 +45,10 @@ function MessageList({
     () => messages[messages.length - 1],
     [messages]
   );
+
+  React.useEffect(() => {
+    void refetch();
+  });
 
   React.useEffect(() => {
     const timeout: NodeJS.Timeout = setTimeout(() => {

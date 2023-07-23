@@ -73,7 +73,7 @@ export class ChannelController {
       sendMessageDto.message,
     );
 
-    this.channelGateway.emitChannelUpdate(message.channelId);
+    this.channelGateway.emitNewMessage(message.channelId);
     return message;
   }
 

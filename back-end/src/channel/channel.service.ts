@@ -176,6 +176,17 @@ export class ChannelService {
       },
     });
 
+    await this.prisma.channelUser.update({
+      where: {
+        channelId_userId: {
+          channelId: channelId,
+          userId: userId,
+        },
+      },
+      data: {
+        lastReadMessageId: newMsg.id ?? 1,
+      },
+    });
     await this.prisma.channel.update({
       where: {
         id: channelId,
@@ -184,6 +195,7 @@ export class ChannelService {
         lastMessageId: newMsg.id,
       },
     });
+
     return newMsg;
   }
 

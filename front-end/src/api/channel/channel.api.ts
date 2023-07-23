@@ -19,6 +19,7 @@ import {
   IMessagePost,
 } from '@/api/channel/channel.types';
 import {
+  QueryKey,
   UseInfiniteQueryOptions,
   UseMutationOptions,
   UseMutationResult,
@@ -53,14 +54,14 @@ export const useInfiniteChannelsGet = (
   useInfiniteQuery<IChannelPage, unknown>(
     ['CHANNELS', 'GET'],
     async ({ pageParam = 0 }): Promise<IChannelPage> => {
-      const data = await getWithToken(`/channel/page`, {
+      const data = await getWithToken<IChannelPage>(`/channel/page`, {
         params: {
           limit,
           page: pageParam,
         },
       });
 
-      return data as IChannelPage;
+      return data;
     },
     {
       getNextPageParam: (lastPage) => {
@@ -80,13 +81,13 @@ export const useChannelGet = (
   useQuery<IChannel, Error>(
     ['CHANNEL', 'GET', channelId],
     async () => {
-      const data = await getWithToken(`/channel`, {
+      const data = await getWithToken<IChannel>(`/channel`, {
         params: {
           channelId,
         },
       });
 
-      return data as IChannel;
+      return data;
     },
     { ...defaultChannelFetchConfig, ...options }
   );
@@ -117,11 +118,12 @@ export const useChannelMessagesGet = (
   channelId: number,
   limit: number,
   options?: UseInfiniteQueryOptions<IMessagePage, unknown>
-) =>
-  useInfiniteQuery<IMessagePage, unknown>(
+) => {
+  const queryClient = useQueryClient();
+  return useInfiniteQuery<IMessagePage, unknown>(
     ['CHANNEL_MESSAGES', 'GET', channelId],
     async ({ pageParam = 0 }): Promise<IMessagePage> => {
-      const data = await getWithToken('/channel/message/page', {
+      const data = await getWithToken<IMessagePage>('/channel/message/page', {
         params: {
           channelId,
           limit,
@@ -129,14 +131,18 @@ export const useChannelMessagesGet = (
         },
       });
 
-      return data as IMessagePage;
+      return data;
     },
     {
       getNextPageParam: (lastPage) =>
         lastPage.hasNextPage ? lastPage.page + 1 : undefined,
+      onSuccess: () => {
+        void queryClient.invalidateQueries(['CHANNELS', 'GET']);
+      },
       ...options,
     }
   );
+};
 
 export const useSendMessagePost = (
   channelId: number
@@ -151,12 +157,10 @@ export const useSendMessagePost = (
     onError: (err: unknown) => {
       toast.error(printChannelError(err));
     },
-    onSettled: () => {
-      void queryClient.invalidateQueries([
-        'CHANNEL_MESSAGES',
-        'GET',
-        channelId,
-      ]);
+    onSuccess: () => {
+      const queryKey: QueryKey = ['CHANNEL_MESSAGES', 'GET', channelId];
+      if (!queryClient.isFetching({ queryKey }))
+        void queryClient.invalidateQueries(queryKey);
     },
   });
 };
@@ -166,9 +170,9 @@ export const useChannelPost = (
 ) =>
   useMutation<IChannel, unknown, IChannelPostParams>(
     async (params): Promise<IChannel> => {
-      const data = await postWithToken('/channel', params);
+      const data = await postWithToken<IChannel>('/channel', params);
 
-      return data as IChannel;
+      return data;
     },
     options
   );

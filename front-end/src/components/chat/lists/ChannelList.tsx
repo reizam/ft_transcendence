@@ -25,11 +25,8 @@ function ChannelList(): React.ReactElement {
   );
   const { user: me } = useAuth();
 
-  console.log('data loaded');
-
   const hasNewMessages = (channel: IChannel, userId?: number): boolean => {
     const channelUser = channel.users.find((user) => user.userId === userId);
-
     if (
       channelUser &&
       channel.lastMessageId &&

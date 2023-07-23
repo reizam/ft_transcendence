@@ -82,11 +82,15 @@ export const useProvideSocket = (): ISocketContext => {
       void router.push('/game/' + gameId.toString());
     };
 
-    const handleChannelUpdate = (channelId: number): void => {
-      if (router.pathname.includes('/chat')) {
+    const handleNewMessage = (channelId: number): void => {
+      if (router.pathname.startsWith('/chat'))
         void queryClient.invalidateQueries(['CHANNELS', 'GET']);
-        void queryClient.invalidateQueries(['CHANNEL', 'GET', channelId]);
-      }
+      if (router.asPath === `/chat/channel/${channelId}`)
+        void queryClient.invalidateQueries([
+          'CHANNEL_MESSAGES',
+          'GET',
+          channelId,
+        ]);
     };
 
     socket.on('connect', onConnect);
@@ -98,7 +102,7 @@ export const useProvideSocket = (): ISocketContext => {
     socket.on('joinChallenge', handleJoinChallenge);
     socket.on('watchError', handleWatchError);
 
-    socket.on('channelUpdate', handleChannelUpdate);
+    socket.on('newMessage', handleNewMessage);
 
     if (
       socket.disconnected &&
@@ -116,7 +120,7 @@ export const useProvideSocket = (): ISocketContext => {
       socket.removeAllListeners('challengeError');
       socket.removeAllListeners('joinChallenge');
       socket.removeAllListeners('watchError');
-      socket.removeAllListeners('channelUpdate');
+      socket.removeAllListeners('newMessage');
     };
   }, [router.pathname, router, logout, queryClient]);
 
