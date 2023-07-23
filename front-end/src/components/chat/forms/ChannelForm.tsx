@@ -1,6 +1,7 @@
 import BasicInput from '@/components/app/inputs/BasicInput';
 import { useFormik } from 'formik';
 import React from 'react';
+import { toast } from 'react-toastify';
 import * as Yup from 'yup';
 
 const schema = Yup.object().shape({
@@ -26,7 +27,7 @@ function ChannelForm({
   initialValues,
   onSubmit,
 }: ChannelFormProps): React.ReactElement {
-  const { handleSubmit, values, handleChange, setFieldValue, isValid } =
+  const { handleSubmit, values, handleChange, setFieldValue, isValid, errors } =
     useFormik({
       initialValues,
       onSubmit,
@@ -37,7 +38,7 @@ function ChannelForm({
     if (isValid) {
       handleSubmit();
     } else {
-      // show toast error
+      toast.error(errors?.password ?? errors?.isPrivate ?? 'Form error');
     }
   };
 
@@ -54,8 +55,8 @@ function ChannelForm({
           onClick={onChannelTypeChange(false)}
           className={
             !values.isPrivate
-              ? 'text-white w-full antialiased py-2 rounded-full ease-in-out duration-200 border-purple border-4'
-              : 'text-white w-full antialiased py-2 rounded-full ease-in-out duration-200 border-white border-2'
+              ? 'text-white w-full antialiased py-2 rounded-full border-[var(--main-theme-color)] border-2'
+              : 'text-white w-full antialiased py-2 rounded-full border-white border-[0.5px]'
           }
         >
           Public
@@ -64,8 +65,8 @@ function ChannelForm({
           onClick={onChannelTypeChange(true)}
           className={
             values.isPrivate
-              ? 'text-white w-full antialiased py-2 rounded-full ease-in-out duration-200 border-purple border-4'
-              : 'text-white w-full antialiased py-2 rounded-full ease-in-out duration-200 border-white border-2'
+              ? 'text-white w-full antialiased py-2 rounded-full border-[var(--main-theme-color)] border-2'
+              : 'text-white w-full antialiased py-2 rounded-full border-white border-[0.5px]'
           }
         >
           Private
