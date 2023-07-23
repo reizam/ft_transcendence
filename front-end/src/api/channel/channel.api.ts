@@ -93,11 +93,18 @@ export const useChannelGet = (
   );
 
 export const useChannelPut = (
-  options?: UseMutationOptions<void, unknown, IChannelPutParams>
-) =>
-  useMutation<void, unknown, IChannelPutParams>(async (params) => {
-    await putWithToken(`/channel`, params);
-  }, options);
+  options?: UseMutationOptions<boolean, unknown, IChannelPutParams>
+) => {
+  return useMutation({
+    mutationFn: async (params: IChannelPutParams) => {
+      return await putWithToken<boolean>(`/channel`, params);
+    },
+    onError: (err: unknown) => {
+      toast.error(printChannelError(err));
+    },
+    ...options,
+  });
+};
 
 export const useLeaveChannelDelete = (
   options?: UseMutationOptions<void, unknown, number>

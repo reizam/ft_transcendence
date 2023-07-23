@@ -27,8 +27,12 @@ import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 
 interface ButtonsProps {
+  isDM: boolean;
   user: IChannelUser;
   isInChannel: boolean;
+  asOwner: boolean;
+  asAdmin: boolean;
+  isOwner: boolean;
   isBanned: boolean;
   isPrivateChannel: boolean;
 }
@@ -321,8 +325,12 @@ function GetMatchButton(user: IChatUser): ReactElement {
 }
 
 function Buttons({
+  isDM,
   user,
   isInChannel,
+  asOwner,
+  asAdmin,
+  isOwner,
   isBanned,
   isPrivateChannel,
 }: ButtonsProps): ReactElement {
@@ -353,12 +361,16 @@ function Buttons({
   return (
     <div className={chatStyles.ctn_list_btn}>
       {!isInChannel && isPrivateChannel && GetAddButton(user)}
-      {isInChannel && GetAdminButton(user, isMe)}
+      {isInChannel && asOwner && GetAdminButton(user, isMe)}
       {isInChannel && !isMe && GetMatchButton(user.user)}
-      {isInChannel && !isMe && GetMessageButton(user.user)}
-      {isInChannel && !isMe && GetMuteButton(isMuted(user.mutedUntil), user)}
-      {isInChannel && !isMe && GetKickButton(user)}
-      {!isMe && GetBanButton(isBanned, user)}
+      {isInChannel && !isMe && !isDM && GetMessageButton(user.user)}
+      {isInChannel &&
+        !isMe &&
+        !isOwner &&
+        asAdmin &&
+        GetMuteButton(isMuted(user.mutedUntil), user)}
+      {isInChannel && !isMe && !isOwner && asAdmin && GetKickButton(user)}
+      {!isMe && !isOwner && asAdmin && GetBanButton(isBanned, user)}
       {!isMe && GetBlockButton(!!isBlocked, user)}
     </div>
   );

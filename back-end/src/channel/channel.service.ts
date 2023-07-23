@@ -269,10 +269,7 @@ export class ChannelService {
     };
   }
 
-  async isAdminWithChannel(
-    userId: number,
-    channel: IChannel,
-  ): Promise<boolean> {
+  isAdminWithChannel(userId: number, channel: IChannel): boolean {
     return channel.ownerId === userId || channel.users.some((u) => u.isAdmin);
   }
 
@@ -281,8 +278,19 @@ export class ChannelService {
 
     if (!channel)
       throw new NotFoundException('Channel not found, or incorrect permission');
-
     return this.isAdminWithChannel(userId, channel);
+  }
+
+  isOwnerWithChannel(userId: number, channel: IChannel): boolean {
+    return channel.ownerId === userId;
+  }
+
+  async isOwner(userId: number, channelId: number): Promise<boolean> {
+    const channel = await this.getChannel(userId, channelId);
+
+    if (!channel)
+      throw new NotFoundException('Channel not found, or incorrect permission');
+    return this.isOwnerWithChannel(userId, channel);
   }
 
   async createChannelUser(userId: number, channelId: number): Promise<void> {
@@ -542,8 +550,10 @@ export class ChannelService {
     if (!channel)
       throw new NotFoundException('Channel not found, or incorrect permission');
 
-    if (!this.isAdminWithChannel(userId, channel))
-      throw new ForbiddenException('You are not the admin of this channel');
+    if (!this.isOwnerWithChannel(userId, channel))
+      throw new ForbiddenException('You are not the owner of this channel');
+
+    if (!password && !channel.isProtected) return false;
 
     await this.prisma.channel.update({
       where: {
@@ -688,6 +698,7 @@ export class ChannelService {
   }
 
   hasPrivileges(
+    sanction: string,
     requesterUser: IChannelUser,
     targetUser: IChannelUser | undefined,
     ownerId: number,
@@ -695,6 +706,12 @@ export class ChannelService {
     const requesterRole = this.getRole(requesterUser, ownerId);
     const targetRole = this.getRole(targetUser, ownerId);
 
+    if (
+      (sanction === Sanction.DEMOTE || sanction === Sanction.PROMOTE) &&
+      requesterUser.userId !== ownerId
+    ) {
+      return false;
+    }
     return requesterRole > targetRole;
   }
 
@@ -783,7 +800,9 @@ export class ChannelService {
       this.isBanned(targetUser.userId, channel.bannedUserIds)
     )
       throw new ForbiddenException('User is banned');
-    if (!this.hasPrivileges(requesterUser, targetUser, channel.ownerId))
+    if (
+      !this.hasPrivileges(sanction, requesterUser, targetUser, channel.ownerId)
+    )
       throw new ForbiddenException("You don't have the required privileges");
 
     if (sanction === Sanction.KICK) {
@@ -861,7 +880,9 @@ export class ChannelService {
     const targetUser = channel.users.find(
       (channelUser) => channelUser.userId === targetUserId,
     );
-    if (!this.hasPrivileges(requesterUser, targetUser, channel.ownerId))
+    if (
+      !this.hasPrivileges(sanction, requesterUser, targetUser, channel.ownerId)
+    )
       throw new ForbiddenException("You don't have the required privileges");
 
     if (sanction === Sanction.BAN) {

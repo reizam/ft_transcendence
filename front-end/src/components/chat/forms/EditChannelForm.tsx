@@ -15,6 +15,8 @@ const schema = Yup.object().shape({
 
 export type EditChannelFormValues = {
   channel: IChannel;
+  isOwner: boolean;
+  isAdmin: boolean;
   users: IChannelUser[];
   withPassword: boolean;
   password: string;
@@ -46,8 +48,9 @@ function EditChannelForm({
     }
   };
 
-  const isOwner = (userId: number, channel: IChannel): boolean =>
-    userId === channel.ownerId;
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter') onClick();
+  };
 
   const isBanned = (
     userId: number,
@@ -75,11 +78,9 @@ function EditChannelForm({
     };
   };
 
-  console.log(values);
-
   return (
     <div className="flex flex-col items-center justify-between w-full h-full px-4 py-8 overflow-y-auto hide-scrollbar">
-      {initialValues.channel.isPrivate ? null : (
+      {initialValues.channel.isPrivate || !initialValues.isOwner ? null : (
         <div className="flex flex-col items-center space-y-8 w-full">
           <div className="flex flex-row space-x-4 items-center">
             <input
@@ -104,6 +105,7 @@ function EditChannelForm({
               }
               value={values.password}
               onChange={handleChange('password')}
+              onKeyPress={handleKeyDown}
             />
           )}
         </div>
@@ -115,9 +117,12 @@ function EditChannelForm({
           {initialValues.users?.map((user) => (
             <Line
               key={user.userId}
+              isDM={initialValues.channel.isDM}
               user={user}
-              isOwner={isOwner(user.userId, initialValues.channel)}
               isInChannel={true}
+              asOwner={initialValues.isOwner}
+              asAdmin={initialValues.isAdmin}
+              isOwner={user.userId === initialValues.channel.ownerId}
               isBanned={isBanned(
                 user.userId,
                 initialValues.channel.bannedUserIds
@@ -144,9 +149,12 @@ function EditChannelForm({
                 .map((user) => (
                   <Line
                     key={user.id}
+                    isDM={false}
                     user={createDummyChannelUser(user)}
-                    isOwner={false}
                     isInChannel={false}
+                    asOwner={false}
+                    asAdmin={false}
+                    isOwner={false}
                     isBanned={isBanned(
                       user.id,
                       initialValues.channel.bannedUserIds
@@ -170,6 +178,7 @@ function EditChannelForm({
           type="submit"
           onClick={onClick}
           className="bg-purple ring-1 ring-white hover:ring-2 hover:ring-offset-1 active:opacity-75 rounded-full text-white font-medium text-sm transition ease-in-out duration-200 px-4 py-2"
+          hidden={initialValues.channel.isDM || !initialValues.isOwner}
         >
           Save settings
         </button>

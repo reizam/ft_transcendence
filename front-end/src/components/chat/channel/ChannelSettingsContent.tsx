@@ -4,6 +4,7 @@ import {
   useChannelPut,
   useLeaveChannelDelete,
 } from '@/api/channel/channel.api';
+import { IChannel } from '@/api/channel/channel.types';
 import EditChannelForm, {
   EditChannelFormValues,
 } from '@/components/chat/forms/EditChannelForm';
@@ -39,13 +40,13 @@ function ChannelSettingsContent({
   });
 
   const { mutate: updateChannel, isLoading: editing } = useChannelPut({
-    onSuccess: () => {
+    onMutate: () => {
       void router.push(`/chat/channel/${channelId}`, undefined, {
         shallow: true,
       });
     },
-    onError: () => {
-      toast.error('Channel update error');
+    onSuccess: (data: boolean) => {
+      data ? toast.info('Updated', { autoClose: 1000 }) : null;
     },
   });
 
@@ -74,11 +75,14 @@ function ChannelSettingsContent({
     }
   };
 
+  const isOwner = (userId: number, channel: IChannel): boolean =>
+    userId === channel.ownerId;
+
   if (isLoading || !channel) {
     return <ChatLayout title="Channel" screen="create" loading />;
   }
 
-  if (!user || !isAdmin(user.id, channel)) {
+  if (!user) {
     return (
       <ChatLayout
         title="Channel"
@@ -120,6 +124,8 @@ function ChannelSettingsContent({
         onSubmit={onSubmit}
         initialValues={{
           channel,
+          isOwner: isOwner(user.id, channel),
+          isAdmin: isAdmin(user.id, channel),
           users: channel.users,
           withPassword: channel.isProtected,
           password: '',

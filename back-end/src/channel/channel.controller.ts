@@ -158,13 +158,11 @@ export class ChannelController {
     @Body() putChannelDto: PutChannelDto,
     @DUser() user: User,
   ): Promise<boolean> {
-    await this.channelService.updateChannel(
+    return await this.channelService.updateChannel(
       user.id,
       putChannelDto.channelId,
       putChannelDto.password,
     );
-
-    return true;
   }
 
   @Get('message/page')
