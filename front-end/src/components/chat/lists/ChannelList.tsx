@@ -3,6 +3,8 @@ import { useInfiniteChannelsGet } from '@/api/channel/channel.api';
 import Spinner from '@/components/utils/Spinner';
 import { flatMap, uniqBy } from 'lodash';
 import ChannelItem from '@/components/chat/items/ChannelItem';
+import { IChannel } from '@/api/channel/channel.types';
+import { useAuth } from '@/providers/auth/auth.context';
 
 function ChannelList(): React.ReactElement {
   const {
@@ -21,6 +23,23 @@ function ChannelList(): React.ReactElement {
       ),
     [data]
   );
+  const { user: me } = useAuth();
+
+  console.log('data loaded');
+
+  const hasNewMessages = (channel: IChannel, userId?: number): boolean => {
+    const channelUser = channel.users.find((user) => user.userId === userId);
+
+    if (
+      channelUser &&
+      channel.lastMessageId &&
+      (!channelUser.lastReadMessageId ||
+        channelUser.lastReadMessageId < channel.lastMessageId)
+    ) {
+      return true;
+    }
+    return false;
+  };
 
   const handleLoadMore = (): void => {
     if (hasNextPage) {
@@ -44,7 +63,11 @@ function ChannelList(): React.ReactElement {
   return (
     <div className="flex flex-col space-y-1 my-8 overflow-y-auto hide-scrollbar">
       {channels.map((channel) => (
-        <ChannelItem key={channel.id} channel={channel} />
+        <ChannelItem
+          key={channel.id}
+          channel={channel}
+          hasNewMessages={hasNewMessages(channel, me?.id)}
+        />
       ))}
       {hasNextPage && (
         <button

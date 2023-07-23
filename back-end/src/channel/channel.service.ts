@@ -152,7 +152,7 @@ export class ChannelService {
       );
     }
 
-    return await this.prisma.message.create({
+    const newMsg = await this.prisma.message.create({
       data: {
         channelId,
         userId,
@@ -175,6 +175,16 @@ export class ChannelService {
         },
       },
     });
+
+    await this.prisma.channel.update({
+      where: {
+        id: channelId,
+      },
+      data: {
+        lastMessageId: newMsg.id,
+      },
+    });
+    return newMsg;
   }
 
   async getChannelMessagePage(
@@ -216,6 +226,20 @@ export class ChannelService {
       skip: page * limit,
       take: limit,
     });
+
+    if (messages.at(0)) {
+      await this.prisma.channelUser.update({
+        where: {
+          channelId_userId: {
+            channelId: channelId,
+            userId: userId,
+          },
+        },
+        data: {
+          lastReadMessageId: messages.at(0)?.id ?? 1,
+        },
+      });
+    }
 
     const count = await this.prisma.message.count({
       where,
@@ -312,12 +336,14 @@ export class ChannelService {
             isPrivate: true,
             isProtected: true,
             isDM: true,
+            lastMessageId: true,
             users: {
               select: {
                 isAdmin: true,
                 userId: true,
                 channelId: true,
                 mutedUntil: true,
+                lastReadMessageId: true,
                 user: {
                   select: {
                     id: true,
@@ -364,12 +390,14 @@ export class ChannelService {
         isPrivate: true,
         isProtected: true,
         isDM: true,
+        lastMessageId: true,
         users: {
           select: {
             isAdmin: true,
             userId: true,
             channelId: true,
             mutedUntil: true,
+            lastReadMessageId: true,
             user: {
               select: {
                 id: true,
@@ -422,12 +450,14 @@ export class ChannelService {
         isPrivate: true,
         isProtected: true,
         isDM: true,
+        lastMessageId: true,
         users: {
           select: {
             isAdmin: true,
             userId: true,
             channelId: true,
             mutedUntil: true,
+            lastReadMessageId: true,
             user: {
               select: {
                 id: true,
@@ -458,6 +488,7 @@ export class ChannelService {
         isProtected: password ? true : false,
         password: password ? hashSync(password, 10) : null,
         isDM: otherUserId ? true : false,
+        lastMessageId: null,
         users: {
           create: [
             { userId: ownerUserId, isAdmin: true },
@@ -472,6 +503,7 @@ export class ChannelService {
             isAdmin: true,
             userId: true,
             channelId: true,
+            lastReadMessageId: true,
             user: {
               select: {
                 id: true,
@@ -547,12 +579,14 @@ export class ChannelService {
         isPrivate: true,
         isProtected: true,
         isDM: true,
+        lastMessageId: true,
         users: {
           select: {
             isAdmin: true,
             userId: true,
             channelId: true,
             mutedUntil: true,
+            lastReadMessageId: true,
             user: {
               select: {
                 id: true,

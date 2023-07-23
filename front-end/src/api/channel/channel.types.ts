@@ -16,6 +16,7 @@ export interface IChannel {
   users: IChannelUser[];
   bannedUserIds: number[];
   createdAt?: Date;
+  lastMessageId?: number | null;
 }
 
 export interface IMessagePage {
@@ -53,6 +54,7 @@ export interface IChannelUser {
   user: IChatUser;
   isAdmin: boolean;
   mutedUntil?: Date | null;
+  lastReadMessageId?: number | null;
 }
 
 export interface IChannelPage {

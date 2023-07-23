@@ -79,6 +79,8 @@ model Channel {
   password          String?
 
   createdAt         DateTime      @default(now())
+
+  lastMessageId     Int?
 }
 
 model ChannelUser {
@@ -92,6 +94,8 @@ model ChannelUser {
   mutedUntil        DateTime?
 
   createdAt         DateTime      @default(now())
+
+  lastReadMessageId Int?
 
   @@id([channelId, userId])
 }

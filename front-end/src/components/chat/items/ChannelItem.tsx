@@ -5,13 +5,18 @@ import { preventDefault } from '@/utils/react.util';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
+import { BsChatDotsFill } from 'react-icons/bs';
 import { FaLock } from 'react-icons/fa';
 
 interface ChannelItemProps {
   channel: IChannel;
+  hasNewMessages: boolean;
 }
 
-function ChannelItem({ channel }: ChannelItemProps): React.ReactElement {
+function ChannelItem({
+  channel,
+  hasNewMessages,
+}: ChannelItemProps): React.ReactElement {
   const router = useRouter();
 
   const channelTitles = React.useMemo(
@@ -34,6 +39,7 @@ function ChannelItem({ channel }: ChannelItemProps): React.ReactElement {
         <EntityAvatar acronym={channelTitles.acronym} size={36} />
         <p className="text-sm flex-grow antialiased">{channelTitles.title}</p>
         {channel.isProtected && <FaLock size={16} />}
+        {hasNewMessages && <BsChatDotsFill size={16} />}
       </div>
     </Link>
   );

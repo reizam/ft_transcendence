@@ -38,11 +38,15 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { Prisma, User } from '@prisma/client';
 import { Response } from 'express';
+import { ChannelGateway } from './channel.gateway';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('channel')
 export class ChannelController {
-  constructor(private readonly channelService: ChannelService) {}
+  constructor(
+    private readonly channelService: ChannelService,
+    private readonly channelGateway: ChannelGateway,
+  ) {}
 
   @Post()
   async postChannel(
@@ -63,11 +67,14 @@ export class ChannelController {
     @Body() sendMessageDto: PostChannelSendMessageDto,
     @DUser() user: User,
   ): Promise<IMessage> {
-    return await this.channelService.sendMessage(
+    const message = await this.channelService.sendMessage(
       user.id,
       sendMessageDto.channelId,
       sendMessageDto.message,
     );
+
+    this.channelGateway.emitChannelUpdate(message.channelId);
+    return message;
   }
 
   @Post('join')
