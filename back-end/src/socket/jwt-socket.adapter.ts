@@ -13,7 +13,7 @@ export class JwtSocket extends IoAdapter {
 
   createIOServer(port: number, options?: ServerOptions): unknown {
     const corsOptions = {
-      origin: process.env.FRONTEND_URL || 'http://80.236.34.5:4000',
+      origin: process.env.FRONTEND_URL || 'http://46.101.112.29:4000',
       methods: ['GET', 'POST'],
       credentials: true,
       allowedHeaders: ['Content-Type', 'Authorization'],

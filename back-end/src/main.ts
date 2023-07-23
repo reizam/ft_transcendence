@@ -16,7 +16,7 @@ async function bootstrap(): Promise<void> {
   app.useWebSocketAdapter(new JwtSocket(app, app.get(AuthService)));
   app.use(json({ limit: '5mb' }));
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://80.236.34.5:4000',
+    origin: process.env.FRONTEND_URL || 'http://46.101.112.29:4000',
     methods: 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
     credentials: true,
   });
