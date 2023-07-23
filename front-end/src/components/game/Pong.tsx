@@ -1,7 +1,7 @@
 import Canvas from '@/components/app/canvas/Canvas';
 import useColors from '@/hooks/useColors';
 import { useSocket } from '@/providers/socket/socket.context';
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { toast } from 'react-toastify';
 
 interface PongProps {
@@ -23,25 +23,28 @@ const Pong = ({
 
   const { socket } = useSocket();
 
-  const parameters = {
-    frameInterval: 1000 / 120,
-    dimensions: {
-      width: 1920,
-      height: 1080,
-    },
-    paddle: {
-      width: 20,
-      height: 250,
-      offset: 10,
-      speed: 15,
-    },
-    ball: {
-      speed: 8,
-      radius: 20,
-    },
-    scoreLimit: 10,
-    keys: ['w', 's', 'ArrowUp', 'ArrowDown'],
-  };
+  const parameters = useMemo(
+    () => ({
+      frameInterval: 1000 / 120,
+      dimensions: {
+        width: 1920,
+        height: 1080,
+      },
+      paddle: {
+        width: 20,
+        height: 250,
+        offset: 10,
+        speed: 15,
+      },
+      ball: {
+        speed: 8,
+        radius: 20,
+      },
+      scoreLimit: 10,
+      keys: ['w', 's', 'ArrowUp', 'ArrowDown'],
+    }),
+    []
+  );
 
   const gameState = useRef({
     paddleY: {
@@ -190,7 +193,7 @@ const Pong = ({
       socket?.removeAllListeners('gameState');
       cancelAnimationFrame(frame.current);
     };
-  }, [socket, primaryColor, secondaryColor]);
+  }, [socket, primaryColor, secondaryColor, parameters, isPlayer]);
 
   useEffect(() => {
     if (!isPlayer) return;
@@ -303,7 +306,16 @@ const Pong = ({
       document.removeEventListener('keyup', handleKeyUp);
       clearInterval(intervalId);
     };
-  }, [socket, keyState, gameState]);
+  }, [
+    socket,
+    keyState,
+    gameId,
+    gameState,
+    isPlayer,
+    isLeftPlayer,
+    isLocal,
+    parameters,
+  ]);
 
   return <Canvas ref={canvasRef} />;
 };

@@ -1,5 +1,5 @@
 import { PrismaService } from '@/prisma/prisma.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserSummary } from './types/friends.types';
 
 @Injectable()
@@ -71,9 +71,7 @@ export class FriendsService {
       },
     });
 
-    if (!friend) {
-      throw new Error('Friend not found');
-    }
+    if (!friend) throw new NotFoundException('Friend not found');
 
     await this.prisma.user.update({
       where: {
@@ -97,9 +95,7 @@ export class FriendsService {
       },
     });
 
-    if (!friend) {
-      throw new Error('Friend not found');
-    }
+    if (!friend) throw new NotFoundException('Friend not found');
 
     await this.prisma.user.update({
       where: {

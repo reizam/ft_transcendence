@@ -22,8 +22,9 @@ function Line({
 }: LineProps): ReactElement {
   return (
     <div className={chatStyles.ctn_list}>
+      <StatusInfo status={user.user.status} withInfo={false} />
+      &nbsp;
       <UserInfo user={user.user} isOwner={isOwner} />
-      <StatusInfo status={user.user.status} />
       <Buttons
         user={user}
         isInChannel={isInChannel}

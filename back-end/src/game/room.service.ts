@@ -9,7 +9,7 @@ import {
 import { PrismaService } from '@/prisma/prisma.service';
 import { ProfileService } from '@/profile/profile.service';
 import { SocketUserService } from '@/socket/user/socket.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConnectedSocket } from '@nestjs/websockets';
 import { Game, User } from '@prisma/client';
 import { Socket } from 'socket.io';
@@ -306,7 +306,7 @@ export class RoomService {
 
       if (i != -1) room.userIds.splice(i, 1);
     }
-    console.log(this.rooms);
+    console.log('rooms: ', this.rooms);
     return room;
   }
 
@@ -336,7 +336,7 @@ export class RoomService {
       },
     });
     if (!winner || !loser) {
-      throw new Error('Player stats unavailable');
+      throw new NotFoundException('Player stats unavailable');
     }
     return { winner, loser };
   }

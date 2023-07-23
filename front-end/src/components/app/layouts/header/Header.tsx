@@ -10,7 +10,7 @@ interface HeaderProps {
 function Header({ title }: HeaderProps): React.ReactElement {
   const [showList, setShowList] = useState(false);
 
-  const handleClick = () => {
+  const handleClick = (): void => {
     setShowList(!showList);
   };
 

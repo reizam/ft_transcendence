@@ -7,11 +7,19 @@ interface HistoryProps {
   matchHistory: Game[];
 }
 
+function sortPlayers(games: Game[]): void {
+  games.forEach((game) => {
+    if (game.playerOneId === game.players[1].id) {
+      game.players.reverse();
+    }
+  });
+}
 function History({ matchHistory }: HistoryProps): ReactElement {
   const games = matchHistory
     ?.filter((game) => game.status.toLowerCase() === 'finished')
     ?.slice(0, 5);
 
+  sortPlayers(games);
   return (
     <div className={dashStyles.dash__data}>
       <h1 className={dashStyles.dash__title}>Match History</h1>

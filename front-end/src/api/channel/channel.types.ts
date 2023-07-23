@@ -39,7 +39,7 @@ export interface IMessage {
 
   channelId: number;
   userId: number;
-  user: any;
+  user: IChatUser;
 
   message: string;
   gameId: number | null;

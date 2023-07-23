@@ -56,7 +56,8 @@ export const printFriendsError = (error: unknown): string => {
   let errorMessage = 'Failed to update';
   if (
     axios.isAxiosError(error) &&
-    error.response?.data?.hasOwnProperty('message')
+    error.response?.data &&
+    'message' in error.response.data
   ) {
     if (Array.isArray(error?.response?.data?.message)) {
       errorMessage = error.response.data.message[0];

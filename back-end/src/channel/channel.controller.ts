@@ -87,7 +87,7 @@ export class ChannelController {
       channel.users.find((channelUser) => channelUser.userId === user.id)
     )
       return channel;
-    if (channel.isProtected)
+    if (channel.isProtected && !data.invitedId)
       return await this.channelService.joinProtectedChannel(
         user.id,
         data.channelId,

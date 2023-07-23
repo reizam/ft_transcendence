@@ -34,7 +34,7 @@ function ChannelPassword({
       toast.error(errors?.password ?? 'Password error');
     }
   };
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter') onClick();
   };
 

@@ -37,7 +37,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family:  var(--title-font);
+  font-family: var(--title-font);
 }
 
 .friends__list {
@@ -59,126 +59,122 @@
 
 /*  --  LINE CSS  --  */
 
-  /*  --- PROFILE_PICTURE ---   */
+/*  --- PROFILE_PICTURE ---   */
 
-      .pict__prof {
-        width: 30%;
-        aspect-ratio: 1 / 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
+.pict__prof {
+  width: 30%;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-      .img__prof {
-        width: 70%;
-        height: 70%;
-        min-width: 50px;
-        min-height: 50px;
-        object-fit: cover;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid aliceblue;
-      }
+.img__prof {
+  width: 70%;
+  height: 70%;
+  min-width: 50px;
+  min-height: 50px;
+  object-fit: cover;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid aliceblue;
+}
 
-  /*  --- PROFILE_NAME ---   */
+/*  --- PROFILE_NAME ---   */
 
-      .user__name {
-        width: 80%;
-        padding-left: 5%;
-        display: flex;
-        align-items: center;
-      }
+.user__name {
+  width: 80%;
+  padding-left: 5%;
+  display: flex;
+  align-items: center;
+}
 
-  /*  --- STATUS_LOG ---   */
+/*  --- STATUS_LOG ---   */
 
-      .badge__ctn {
-        width: 5%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: right;
-        background-color: var(--container-background-color);
-      }
+.badge__ctn {
+  display: flex;
+  align-items: center;
+  justify-content: right;
+  background-color: var(--container-background-color);
+}
 
-      .badge {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        margin-right: 5px;
-      }
-        
-      .red {
-        background-color: red;
-      }
-      
-      .green {
-        background-color: green;
-      }
-      
-      .orange {
-        background-color: orange;
-      }
-      
-      .gray {
-        background-color: gray;
-      }
+.badge {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
 
-      .user__info {
-        width: 15%;
-        display: flex;
-        align-items: center;
-        justify-content: left;
-        background-color: var(--container-background-color);
-      }
+.red {
+  background-color: red;
+}
 
-  /*  --- BUTTONS ---   */
+.green {
+  background-color: green;
+}
 
-      .buttons__ctn {
-        width: 40%;
-        display: flex;
-        align-items: center;
-        justify-content: left;
-        padding-left: 2%;
-        cursor: pointer;
-      }
+.orange {
+  background-color: orange;
+}
 
-      .button__ctn {
-        margin: 3%;
-      }
+.gray {
+  background-color: gray;
+}
 
-      .style__button__1 {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: var(--container-color);
-        color: var(--button-background-color-hover);
-        width: 40px;
-        border-radius: 50%;
-        aspect-ratio: 1 / 1;
-      }
+.user__info {
+  width: 15%;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  background-color: var(--container-background-color);
+  font-size: small;
+}
 
-      .style__button__1:hover {
-        opacity: calc(95%);
-        border: 1px solid var(--main-theme-color);
-        
-      }
+/*  --- BUTTONS ---   */
 
-      .style__button__2 {
-        background-color: var(--main-theme-color);
-        width: 40px;
-        border-radius: 50%;
-        aspect-ratio: 1 / 1;
-      }
+.buttons__ctn {
+  width: 40%;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  padding-left: 2%;
+  cursor: pointer;
+}
 
-      .style__button__2:hover {
-        opacity: calc(95%);
-        border: 1px solid var(--container-color);
-      }
+.button__ctn {
+  margin: 3%;
+}
+
+.style__button__1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--container-color);
+  color: var(--button-background-color-hover);
+  width: 40px;
+  border-radius: 50%;
+  aspect-ratio: 1 / 1;
+}
+
+.style__button__1:hover {
+  opacity: calc(95%);
+  border: 1px solid var(--main-theme-color);
+}
+
+.style__button__2 {
+  background-color: var(--main-theme-color);
+  width: 40px;
+  border-radius: 50%;
+  aspect-ratio: 1 / 1;
+}
+
+.style__button__2:hover {
+  opacity: calc(95%);
+  border: 1px solid var(--container-color);
+}
 
 /*  --  END LINE CSS  --  */
-
 
 /*  --  Container Friends --  */
 
@@ -208,8 +204,9 @@
     padding-left: 6rem;
     padding-right: 6rem;
   }
-  
-  .ctn__pre__friends, .ctn__pre__notfriends {
+
+  .ctn__pre__friends,
+  .ctn__pre__notfriends {
     font-size: 0.9rem;
   }
 
@@ -225,38 +222,39 @@
 
   .canvas__title {
     margin-top: 2%;
+    font-size: large;
   }
 }
 
 @media screen and (max-width: 600px) {
   /*  --  LINE CSS  --  */
 
-    /*  --- PROFILE_PICTURE ---   */
+  /*  --- PROFILE_PICTURE ---   */
 
-    .pict__prof {
-      width: 25%;
-    }
+  .pict__prof {
+    width: 25%;
+  }
 
-    .img__prof {
-      width: 50%;
-      height: 50%;
-    }
+  .img__prof {
+    width: 50%;
+    height: 50%;
+  }
 
   /*  --- PROFILE_NAME ---   */
 
-    .user__name {
-      width: 40%;
-    }
+  .user__name {
+    width: 40%;
+  }
 
   /*  --- STATUS_LOG ---   */
 
-    .badge__ctn {
-      width: 10%;
-    }
+  .badge__ctn {
+    width: 10%;
+  }
 
-    .user__info {
-      width: 25%;
-    }
+  .user__info {
+    width: 25%;
+  }
 
   /*  --- BUTTONS ---   */
 
@@ -264,5 +262,5 @@
     width: 200%;
   }
 
-/*  --  END LINE CSS  --  */
+  /*  --  END LINE CSS  --  */
 }

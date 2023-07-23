@@ -9,10 +9,12 @@ export const Keyframes = (props: IProps): ReactElement => {
   const toCss = (cssObject: CSSProperties | string): string =>
     typeof cssObject === 'string'
       ? cssObject
-      : Object.keys(cssObject).reduce((accumulator, key) => {
+      : Object.entries(cssObject).reduce((accumulator, [key, value]) => {
+          if (typeof value === 'string') {
+            value = value.replace("'", '');
+          }
           const cssKey = key.replace(/[A-Z]/g, (v) => `-${v.toLowerCase()}`);
-          const cssValue = (cssObject as any)[key].toString().replace("'", '');
-          return `${accumulator}${cssKey}:${cssValue};`;
+          return `${accumulator}${cssKey}:${value};`;
         }, '');
 
   return (

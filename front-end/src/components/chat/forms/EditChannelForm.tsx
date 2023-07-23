@@ -79,33 +79,35 @@ function EditChannelForm({
 
   return (
     <div className="flex flex-col items-center justify-between w-full h-full px-4 py-8 overflow-y-auto hide-scrollbar">
-      <div className="flex flex-col items-center space-y-8 w-full">
-        <div className="flex flex-row space-x-4 items-center">
-          <input
-            type="checkbox"
-            name="toggle password input"
-            checked={values.withPassword}
-            onChange={(event): void =>
-              void setFieldValue('withPassword', event.target.checked)
-            }
-          />
-          <p>Protéger le salon par un mot de passe</p>
+      {initialValues.channel.isPrivate ? null : (
+        <div className="flex flex-col items-center space-y-8 w-full">
+          <div className="flex flex-row space-x-4 items-center">
+            <input
+              type="checkbox"
+              name="toggle password input"
+              checked={values.withPassword}
+              onChange={(event): void =>
+                void setFieldValue('withPassword', event.target.checked)
+              }
+            />
+            <p>Protéger le salon par un mot de passe</p>
+          </div>
+          {values.withPassword && (
+            <BasicInput
+              type="input"
+              name="new channel password"
+              className="text-black rounded-full w-1/2 py-2 px-4 outline-0 placeholder:text-center placeholder:antialiased antialiased"
+              placeholder={
+                !initialValues.withPassword
+                  ? 'Veuillez entrer un mot de passe'
+                  : 'Le nouveau mot de passe du salon'
+              }
+              value={values.password}
+              onChange={handleChange('password')}
+            />
+          )}
         </div>
-        {values.withPassword && (
-          <BasicInput
-            type="input"
-            name="new channel password"
-            className="text-black rounded-full w-1/2 py-2 px-4 outline-0 placeholder:text-center placeholder:antialiased antialiased"
-            placeholder={
-              !initialValues.withPassword
-                ? 'Veuillez entrer un mot de passe'
-                : 'Le nouveau mot de passe du salon'
-            }
-            value={values.password}
-            onChange={handleChange('password')}
-          />
-        )}
-      </div>
+      )}
 
       <div className="flex flex-col items-center space-y-8 w-full">
         <div className={chatStyles.ctn_user}>

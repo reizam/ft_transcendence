@@ -1,5 +1,6 @@
 import { IChannelUser } from '@/api/channel/channel.types';
 import ChannelUserItem from '@/components/chat/items/ChannelUserItem';
+import Link from 'next/link';
 
 // const schema = Yup.object().shape({
 //   admins: Yup.array().of(Yup.number()).required(),
@@ -23,10 +24,12 @@ function UserList({ owner, admins, users }: UserListProps): React.ReactElement {
         <p className="text-s">Owner</p>
         <div className="flex flex-row items-start flex-wrap gap-1 w-full overflow-y-auto">
           {owner && (
-            <ChannelUserItem
-              key={`${'owner' + owner.userId}`}
-              channelUser={owner}
-            />
+            <Link href={`/profile/${owner.userId}`}>
+              <ChannelUserItem
+                key={`${'owner' + owner.userId}`}
+                channelUser={owner}
+              />
+            </Link>
           )}
         </div>
       </div>
@@ -35,10 +38,12 @@ function UserList({ owner, admins, users }: UserListProps): React.ReactElement {
         <div className="flex flex-row items-start flex-wrap gap-1 w-full overflow-y-auto">
           {admins &&
             admins.map((admin) => (
-              <ChannelUserItem
+              <Link
                 key={`${'admin' + admin.userId}`}
-                channelUser={admin}
-              />
+                href={`/profile/${admin.userId}`}
+              >
+                <ChannelUserItem channelUser={admin} />
+              </Link>
             ))}
         </div>
       </div>
@@ -47,7 +52,9 @@ function UserList({ owner, admins, users }: UserListProps): React.ReactElement {
           {users
             .filter((user) => !user.isAdmin)
             .map((user) => (
-              <ChannelUserItem key={user.userId} channelUser={user} />
+              <Link key={user.userId} href={`/profile/${user.userId}`}>
+                <ChannelUserItem channelUser={user} />
+              </Link>
             ))}
         </div>
       </div>

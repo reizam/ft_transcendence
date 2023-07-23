@@ -3,7 +3,7 @@ import { IJWTPayload } from '@/auth/types/jwt.types';
 import { PrismaService } from '@/prisma/prisma.service';
 import { WithWasJustCreated } from '@/profile/types/profile.types';
 import { Status } from '@/user/types/user.types';
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import type { User } from '@prisma/client';
 import axios from 'axios';
@@ -103,7 +103,7 @@ export class AuthService {
 
   async verify2FA(user: User, token: string): Promise<boolean> {
     if (!user.twoFactorSecret) {
-      throw new Error(
+      throw new ConflictException(
         'Two factor authentification is not enabled for this user.',
       );
     }

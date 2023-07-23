@@ -33,7 +33,7 @@ function ChannelContent({
   const { mutate: submitPassword } = useChannelJoin();
 
   const passwordError = React.useRef(0);
-  const handlePasswordSubmit = (values: ChannelPasswordValues) => {
+  const handlePasswordSubmit = (values: ChannelPasswordValues): void => {
     submitPassword(
       { channelId, password: values.password },
       {
@@ -48,7 +48,7 @@ function ChannelContent({
               toast.error(
                 'Are you sure you belong here? Go look somewhere else ;)'
               );
-              router.push('/chat');
+              void router.push('/chat');
             }
           }
         },
@@ -75,14 +75,14 @@ function ChannelContent({
   );
 
   useEffect(() => {
-    let timer: NodeJS.Timeout = 0 as any;
+    let timer: NodeJS.Timeout | undefined = undefined;
     if (me && channel && !hasJoined && !channel.isProtected) {
       timer = setTimeout(() => joinChannel({ channelId }), 100);
     }
     return () => {
       clearTimeout(timer);
     };
-  }, [me, channel]);
+  }, [me, channel, hasJoined, channelId, joinChannel]);
 
   if (!me || channelLoading) {
     return <ChatLayout title="Salon" screen="create" loading />;

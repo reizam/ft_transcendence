@@ -31,7 +31,7 @@ function ChatRightSidebar({
     <div className="flex flex-col bg-dark-purple h-full w-1/3 rounded-xl overflow-hidden p-6">
       {screen === 'chat' && (
         <>
-          <Link onMouseDown={preventDefault} href="/chat/friends">
+          <Link onMouseDown={preventDefault} href="/friends">
             <FaUserFriends size={24} />
           </Link>
           <Link onMouseDown={preventDefault} href="/chat/channel/create">

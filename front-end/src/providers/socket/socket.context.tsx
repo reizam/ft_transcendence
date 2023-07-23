@@ -28,7 +28,7 @@ export const useProvideSocket = (): ISocketContext => {
       console.log('Socket disconnected');
     }
 
-    function onConnectError(error: any): void {
+    function onConnectError(error: Error): void {
       setTimeout(() => {
         if (socket.disconnected) {
           toast.error(
@@ -44,12 +44,12 @@ export const useProvideSocket = (): ISocketContext => {
       challengerName: string,
       ackCallback: (ack: string) => void
     ): void => {
-      let handleClose = () => ackCallback('refuse');
+      let handleClose = (): void => ackCallback('refuse');
       const toastId = toast.info(
         `${challengerName} challenged you! Click here to accept if you dare`,
         {
           onClick: () => {
-            handleClose = () => null;
+            handleClose = (): null => null;
             ackCallback('accept');
           },
           closeOnClick: true,
@@ -68,16 +68,16 @@ export const useProvideSocket = (): ISocketContext => {
       );
     };
 
-    const handleChallengeError = (err: string) => {
+    const handleChallengeError = (err: string): void => {
       toast.error(err ?? 'Unknown challenge error');
     };
 
-    const handleWatchError = (err: string) => {
+    const handleWatchError = (err: string): void => {
       toast.error(err ?? 'Unknown watch error');
     };
 
-    const handleJoinChallenge = (gameId: number) => {
-      router.push('/game/' + gameId.toString());
+    const handleJoinChallenge = (gameId: number): void => {
+      void router.push('/game/' + gameId.toString());
     };
 
     socket.on('connect', onConnect);
@@ -106,7 +106,7 @@ export const useProvideSocket = (): ISocketContext => {
       socket.removeAllListeners('joinChallenge');
       socket.removeAllListeners('watchError');
     };
-  }, [router.pathname]);
+  }, [router.pathname, router, logout]);
 
   return {
     socket,

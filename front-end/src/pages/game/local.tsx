@@ -1,5 +1,4 @@
 import Layout from '@/components/app/layouts/Layout';
-import ThemeSwitcher from '@/components/app/theme/ThemeSwitcher';
 import { GameResult } from '@/components/game/GameResult';
 import Pong from '@/components/game/Pong';
 import Countdown from '@/components/utils/Countdown';
@@ -16,10 +15,9 @@ import { toast } from 'react-toastify';
 
 const Game: NextPage = () => {
   const { primary: primaryColor } = useColors();
-  const [count, { startCountdown, stopCountdown, resetCountdown }] =
-    useCountdown({
-      countStart: 10,
-    });
+  const [count, { startCountdown, stopCountdown }] = useCountdown({
+    countStart: 10,
+  });
 
   const { socket } = useSocket();
   const router = useRouter();
@@ -36,14 +34,12 @@ const Game: NextPage = () => {
     if (count === 0) {
       stopCountdown();
     }
-  }, [count]);
-
-  useEffect(() => resetCountdown(), []);
+  }, [count, stopCountdown]);
 
   useEffect(() => {
     const sendJoinGame = (): void => {
       socket?.volatile.emit('joinLocalGame', (id: number) => {
-        if (gameId < 0) setGameId(id);
+        setGameId(id);
       });
     };
     const timer1 = setTimeout(sendJoinGame, 100);
@@ -55,7 +51,7 @@ const Game: NextPage = () => {
 
   useEffect(() => {
     const handleStartGame = (): void => {
-      if (!startGame) setStartGame(true);
+      setStartGame(true);
     };
 
     socket?.once('startCountdown', startCountdown);
@@ -65,28 +61,28 @@ const Game: NextPage = () => {
       socket?.off('startCountdown', startCountdown);
       socket?.off('startGame', handleStartGame);
     };
-  }, [socket, router]);
+  }, [socket, router, startCountdown]);
 
   useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent): string => {
       e.preventDefault();
       const confirmationMessage = 'Are you sure you want to leave the game?';
 
       e.returnValue = ''; // Required for Chrome
       return confirmationMessage;
     };
-    const handleUnload = (e: Event) => {
+    const handleUnload = (): void => {
       socket?.volatile.emit('leaveGame', gameId);
     };
 
-    const handleRouteChange = () => {
+    const handleRouteChange = (): void => {
       if (!window.confirm('Are you sure you want to leave the game?')) {
         throw 'routeChange aborted';
       } else {
         socket?.volatile.emit('leaveGame', gameId);
       }
     };
-    const handleRejection = (e: any) => {
+    const handleRejection = (e: PromiseRejectionEvent): void => {
       if (e?.reason === 'routeChange aborted') e.preventDefault();
     };
 
@@ -95,9 +91,9 @@ const Game: NextPage = () => {
     router.events.on('routeChangeStart', handleRouteChange);
     window.addEventListener('unhandledrejection', handleRejection);
 
-    let timer1: NodeJS.Timeout = 0 as any;
-    let timer2: NodeJS.Timeout = 0 as any;
-    const handleGameError = (err: string) => {
+    let timer1: NodeJS.Timeout | undefined = undefined;
+    let timer2: NodeJS.Timeout | undefined = undefined;
+    const handleGameError = (err: string): void => {
       timer1 = setTimeout(() => toast.error(err ?? 'Unknown game error'), 200);
       timer2 = setTimeout(() => router.push('/game'), 1500);
       window.removeEventListener('beforeunload', handleBeforeUnload);
