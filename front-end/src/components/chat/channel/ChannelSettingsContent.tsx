@@ -45,7 +45,7 @@ function ChannelSettingsContent({
       });
     },
     onError: () => {
-      toast.error('Une erreur est survenue lors de la mise à jour du salon.');
+      toast.error('Channel update error');
     },
   });
 
@@ -69,19 +69,19 @@ function ChannelSettingsContent({
   };
 
   const onLeave = (): void => {
-    if (confirm('Êtes-vous sûr de vouloir quitter ce salon ?')) {
+    if (confirm('Do you really want to leave this channel?')) {
       leaveChannel(channelId);
     }
   };
 
   if (isLoading || !channel) {
-    return <ChatLayout title="Salon" screen="create" loading />;
+    return <ChatLayout title="Channel" screen="create" loading />;
   }
 
   if (!user || !isAdmin(user.id, channel)) {
     return (
       <ChatLayout
-        title="Salon"
+        title="Channel"
         screen="create"
         topRight={{
           icon: <AiOutlineCloseCircle size={16} />,
@@ -90,14 +90,14 @@ function ChannelSettingsContent({
       >
         <div className="flex flex-col items-center justify-between h-full px-4 py-8">
           <h1 className="text-sm font-bold text-center">
-            Vous n'avez pas les droits pour modifier ce salon.
+            You don't have the rights to edit this channel
           </h1>
           <div className="flex flex-row space-x-4">
             <button
               onClick={onLeave}
               className="bg-purple ring-1 ring-white hover:ring-2 hover:ring-offset-1 active:opacity-75 rounded-full text-white font-medium text-sm transition ease-in-out duration-200 px-4 py-2"
             >
-              Quitter le salon
+              Leave channel
             </button>
           </div>
         </div>

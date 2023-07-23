@@ -1,15 +1,17 @@
 import Layout from '@/components/app/layouts/Layout';
 import { withProtected } from '@/providers/auth/auth.routes';
 import { NextPage } from 'next';
+import styleLogo from '@/styles/login.module.css';
+import Link from 'next/link';
 
 const Home: NextPage = () => {
   return (
     <Layout className="flex items-center justify-center h-screen" title="Home">
-      <div className="flex flex-col items-center space-y-8">
-        <h1 className="text-white font-medium text-sm">
-          Bravo, vous êtes connecté !
-        </h1>
-      </div>
+      <Link href="https://www.ponggame.org/">
+        <div className="flex flex-col space-y-16">
+          <h2 className={styleLogo.main_logo}>Not our Pong!</h2>
+        </div>
+      </Link>
     </Layout>
   );
 };

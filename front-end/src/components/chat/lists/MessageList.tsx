@@ -71,7 +71,7 @@ function MessageList({
             await fetchNextPage();
           }}
         >
-          Charger plus
+          Load more
         </button>
       ) : null}
       {messages.map((message) => (

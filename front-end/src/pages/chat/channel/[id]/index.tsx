@@ -10,7 +10,7 @@ const Channel: NextPage = () => {
   const channelId = Number(router.query.id);
 
   return (
-    <Layout title="Salon">
+    <Layout title="Chat">
       <ChannelContent channelId={channelId} />
     </Layout>
   );

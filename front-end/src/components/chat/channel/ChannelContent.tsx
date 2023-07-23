@@ -85,11 +85,11 @@ function ChannelContent({
   }, [me, channel, hasJoined, channelId, joinChannel]);
 
   if (!me || channelLoading) {
-    return <ChatLayout title="Salon" screen="create" loading />;
+    return <ChatLayout title="Channel" screen="create" loading />;
   }
   if (channelError)
     return (
-      <ChatLayout title="Salon" screen="create">
+      <ChatLayout title="Channel" screen="create">
         <h1 className="flex items-center justify-center h-full w-full">
           Error
         </h1>
@@ -114,7 +114,7 @@ function ChannelContent({
         </ChatLayout>
       );
     } else {
-      return <ChatLayout title="Salon" screen="create" loading />;
+      return <ChatLayout title="Channel" screen="create" loading />;
     }
   }
 
