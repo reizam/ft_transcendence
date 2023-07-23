@@ -133,6 +133,6 @@ export class GameGateway {
 
       this.server.to(String(game.id)).emit('startGame');
       this.schedulerRegistry.addInterval(`${game.id}`, interval);
-    }, 11000);
+    }, 6000);
   }
 }

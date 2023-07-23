@@ -7,9 +7,9 @@ interface CountdownProps {
 }
 
 const Countdown = ({ count, total, color }: CountdownProps): JSX.Element => {
-  const zeroPad = (n: string): string => {
-    return n.length >= 2 ? n : new Array(2 - n.length + 1).join('0') + n;
-  };
+  // const zeroPad = (n: string): string => {
+  //   return n.length >= 2 ? n : new Array(2 - n.length + 1).join('0') + n;
+  // };
 
   return (
     <div className={styleCountdown.div}>
@@ -68,7 +68,7 @@ const Countdown = ({ count, total, color }: CountdownProps): JSX.Element => {
             fill="#fff"
             textAnchor="middle" // Center the text horizontally
           >
-            {zeroPad(count.toString())}
+            {count.toString()}
           </text>
         </g>
       </svg>

@@ -216,7 +216,7 @@ export class RoomGateway {
 
     let playersReady = false;
     let gameStarted = false;
-    let countdown = 10;
+    let countdown = 5;
     const now = new Date().getTime();
 
     if (this.roomService.playersReady(gameRoom)) {

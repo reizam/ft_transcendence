@@ -16,7 +16,7 @@ import { toast } from 'react-toastify';
 const Game: NextPage = () => {
   const { primary: primaryColor } = useColors();
   const [count, { startCountdown, stopCountdown }] = useCountdown({
-    countStart: 10,
+    countStart: 5,
   });
 
   const { socket } = useSocket();
@@ -165,7 +165,7 @@ const Game: NextPage = () => {
               ) : (
                 <div className={gameStyles.ctn__countdown}>
                   {!winner ? (
-                    <Countdown count={count} total={10} color={primaryColor} />
+                    <Countdown count={count} total={5} color={primaryColor} />
                   ) : (
                     <GameResult winner={winner}></GameResult>
                   )}
