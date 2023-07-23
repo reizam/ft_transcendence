@@ -341,6 +341,36 @@ export class RoomService {
     return { winner, loser };
   }
 
+  async updatePlayerStats(
+    winnerId: number,
+    loserId: number,
+  ): Promise<{ winner: User; loser: User }> {
+    const winner = await this.prisma.user.update({
+      where: {
+        id: winnerId,
+      },
+      data: {
+        wins: {
+          increment: 1,
+        },
+      },
+    });
+    const loser = await this.prisma.user.update({
+      where: {
+        id: loserId,
+      },
+      data: {
+        wins: {
+          increment: 1,
+        },
+      },
+    });
+    if (!winner || !loser) {
+      throw new NotFoundException('Player stats unavailable');
+    }
+    return { winner, loser };
+  }
+
   updateElo(
     winnerElo: number,
     loserElo: number,
@@ -362,7 +392,7 @@ export class RoomService {
   }
 
   async recordGame(game: GameInfos): Promise<void> {
-    const { winner, loser } = await this.getPlayerStats(
+    const { winner, loser } = await this.updatePlayerStats(
       game.playerOneScore > game.playerTwoScore
         ? game.playerOneId
         : game.playerTwoId,
@@ -376,7 +406,7 @@ export class RoomService {
       game.playerOneScore === game.playerTwoScore,
     );
 
-    await this.prisma.$transaction([
+    await await this.prisma.$transaction([
       this.prisma.user.update({
         where: {
           id: loser.id,
