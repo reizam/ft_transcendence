@@ -25,7 +25,8 @@ function ChannelItem({
   );
 
   const href = `/chat/channel/${channel.id}`;
-  const selected = router.asPath === href;
+  const selected =
+    router.asPath === href || router.asPath === href + '/settings';
 
   return (
     <Link onMouseDown={preventDefault} href={href}>

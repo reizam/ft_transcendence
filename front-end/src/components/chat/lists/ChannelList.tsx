@@ -57,7 +57,7 @@ function ChannelList(): React.ReactElement {
   }
 
   if (isError) {
-    return <div>Erreur</div>;
+    return <div>Error</div>;
   }
 
   return (
@@ -74,7 +74,7 @@ function ChannelList(): React.ReactElement {
           className="text-purple text-sm underline"
           onClick={handleLoadMore}
         >
-          Voir plus
+          Load more
         </button>
       )}
     </div>

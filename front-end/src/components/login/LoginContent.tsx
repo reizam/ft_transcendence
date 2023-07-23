@@ -1,5 +1,5 @@
 import { BACKEND_URL } from '@/constants/env';
-import styleLogo from '../../styles/login.module.css';
+import styleLogo from '@/styles/login.module.css';
 import Link from 'next/link';
 import { ReactElement } from 'react';
 

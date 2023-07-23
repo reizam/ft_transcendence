@@ -6,7 +6,7 @@ import { withProtected } from '@/providers/auth/auth.routes';
 
 const CreateChannel: NextPage = () => {
   return (
-    <Layout title="Creer un salon">
+    <Layout title="Chat">
       <CreateChannelContent />
     </Layout>
   );

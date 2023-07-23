@@ -11,7 +11,7 @@ const ChannelSettings: NextPage = () => {
   const channelId = Number(router.query.id);
 
   return (
-    <Layout title="Salon">
+    <Layout title="Chat">
       <ChannelSettingsContent channelId={channelId} />
     </Layout>
   );

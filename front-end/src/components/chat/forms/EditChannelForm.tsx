@@ -42,7 +42,7 @@ function EditChannelForm({
     if (isValid) {
       handleSubmit();
     } else {
-      toast.error('Veuillez corriger les erreurs dans le formulaire.');
+      toast.error('Please correct the form errors');
     }
   };
 
@@ -90,7 +90,7 @@ function EditChannelForm({
                 void setFieldValue('withPassword', event.target.checked)
               }
             />
-            <p>Protéger le salon par un mot de passe</p>
+            <p>Protect with password</p>
           </div>
           {values.withPassword && (
             <BasicInput
@@ -99,8 +99,8 @@ function EditChannelForm({
               className="text-black rounded-full w-1/2 py-2 px-4 outline-0 placeholder:text-center placeholder:antialiased antialiased"
               placeholder={
                 !initialValues.withPassword
-                  ? 'Veuillez entrer un mot de passe'
-                  : 'Le nouveau mot de passe du salon'
+                  ? 'Enter a password'
+                  : 'New password'
               }
               value={values.password}
               onChange={handleChange('password')}
@@ -164,14 +164,14 @@ function EditChannelForm({
           className="bg-purple ring-1 ring-white hover:ring-2 hover:ring-offset-1 active:opacity-75 rounded-full text-white font-medium text-sm transition ease-in-out duration-200 px-4 py-2"
           hidden={initialValues.channel.isDM}
         >
-          Quitter le salon
+          Leave channel
         </button>
         <button
           type="submit"
           onClick={onClick}
           className="bg-purple ring-1 ring-white hover:ring-2 hover:ring-offset-1 active:opacity-75 rounded-full text-white font-medium text-sm transition ease-in-out duration-200 px-4 py-2"
         >
-          Sauvegarder les modifications
+          Save settings
         </button>
       </div>
     </div>

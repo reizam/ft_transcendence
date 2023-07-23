@@ -44,7 +44,7 @@ function MessageInput({ channelId }: MessageInputProps): React.ReactElement {
         value={message}
         onChange={onChange}
         className="bg-purple/50 text-white outline-0 placeholder:text-light-white/50 text-sm w-full rounded-full p-3"
-        placeholder="Veuillez saisir votre message"
+        placeholder="Enter your message"
       />
       <button
         className="flex items-center justify-center ease-in-out transition-opacity duration-200 hover:opacity-50 active:opacity-100 w-10 h-10"
