@@ -125,6 +125,8 @@ export class GameGateway {
   startGame(game: GameInfos): void {
     game.status = GameState.INGAME;
     game.launchedAt = new Date();
+    this.gameService.updateUserStatus(game.playerOneId);
+    this.gameService.updateUserStatus(game.playerTwoId);
     setTimeout(() => {
       this.server.to(String(game.id)).emit('startCountdown');
     }, 100);
