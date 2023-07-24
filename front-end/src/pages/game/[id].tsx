@@ -59,7 +59,8 @@ const Game: NextPage = () => {
           if (ack.isLeftPlayer) setIsLeftPlayer(true);
           else if (!ack.isLeftPlayer) setIsLeftPlayer(false);
           if (ack.playersReady) setTimeout(() => startCountdown(), 100);
-          if (ack.gameStarted) setStartGame(true);
+          if (ack.gameStarted || (!ack.asPlayer && ack.countdown < 2))
+            setStartGame(true);
           if (ack.countdown !== 5) setCountdown(ack.countdown);
         }
       );
@@ -101,7 +102,10 @@ const Game: NextPage = () => {
     };
 
     const handleRouteChange = (): void => {
-      if (!window.confirm('Are you sure you want to leave the game?')) {
+      if (
+        isPlayer &&
+        !window.confirm('Are you sure you want to leave the game?')
+      ) {
         throw 'routeChange aborted';
       } else {
         socket?.volatile.emit(
@@ -114,7 +118,7 @@ const Game: NextPage = () => {
       if (e?.reason === 'routeChange aborted') e.preventDefault();
     };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
+    if (isPlayer) window.addEventListener('beforeunload', handleBeforeUnload);
     window.addEventListener('unload', handleUnload);
     router.events.on('routeChangeStart', handleRouteChange);
     window.addEventListener('unhandledrejection', handleRejection);
