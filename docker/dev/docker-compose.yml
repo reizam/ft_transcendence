@@ -36,7 +36,7 @@ services:
     volumes:
       - ../../front-end/src:/app/src
     environment:
-      BACKEND_URL: http://localhost:3000
+      BACKEND_URL: http://46.101.16.66:3000
     ports:
       - "4000:4000"
     depends_on:
