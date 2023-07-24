@@ -246,6 +246,7 @@ export const useChannelUpdate = (
         : toast.dismiss();
     },
     onSettled: (_data, _err, params: IChannelUpdateParams) => {
+      void queryClient.invalidateQueries(['CHANNELS', 'GET']);
       void queryClient.invalidateQueries(['CHANNEL', 'GET', params.channelId]);
     },
     ...options,

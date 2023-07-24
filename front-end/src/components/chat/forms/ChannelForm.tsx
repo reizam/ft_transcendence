@@ -72,14 +72,16 @@ function ChannelForm({
           Private
         </button>
       </div>
-      <BasicInput
-        type="input"
-        name="channel password"
-        className="text-black rounded-full w-1/2 py-2 px-4 outline-0 placeholder:text-center placeholder:antialiased antialiased"
-        placeholder="Password (optional)"
-        value={values.password}
-        onChange={handleChange('password')}
-      />
+      {!values.isPrivate && (
+        <BasicInput
+          type="input"
+          name="channel password"
+          className="text-black rounded-full w-1/2 py-2 px-4 outline-0 placeholder:text-center placeholder:antialiased antialiased"
+          placeholder="Password (optional)"
+          value={values.password}
+          onChange={handleChange('password')}
+        />
+      )}
       <button
         type="submit"
         onClick={onClick}

@@ -56,7 +56,9 @@ export class ChannelController {
     const channel = await this.channelService.createChannel(
       user.id,
       createChannelDto.isPrivate,
-      createChannelDto.password?.length ? createChannelDto.password : undefined,
+      createChannelDto.password?.length && !createChannelDto.isPrivate
+        ? createChannelDto.password
+        : undefined,
     );
 
     return channel;
