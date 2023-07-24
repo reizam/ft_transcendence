@@ -132,7 +132,7 @@ export class GameGateway {
       this.server.to(String(game.id)).emit('startCountdown');
     }, 100);
     setTimeout(() => {
-      const interval = setInterval(() => this.loop(game), 1000 / 60);
+      const interval = setInterval(() => this.loop(game), 1000 / 120);
 
       this.server.to(String(game.id)).emit('startGame');
       this.schedulerRegistry.addInterval(`${game.id}`, interval);
