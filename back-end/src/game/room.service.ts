@@ -360,7 +360,7 @@ export class RoomService {
         id: loserId,
       },
       data: {
-        wins: {
+        losses: {
           increment: 1,
         },
       },

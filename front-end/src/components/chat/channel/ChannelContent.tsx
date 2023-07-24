@@ -27,7 +27,7 @@ function ChannelContent({
     isLoading: channelLoading,
     isError: channelError,
   } = useChannelGet(channelId, {
-    enabled: isNaN(channelId) === false && channelId !== null,
+    enabled: channelId !== null,
   });
   const { mutate: joinChannel } = useChannelJoin();
   const { mutate: submitPassword } = useChannelJoin();
