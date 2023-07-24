@@ -333,13 +333,14 @@
 
 .ctn__one_button {
   width: 50%;
+  display: flex;
+  justify-content: center;
 }
 
 .ctn__one_long_button {
   width: 100%;
   display: flex;
   justify-content: center;
-  padding-right: 7%;
 }
 
 .style__button__pro {
@@ -350,8 +351,7 @@
   color: var(--container-color);
   width: 5vw;
   aspect-ratio: 5/2;
-  border-radius: var(--radius-container);
-  margin: 5% auto;
+  border-radius: 99999px;
 }
 
 .style__button__pro:hover {
