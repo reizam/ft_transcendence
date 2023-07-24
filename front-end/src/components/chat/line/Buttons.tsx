@@ -370,7 +370,10 @@ function Buttons({
         asAdmin &&
         GetMuteButton(isMuted(user.mutedUntil), user)}
       {isInChannel && !isMe && !isOwner && asAdmin && GetKickButton(user)}
-      {!isMe && !isOwner && asAdmin && GetBanButton(isBanned, user)}
+      {!isMe &&
+        !isOwner &&
+        (asOwner || asAdmin) &&
+        GetBanButton(isBanned, user)}
       {!isMe && GetBlockButton(!!isBlocked, user)}
     </div>
   );

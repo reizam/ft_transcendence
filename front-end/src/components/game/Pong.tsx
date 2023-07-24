@@ -25,7 +25,6 @@ const Pong = ({
 
   const parameters = useMemo(
     () => ({
-      frameInterval: 1000 / 120,
       dimensions: {
         width: 1920,
         height: 1080,
@@ -100,8 +99,6 @@ const Pong = ({
     const context = canvas?.getContext('2d');
     if (!context) return;
 
-    let lastTime = new Date().getTime();
-
     // Draw the paddle for the player
     const drawPaddle = (): void => {
       // Draw the paddle on the left
@@ -174,16 +171,10 @@ const Pong = ({
     );
 
     const draw = (): void => {
-      const now = new Date().getTime();
-      const elapsed = now - lastTime;
-
-      if (context && elapsed > parameters.frameInterval) {
-        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-        drawBall();
-        drawPaddle();
-        drawScore();
-        lastTime = now;
-      }
+      context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+      drawBall();
+      drawPaddle();
+      drawScore();
       frame.current = window.requestAnimationFrame(draw);
     };
 
@@ -299,7 +290,7 @@ const Pong = ({
           gameState.current.paddleY = data;
         }
       );
-    }, 1000 / 120);
+    }, 1000 / 60);
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);

@@ -152,8 +152,8 @@ function EditChannelForm({
                     isDM={false}
                     user={createDummyChannelUser(user)}
                     isInChannel={false}
-                    asOwner={false}
-                    asAdmin={false}
+                    asOwner={initialValues.isOwner}
+                    asAdmin={initialValues.isAdmin}
                     isOwner={false}
                     isBanned={isBanned(
                       user.id,

@@ -1,6 +1,7 @@
 import { GameService } from '@/game/game.service';
 import { GameInfos, GameRoom, GameState } from '@/game/types/game.types';
 import { SocketUserService } from '@/socket/user/socket.service';
+import { Status } from '@/user/types/user.types';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import {
   ConnectedSocket,
@@ -9,10 +10,9 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { User } from '@prisma/client';
 import { Server, Socket } from 'socket.io';
 import { RoomService } from './room.service';
-import { User } from '@prisma/client';
-import { Status } from '@/user/types/user.types';
 
 @WebSocketGateway()
 export class GameGateway {
@@ -132,7 +132,7 @@ export class GameGateway {
       this.server.to(String(game.id)).emit('startCountdown');
     }, 100);
     setTimeout(() => {
-      const interval = setInterval(() => this.loop(game), 1000 / 120);
+      const interval = setInterval(() => this.loop(game), 1000 / 60);
 
       this.server.to(String(game.id)).emit('startGame');
       this.schedulerRegistry.addInterval(`${game.id}`, interval);

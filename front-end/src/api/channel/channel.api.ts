@@ -81,6 +81,8 @@ export const useChannelGet = (
   useQuery<IChannel, Error>(
     ['CHANNEL', 'GET', channelId],
     async () => {
+      if (isNaN(channelId)) channelId = 0;
+
       const data = await getWithToken<IChannel>(`/channel`, {
         params: {
           channelId,

@@ -80,7 +80,8 @@ export class GameService {
   async updateUserStatus(userId: number, newStatus?: string): Promise<void> {
     const onlineIds: number[] = this.userService.getOnlineIds();
     const status =
-      newStatus ?? onlineIds.includes(userId) ? Status.ONLINE : Status.OFFLINE;
+      newStatus ??
+      (onlineIds.includes(userId) ? Status.ONLINE : Status.OFFLINE);
 
     await this.prisma.user.update({
       where: {
