@@ -35,7 +35,7 @@ function ProfileContent({
           elo: userData.elo,
           wins: userData.wins,
           draws: userData.draws,
-          losses: userData.draws,
+          losses: userData.losses,
         }}
         rank={userData.rank}
       />
