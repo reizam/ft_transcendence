@@ -12,6 +12,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { RoomService } from './room.service';
 import { User } from '@prisma/client';
+import { Status } from '@/user/types/user.types';
 
 @WebSocketGateway()
 export class GameGateway {
@@ -125,8 +126,8 @@ export class GameGateway {
   startGame(game: GameInfos): void {
     game.status = GameState.INGAME;
     game.launchedAt = new Date();
-    void this.gameService.updateUserStatus(game.playerOneId);
-    void this.gameService.updateUserStatus(game.playerTwoId);
+    void this.gameService.updateUserStatus(game.playerOneId, Status.IN_GAME);
+    void this.gameService.updateUserStatus(game.playerTwoId, Status.IN_GAME);
     setTimeout(() => {
       this.server.to(String(game.id)).emit('startCountdown');
     }, 100);
