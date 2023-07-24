@@ -62,7 +62,7 @@
 /*  --- PROFILE_PICTURE ---   */
 
 .pict__prof {
-  width: 30%;
+  width: 50px;
   aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
