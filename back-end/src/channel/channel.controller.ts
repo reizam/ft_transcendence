@@ -110,7 +110,14 @@ export class ChannelController {
         data.channelId,
       );
     }
-    return await this.channelService.joinChannel(user.id, data.channelId);
+
+    const joinedChannel = await this.channelService.joinChannel(
+      user.id,
+      data.channelId,
+    );
+
+    this.channelGateway.emitChannelUpdate(data.channelId);
+    return joinedChannel;
   }
 
   @Post('joinDM')
@@ -151,6 +158,7 @@ export class ChannelController {
   ): Promise<boolean> {
     await this.channelService.leaveChannel(user.id, Number(channelId));
 
+    this.channelGateway.emitChannelUpdate(Number(channelId));
     return true;
   }
 
@@ -242,6 +250,7 @@ export class ChannelController {
         sanctionUserDto.sanction,
         sanctionUserDto.minutesToMute,
       );
+      this.channelGateway.emitChannelUpdate(sanctionUserDto.channelId);
       return res.status(204).send();
     }
 
@@ -257,6 +266,7 @@ export class ChannelController {
       );
       return res.status(204).send();
     }
+    this.channelGateway.emitChannelUpdate(sanctionUserDto.channelId);
     throw new UnprocessableEntityException();
   }
 

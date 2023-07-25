@@ -93,6 +93,13 @@ export const useProvideSocket = (): ISocketContext => {
         ]);
     };
 
+    const handleChannelUpdate = (channelId: number): void => {
+      if (router.pathname.startsWith('/chat'))
+        void queryClient.invalidateQueries(['CHANNELS', 'GET']);
+      if (router.asPath.startsWith(`/chat/channel/${channelId}`))
+        void queryClient.invalidateQueries(['CHANNEL', 'GET', channelId]);
+    };
+
     socket.on('connect', onConnect);
     socket.on('connect_error', onConnectError);
     socket.on('disconnect', onDisconnect);
@@ -103,6 +110,7 @@ export const useProvideSocket = (): ISocketContext => {
     socket.on('watchError', handleWatchError);
 
     socket.on('newMessage', handleNewMessage);
+    socket.on('channelUpdate', handleChannelUpdate);
 
     if (
       socket.disconnected &&

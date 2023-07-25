@@ -9,4 +9,8 @@ export class ChannelGateway {
   emitNewMessage(channelId: number): void {
     this.server.emit('newMessage', channelId);
   }
+
+  emitChannelUpdate(channelId: number): void {
+    this.server.emit('channelUpdate', channelId);
+  }
 }
