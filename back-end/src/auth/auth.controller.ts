@@ -48,7 +48,7 @@ export class AuthController {
     res.cookie('jwt', jwt.accessToken, this.getCookieOptions());
     if (user.has2FA) {
       res.redirect(
-        this.configService.get<string>('FRONTEND_URL', '10.23.106.3:4000') +
+        this.configService.get<string>('FRONTEND_URL', 'localhost:4000') +
           '/check2FA',
       );
     } else {
@@ -56,7 +56,7 @@ export class AuthController {
         res.cookie('newUser', 'true', this.getCookieOptions());
       res.cookie('2FA', 'disabled', this.getCookieOptions());
       res.redirect(
-        this.configService.get<string>('FRONTEND_URL', '10.23.106.3:4000') +
+        this.configService.get<string>('FRONTEND_URL', 'localhost:4000') +
           '/profile',
       );
     }

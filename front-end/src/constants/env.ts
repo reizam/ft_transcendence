@@ -1,2 +1,2 @@
 export const BACKEND_URL: string =
-  process.env.BACKEND_URL || 'http://10.23.106.3:3000';
+  process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
