@@ -33,10 +33,11 @@ const Game: NextPage = () => {
   } | null>(null);
 
   useEffect(() => {
-    if (count === 0) {
+    if (count <= 0) {
+      if (count < 0) setCountdown(0);
       stopCountdown();
     }
-  }, [count, stopCountdown]);
+  }, [count, stopCountdown, setCountdown]);
 
   useEffect(() => {
     if (!gameId) {
@@ -165,7 +166,7 @@ const Game: NextPage = () => {
       router.events.off('routeChangeStart', handleRouteChange);
       window.removeEventListener('unhandledrejection', handleRejection);
     };
-  }, [socket, router, gameId]);
+  }, [socket, router, gameId, isPlayer]);
 
   return (
     <Layout title="Game">
