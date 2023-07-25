@@ -87,9 +87,16 @@ export class RoomGateway {
 
     if (!user) return { event: 'challengeError', data: 'User not found' };
 
-    const challengedSocketUser: ISocketUser | undefined = this.socketUserService
+    const challengedSocketUser: string[] = this.socketUserService
       .getOnlineUsers()
-      .find((user) => user.id === challengedUser.id);
+      .reduce((array: string[], user) => {
+        if (user.id === challengedUser.id) array.push(user.clientId);
+        return array;
+      }, []);
+
+    // const challengedSocketUser: ISocketUser | undefined = this.socketUserService
+    //   .getOnlineUsers()
+    //   .find((user) => user.id === challengedUser.id);
 
     if (!challengedSocketUser) {
       return {
@@ -98,7 +105,7 @@ export class RoomGateway {
       };
     }
 
-    let game = await this.roomService.getGameWhereIsPlaying(challengedUser.id);
+    let game = await this.roomService.getPendingGame(challengedUser.id);
 
     if (game) {
       return {
@@ -111,27 +118,34 @@ export class RoomGateway {
 
     if (!game) return { event: 'challengeError', data: 'Game creation error' };
 
-    this.server
-      .to(challengedSocketUser.clientId)
-      .timeout(15000)
-      .emit('challengedBy', user.username, (err: unknown, ack: string[]) => {
-        if (err || ack[0]?.toLowerCase() !== 'accept') {
-          void this.roomService.deleteGame(game?.id ?? -1);
-          client?.emit(
-            'challengeError',
-            `${
-              challengedUser?.username +
-              ' was definitely too afraid to accept your challenge...'
-            }`,
-          );
-        } else {
-          console.log({ ack });
-          this.server
-            .to(client?.id)
-            .to(challengedSocketUser?.clientId)
-            .emit('joinChallenge', game?.id);
-        }
-      });
+    for (const clientId of challengedSocketUser) {
+      this.server
+        .to(clientId)
+        .timeout(15000)
+        .emit(
+          'challengedBy',
+          user.username,
+          async (err: unknown, ack: string[]) => {
+            if (await this.roomService.getGameWhereIsPlaying(user.id)) return;
+            if (err || ack[0]?.toLowerCase() !== 'accept') {
+              void this.roomService.deleteGame(game?.id ?? -1);
+              client?.emit(
+                'challengeError',
+                `${
+                  challengedUser?.username +
+                  ' was definitely too afraid to accept your challenge...'
+                }`,
+              );
+            } else {
+              console.log({ ack });
+              this.server
+                .to(client?.id)
+                .to(clientId)
+                .emit('joinChallenge', game?.id);
+            }
+          },
+        );
+    }
 
     return 'Challenge sent!';
   }
@@ -156,7 +170,7 @@ export class RoomGateway {
       };
     }
 
-    const game = await this.roomService.getGameWhereIsPlaying(watchedUser.id);
+    const game = await this.roomService.getPendingGame(watchedUser.id);
 
     if (!game) {
       return {
@@ -222,7 +236,7 @@ export class RoomGateway {
     if (this.roomService.playersReady(gameRoom)) {
       playersReady = true;
       if (gameRoom.game.status === GameState.WAITING) {
-        this.gameGateway.startGame(gameRoom.game);
+        await this.gameGateway.startGame(gameRoom.game);
       } else if (
         gameRoom.game.launchedAt &&
         now - gameRoom.game.launchedAt?.getTime() < 10000
@@ -294,7 +308,7 @@ export class RoomGateway {
     if (!gameRoom)
       return { event: 'gameError', data: "This room doesn't exist" };
     if (gameRoom.game.status === GameState.WAITING) {
-      this.gameGateway.startGame(gameRoom.game);
+      await this.gameGateway.startGame(gameRoom.game, true);
     }
     return gameId;
   }

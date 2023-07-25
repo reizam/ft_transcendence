@@ -163,9 +163,7 @@ const Pong = ({
         paddleY: { left: number; right: number }
       ) => {
         gameState.current = { ...gameState.current, ...gameState_ };
-        if (!isPlayer) {
-          gameState.current.paddleY = paddleY;
-        }
+        if (!isPlayer) gameState.current.paddleY = paddleY;
         ratio.current = context.canvas.width / parameters.dimensions.width;
       }
     );
@@ -287,7 +285,8 @@ const Pong = ({
           data: { paddleY: gameState.current.paddleY },
         },
         (data: { left: number; right: number }) => {
-          gameState.current.paddleY = data;
+          if (isLeftPlayer) gameState.current.paddleY.right = data.right;
+          else gameState.current.paddleY.left = data.left;
         }
       );
     }, 1000 / 120);

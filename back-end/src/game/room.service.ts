@@ -88,13 +88,26 @@ export class RoomService {
     }
   }
 
-  async getGameWhereIsPlaying(userId: number): Promise<Game | null> {
+  async getPendingGame(userId: number): Promise<Game | null> {
     if (userId == null) return null;
     return await this.prisma.game.findFirst({
       where: {
         OR: [{ playerOneId: userId }, { playerTwoId: userId }],
         status: {
           not: 'finished',
+          mode: 'insensitive',
+        },
+      },
+    });
+  }
+
+  async getGameWhereIsPlaying(userId: number): Promise<Game | null> {
+    if (userId == null) return null;
+    return await this.prisma.game.findFirst({
+      where: {
+        OR: [{ playerOneId: userId }, { playerTwoId: userId }],
+        status: {
+          equals: 'playing',
           mode: 'insensitive',
         },
       },
