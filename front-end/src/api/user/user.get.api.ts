@@ -13,7 +13,7 @@ const onFetchError = (err: Error): void => {
 };
 
 const onFetchSuccess = (data: IUserData): void => {
-  console.log(data);
+  // console.log(data);
 };
 
 const defaultUserFetchConfig = {

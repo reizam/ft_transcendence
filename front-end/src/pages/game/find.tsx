@@ -45,7 +45,7 @@ function FindGame(): JSX.Element {
     socket?.once('joinGame', handleJoinGame);
 
     return () => {
-      console.log('First effect 1');
+      // console.log('First effect 1');
       clearTimeout(timer1);
       clearTimeout(timer2);
       clearTimeout(timer3);
@@ -73,7 +73,7 @@ function FindGame(): JSX.Element {
     socket?.once('foundGame', handleFoundGame);
 
     return () => {
-      console.log('First effect 2');
+      // console.log('First effect 2');
       clearTimeout(timer5);
       clearTimeout(timer6);
       if (ackCallback != undefined && isReadyRef.current === true)
@@ -103,7 +103,7 @@ function FindGame(): JSX.Element {
     const timer9 = setTimeout(cancelFindGame, 45000);
 
     return () => {
-      console.log('Second effect');
+      // console.log('Second effect');
       clearTimeout(timer7);
       clearTimeout(timer8);
       clearTimeout(timer9);
@@ -112,7 +112,7 @@ function FindGame(): JSX.Element {
   }, [socket, router]);
 
   useEffect(() => {
-    console.log('Third effect');
+    // console.log('Third effect');
     if (socket?.connected === false) {
       toast.error('Server error');
       void router.push('/game');
@@ -120,8 +120,8 @@ function FindGame(): JSX.Element {
   }, [socket, socket?.connected, router]);
 
   const onClick = (): void => {
-    console.log({ isReady });
-    console.log({ isReadyRef });
+    // console.log({ isReady });
+    // console.log({ isReadyRef });
     isReadyRef.current = true;
     setIsReady(true);
   };

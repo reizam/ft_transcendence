@@ -68,7 +68,7 @@ export class RoomGateway {
 
   @SubscribeMessage('stopFindGame')
   onStopFindGame(@ConnectedSocket() client: Socket): void {
-    console.log('Stoooooooooooooooooooooooooooooooooooop');
+    // console.log('Stoooooooooooooooooooooooooooooooooooop');
     this.roomService.removeFromPlayerQueue(client);
   }
 
@@ -137,7 +137,7 @@ export class RoomGateway {
                 }`,
               );
             } else {
-              console.log({ ack });
+              // console.log({ ack });
               this.server
                 .to(client?.id)
                 .to(clientId)
@@ -210,7 +210,7 @@ export class RoomGateway {
     // Deal with 'join-room' and 'leave-room' in case of disconnect/reconnect
     // in the middle of a game ? Or through the front useEffect?
 
-    console.log({ gameId });
+    // console.log({ gameId });
     const user = this.socketUserService.getSocketUser(client);
     const gameInDB = await this.roomService.getGame(gameId);
     let gameRoom = this.roomService.getRoom(gameId);
@@ -322,7 +322,7 @@ export class RoomGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() gameId: number,
   ): Promise<void> {
-    console.log(gameId);
+    // console.log(gameId);
     const user = this.socketUserService.getSocketUser(client);
     const gameInDB = await this.roomService.getGame(gameId);
 

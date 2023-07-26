@@ -38,7 +38,7 @@ const onFetchError = (err: Error): void => {
 };
 
 const onFetchSuccess = (data: unknown): void => {
-  console.log(data);
+  // console.log(data);
 };
 
 const defaultChannelFetchConfig = {
@@ -221,7 +221,7 @@ export const useChannelUpdate = (
   return useMutation({
     mutationFn: async (params: IChannelUpdateParams) => {
       const data = await updateWithToken('/channel/sanction', params);
-      console.log({ data });
+      // console.log({ data });
       return data;
     },
     onMutate: () => toast.loading('Updating'),
