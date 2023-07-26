@@ -78,8 +78,8 @@ export const useProvideSocket = (): ISocketContext => {
       toast.error(err ?? 'Unknown watch error');
     };
 
-    const handleJoinChallenge = (gameId: number): void => {
-      void router.push('/game/' + gameId.toString());
+    const handleJoinChallenge = async (gameId: number): Promise<void> => {
+      await router.push('/game/' + gameId.toString());
     };
 
     const handleNewMessage = (channelId: number): void => {
@@ -93,6 +93,13 @@ export const useProvideSocket = (): ISocketContext => {
         ]);
     };
 
+    const handleChannelUpdate = (channelId: number): void => {
+      if (router.pathname.startsWith('/chat'))
+        void queryClient.invalidateQueries(['CHANNELS', 'GET']);
+      if (router.asPath.startsWith(`/chat/channel/${channelId}`))
+        void queryClient.invalidateQueries(['CHANNEL', 'GET', channelId]);
+    };
+
     socket.on('connect', onConnect);
     socket.on('connect_error', onConnectError);
     socket.on('disconnect', onDisconnect);
@@ -103,6 +110,7 @@ export const useProvideSocket = (): ISocketContext => {
     socket.on('watchError', handleWatchError);
 
     socket.on('newMessage', handleNewMessage);
+    socket.on('channelUpdate', handleChannelUpdate);
 
     if (
       socket.disconnected &&

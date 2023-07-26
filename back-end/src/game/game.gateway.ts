@@ -123,11 +123,14 @@ export class GameGateway {
     };
   }
 
-  startGame(game: GameInfos): void {
+  async startGame(game: GameInfos, isLocal = false): Promise<void> {
     game.status = GameState.INGAME;
     game.launchedAt = new Date();
-    void this.gameService.updateUserStatus(game.playerOneId, Status.IN_GAME);
-    void this.gameService.updateUserStatus(game.playerTwoId, Status.IN_GAME);
+    if (!isLocal) {
+      await this.gameService.updateGameStatus(game.id, GameState.INGAME);
+      await this.gameService.updateUserStatus(game.playerOneId, Status.IN_GAME);
+      await this.gameService.updateUserStatus(game.playerTwoId, Status.IN_GAME);
+    }
     setTimeout(() => {
       this.server.to(String(game.id)).emit('startCountdown');
     }, 100);

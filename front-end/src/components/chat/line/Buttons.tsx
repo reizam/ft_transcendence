@@ -37,7 +37,11 @@ interface ButtonsProps {
   isPrivateChannel: boolean;
 }
 
-function GetAdminButton(user: IChannelUser, isMe: boolean): ReactElement {
+function GetAdminButton(
+  user: IChannelUser,
+  isMe: boolean,
+  isDM: boolean
+): ReactElement {
   const [isAdmin, setIsAdmin] = useState(user.isAdmin);
   const { mutate: updateStatus } = useChannelUpdate({});
   const changeStatus = (newStatus: Sanction): void => {
@@ -63,8 +67,8 @@ function GetAdminButton(user: IChannelUser, isMe: boolean): ReactElement {
           changeStatus(isAdmin ? Sanction.DEMOTE : Sanction.PROMOTE)
         }
         title={isAdmin ? 'Demote' : 'Promote'}
-        style={isMe ? { pointerEvents: 'none' } : {}}
-        disabled={isMe}
+        style={isMe || isDM ? { pointerEvents: 'none' } : {}}
+        disabled={isMe || isDM}
       >
         {isAdmin ? <FaUser size="20px" /> : <FaUserShield size="20px" />}
       </button>
@@ -358,23 +362,25 @@ function Buttons({
     return false;
   };
 
+  const addButton = GetAddButton(user);
+  const adminButton = GetAdminButton(user, isMe, isDM);
+  const matchButton = GetMatchButton(user.user);
+  const messageButton = GetMessageButton(user.user);
+  const kickButton = GetKickButton(user);
+  const banButton = GetBanButton(isBanned, user);
+  const muteButton = GetMuteButton(isMuted(user.mutedUntil), user);
+  const blockButton = GetBlockButton(!!isBlocked, user);
+
   return (
     <div className={chatStyles.ctn_list_btn}>
-      {!isInChannel && isPrivateChannel && GetAddButton(user)}
-      {isInChannel && asOwner && GetAdminButton(user, isMe)}
-      {isInChannel && !isMe && GetMatchButton(user.user)}
-      {isInChannel && !isMe && !isDM && GetMessageButton(user.user)}
-      {isInChannel &&
-        !isMe &&
-        !isOwner &&
-        asAdmin &&
-        GetMuteButton(isMuted(user.mutedUntil), user)}
-      {isInChannel && !isMe && !isOwner && asAdmin && GetKickButton(user)}
-      {!isMe &&
-        !isOwner &&
-        (asOwner || asAdmin) &&
-        GetBanButton(isBanned, user)}
-      {!isMe && GetBlockButton(!!isBlocked, user)}
+      {!isInChannel && isPrivateChannel && addButton}
+      {isInChannel && asOwner && adminButton}
+      {isInChannel && !isMe && matchButton}
+      {isInChannel && !isMe && !isDM && messageButton}
+      {isInChannel && !isMe && !isOwner && asAdmin && muteButton}
+      {isInChannel && !isMe && !isDM && !isOwner && asAdmin && kickButton}
+      {!isMe && !isDM && !isOwner && (asOwner || asAdmin) && banButton}
+      {!isMe && blockButton}
     </div>
   );
 }

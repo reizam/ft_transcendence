@@ -23,7 +23,7 @@ export class SocketUserService {
           },
         },
         status: {
-          in: ['WAITING', 'playing'],
+          equals: 'playing',
           mode: 'insensitive',
         },
       },

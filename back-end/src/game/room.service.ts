@@ -77,15 +77,27 @@ export class RoomService {
 
   async deleteGame(gameId: number): Promise<void> {
     try {
-      const _deletedGame = await this.prisma.game.delete({
+      await this.prisma.game.delete({
         where: {
           id: gameId,
         },
       });
-      console.log({ _deletedGame });
     } catch (e: unknown) {
       console.error(e);
     }
+  }
+
+  async getPendingGame(userId: number): Promise<Game | null> {
+    if (userId == null) return null;
+    return await this.prisma.game.findFirst({
+      where: {
+        OR: [{ playerOneId: userId }, { playerTwoId: userId }],
+        status: {
+          not: 'finished',
+          mode: 'insensitive',
+        },
+      },
+    });
   }
 
   async getGameWhereIsPlaying(userId: number): Promise<Game | null> {
@@ -94,7 +106,7 @@ export class RoomService {
       where: {
         OR: [{ playerOneId: userId }, { playerTwoId: userId }],
         status: {
-          not: 'finished',
+          equals: 'playing',
           mode: 'insensitive',
         },
       },
@@ -116,7 +128,7 @@ export class RoomService {
     while ((await this.getGame(gameId)) != null) {
       gameId = generateUniqueId();
     }
-    console.log({ gameId });
+    // console.log({ gameId });
     return gameId;
   }
 
@@ -161,7 +173,7 @@ export class RoomService {
 
     if (!user) return { error: 'Unable to load user infos' };
 
-    console.log(this.playerQueue);
+    // console.log(this.playerQueue);
 
     return new Promise<void | IFindGame>((resolve) => {
       const findMatchingPlayer = async (): Promise<void> => {
@@ -174,8 +186,8 @@ export class RoomService {
         ): void => {
           this.playerQueue.splice(Math.min(playerOneIndex, playerTwoIndex), 2);
           this.playerQueue.splice(0, 1);
-          console.log({ playerOne });
-          console.log({ playerTwo });
+          // console.log({ playerOne });
+          // console.log({ playerTwo });
           return resolve({ players: [playerOne, playerTwo] });
         };
 
@@ -276,7 +288,7 @@ export class RoomService {
       this.rooms[game.id].game.paddles.right.reset();
     } else if (room.userIds.findIndex((id) => id === userId) == -1)
       room.userIds.push(userId);
-    console.log(this.rooms);
+    // console.log(this.rooms);
     return this.rooms[game.id];
   }
 
@@ -306,7 +318,7 @@ export class RoomService {
 
       if (i != -1) room.userIds.splice(i, 1);
     }
-    console.log('rooms: ', this.rooms);
+    // console.log('rooms: ', this.rooms);
     return room;
   }
 

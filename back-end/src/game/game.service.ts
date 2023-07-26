@@ -77,6 +77,17 @@ export class GameService {
     } else return GameState.INGAME;
   }
 
+  async updateGameStatus(gameId: number, status: string): Promise<void> {
+    await this.prisma.game.update({
+      where: {
+        id: gameId,
+      },
+      data: {
+        status,
+      },
+    });
+  }
+
   async updateUserStatus(userId: number, newStatus?: string): Promise<void> {
     const onlineIds: number[] = this.userService.getOnlineIds();
     const status =

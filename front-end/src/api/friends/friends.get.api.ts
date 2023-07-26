@@ -9,7 +9,7 @@ const onFetchError = (err: Error): void => {
 };
 
 const onFetchSuccess = (data: IUserFriends): void => {
-  console.log(data);
+  // console.log(data);
 };
 
 const defaultUserFetchConfig = {
@@ -23,7 +23,7 @@ export const useGetFriends = (): UseQueryResult<IUserFriends, Error> =>
     ['FRIENDS', 'GET', 'ME'],
     async () => {
       const data = await getWithToken('/friends');
-      console.log(data);
+      // console.log(data);
       return data;
     },
     { ...defaultUserFetchConfig }
