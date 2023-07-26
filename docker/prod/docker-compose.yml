@@ -31,10 +31,12 @@ services:
     build:
       context: ../../front-end
       dockerfile: ../docker/prod/requirements/web-node/Dockerfile
+      args:
+        - NEXT_PUBLIC_BACKEND_URL=${BACKEND_URL}
     environment:
       BACKEND_URL: ${BACKEND_URL}
     ports:
-      - "4000:4000"
+      - "80:80"
     depends_on:
       - api-node
     networks:

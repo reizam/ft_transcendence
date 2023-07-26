@@ -16,6 +16,6 @@ RUN npm install --production=false
 
 COPY . ./
 
-EXPOSE 4000
+EXPOSE 80
 
-CMD ["npm", "run", "dev", "--", "--port", "4000"]
+CMD ["npm", "run", "dev", "--", "--port", "80"]

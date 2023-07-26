@@ -48,7 +48,7 @@ export class AuthController {
     res.cookie('jwt', jwt.accessToken, this.getCookieOptions());
     if (user.has2FA) {
       res.redirect(
-        this.configService.get<string>('FRONTEND_URL', '46.101.16.66:4000') +
+        this.configService.get<string>('FRONTEND_URL', 'pongue.live') +
           '/check2FA',
       );
     } else {
@@ -56,7 +56,7 @@ export class AuthController {
         res.cookie('newUser', 'true', this.getCookieOptions());
       res.cookie('2FA', 'disabled', this.getCookieOptions());
       res.redirect(
-        this.configService.get<string>('FRONTEND_URL', '46.101.16.66:4000') +
+        this.configService.get<string>('FRONTEND_URL', 'pongue.live') +
           '/profile',
       );
     }

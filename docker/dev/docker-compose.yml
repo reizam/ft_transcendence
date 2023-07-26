@@ -36,9 +36,9 @@ services:
     volumes:
       - ../../front-end/src:/app/src
     environment:
-      BACKEND_URL: http://46.101.16.66:3000
+      BACKEND_URL: http://pongue.live:3000
     ports:
-      - "4000:4000"
+      - "80:80"
     depends_on:
       - api-node
     networks:
