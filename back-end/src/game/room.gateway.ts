@@ -356,7 +356,8 @@ export class RoomGateway {
               gameRoom.game.playerTwoScore = -1;
             }
           }
-          gameRoom.game.status = GameState.STOPPED;
+          if (gameRoom.game.status === GameState.INGAME)
+            gameRoom.game.status = GameState.STOPPED;
         }
       }, 2000);
     }

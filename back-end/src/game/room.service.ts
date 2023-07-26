@@ -77,12 +77,11 @@ export class RoomService {
 
   async deleteGame(gameId: number): Promise<void> {
     try {
-      const _deletedGame = await this.prisma.game.delete({
+      await this.prisma.game.delete({
         where: {
           id: gameId,
         },
       });
-      // console.log({ _deletedGame });
     } catch (e: unknown) {
       console.error(e);
     }

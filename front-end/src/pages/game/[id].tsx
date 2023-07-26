@@ -66,7 +66,7 @@ const Game: NextPage = () => {
         }
       );
     };
-    const timer1 = setTimeout(sendJoinGame, 1000);
+    const timer1 = setTimeout(sendJoinGame, 100);
 
     return () => {
       clearTimeout(timer1);
