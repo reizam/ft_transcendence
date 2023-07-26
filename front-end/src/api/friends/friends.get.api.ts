@@ -9,6 +9,7 @@ const onFetchError = (err: Error): void => {
 };
 
 const onFetchSuccess = (data: IUserFriends): void => {
+  void data;
   // console.log(data);
 };
 

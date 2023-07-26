@@ -38,6 +38,7 @@ const onFetchError = (err: Error): void => {
 };
 
 const onFetchSuccess = (data: unknown): void => {
+  void data;
   // console.log(data);
 };
 
