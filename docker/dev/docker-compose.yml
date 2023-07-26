@@ -33,6 +33,8 @@ services:
     build:
       context: ../../front-end
       dockerfile: ../docker/dev/requirements/web-node/Dockerfile
+    environment:
+      BACKEND_URL: ${BACKEND_URL}
     volumes:
       - ../../front-end/src:/app/src
     environment:

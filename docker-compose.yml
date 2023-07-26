@@ -32,7 +32,7 @@ services:
       context: ./front-end
       dockerfile: ../docker/prod/requirements/web-node/Dockerfile
       args:
-        - NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}
+        - NEXT_PUBLIC_BACKEND_URL=${BACKEND_URL}
     environment:
       BACKEND_URL: ${BACKEND_URL}
     ports:
