@@ -13,6 +13,7 @@ const onFetchError = (err: Error): void => {
 };
 
 const onFetchSuccess = (data: IUserData): void => {
+  void data;
   // console.log(data);
 };
 
