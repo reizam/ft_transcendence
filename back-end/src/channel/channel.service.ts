@@ -176,25 +176,36 @@ export class ChannelService {
       },
     });
 
-    await this.prisma.channelUser.update({
-      where: {
-        channelId_userId: {
-          channelId: channelId,
-          userId: userId,
+    try {
+      await this.prisma.channelUser.update({
+        where: {
+          channelId_userId: {
+            channelId: channelId,
+            userId: userId,
+          },
         },
-      },
-      data: {
-        lastReadMessageId: newMsg.id ?? 1,
-      },
-    });
-    await this.prisma.channel.update({
-      where: {
-        id: channelId,
-      },
-      data: {
-        lastMessageId: newMsg.id,
-      },
-    });
+        data: {
+          lastReadMessageId: newMsg.id ?? 1,
+        },
+      });
+      await this.prisma.channel.update({
+        where: {
+          id: channelId,
+        },
+        data: {
+          lastMessageId: newMsg.id,
+        },
+      });
+    } catch (error) {
+      console.error({ error });
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025' || error.code === 'P2015')
+          throw new NotFoundException(
+            'The Channel or Channel User was not found',
+          );
+      }
+      throw error;
+    }
 
     return newMsg;
   }
@@ -240,17 +251,26 @@ export class ChannelService {
     });
 
     if (messages.at(0)) {
-      await this.prisma.channelUser.update({
-        where: {
-          channelId_userId: {
-            channelId: channelId,
-            userId: userId,
+      try {
+        await this.prisma.channelUser.update({
+          where: {
+            channelId_userId: {
+              channelId: channelId,
+              userId: userId,
+            },
           },
-        },
-        data: {
-          lastReadMessageId: messages.at(0)?.id ?? 1,
-        },
-      });
+          data: {
+            lastReadMessageId: messages.at(0)?.id ?? 1,
+          },
+        });
+      } catch (error) {
+        console.error({ error });
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          if (error.code === 'P2025' || error.code === 'P2015')
+            throw new NotFoundException('Channel User not found');
+        }
+        throw error;
+      }
     }
 
     const count = await this.prisma.message.count({
@@ -294,19 +314,28 @@ export class ChannelService {
   }
 
   async createChannelUser(userId: number, channelId: number): Promise<void> {
-    await this.prisma.channel.update({
-      where: {
-        id: channelId,
-      },
-      data: {
-        users: {
-          create: {
-            userId,
-            isAdmin: false,
+    await this.prisma.channel
+      .update({
+        where: {
+          id: channelId,
+        },
+        data: {
+          users: {
+            create: {
+              userId,
+              isAdmin: false,
+            },
           },
         },
-      },
-    });
+      })
+      .catch((error) => {
+        console.error({ error });
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          if (error.code === 'P2025' || error.code === 'P2015')
+            throw new NotFoundException('Channel or User not found');
+        }
+        throw error;
+      });
   }
 
   async joinProtectedChannel(
@@ -555,15 +584,20 @@ export class ChannelService {
 
     if (!password && !channel.isProtected) return false;
 
-    await this.prisma.channel.update({
-      where: {
-        id: channelId,
-      },
-      data: {
-        password: password ? hashSync(password, 10) : null,
-        isProtected: password ? true : false,
-      },
-    });
+    try {
+      await this.prisma.channel.update({
+        where: {
+          id: channelId,
+        },
+        data: {
+          password: password ? hashSync(password, 10) : null,
+          isProtected: password ? true : false,
+        },
+      });
+    } catch (error) {
+      console.error({ error });
+      throw new NotFoundException('Channel not found');
+    }
 
     return true;
   }
@@ -809,21 +843,28 @@ export class ChannelService {
       await this.leaveChannel(targetUserId, channel).catch((error) => {
         console.error({ error });
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
-          if (error.code === 'P2015')
-            throw new NotFoundException('User not found');
+          if (error.code === 'P2025' || error.code === 'P2015')
+            throw new NotFoundException('The Channel or User was not found');
         }
         throw error;
       });
-    } else if (sanction === Sanction.MUTE && minutesToMute) {
-      await this.muteUser(targetUserId, channel, minutesToMute);
-    } else if (sanction === Sanction.UNMUTE) {
-      await this.unmuteUser(targetUserId, channel);
-    } else if (sanction === Sanction.PROMOTE) {
-      await this.promoteUser(targetUserId, channel);
-    } else if (sanction === Sanction.DEMOTE) {
-      await this.demoteUser(targetUserId, channel);
-    } else {
-      throw new UnprocessableEntityException();
+      return;
+    }
+    try {
+      if (sanction === Sanction.MUTE && minutesToMute) {
+        await this.muteUser(targetUserId, channel, minutesToMute);
+      } else if (sanction === Sanction.UNMUTE) {
+        await this.unmuteUser(targetUserId, channel);
+      } else if (sanction === Sanction.PROMOTE) {
+        await this.promoteUser(targetUserId, channel);
+      } else if (sanction === Sanction.DEMOTE) {
+        await this.demoteUser(targetUserId, channel);
+      } else {
+        throw new UnprocessableEntityException();
+      }
+    } catch ({ error }) {
+      console.error(error);
+      throw new NotFoundException('Channel user not found');
     }
   }
 
@@ -890,15 +931,21 @@ export class ChannelService {
         await this.leaveChannel(targetUserId, channel).catch((error) => {
           console.error({ error });
           if (error instanceof Prisma.PrismaClientKnownRequestError) {
-            if (error.code === 'P2015')
-              throw new NotFoundException('User not found');
+            if (error.code === 'P2025' || error.code === 'P2015')
+              throw new NotFoundException('The Channel or User was not found');
           }
           throw error;
         });
       }
-      await this.addToBannedList(targetUserId, channel);
+      await this.addToBannedList(targetUserId, channel).catch((error) => {
+        console.error({ error });
+        throw new NotFoundException('Channel not found');
+      });
     } else if (sanction === Sanction.UNBAN) {
-      await this.removeFromBannedList(targetUserId, channel);
+      await this.removeFromBannedList(targetUserId, channel).catch((error) => {
+        console.error({ error });
+        throw new NotFoundException('Channel not found');
+      });
     } else {
       throw new UnprocessableEntityException();
     }
