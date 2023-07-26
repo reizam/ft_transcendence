@@ -13,8 +13,8 @@ function MessageItem(
   const className = React.useMemo(
     () =>
       message?.own
-        ? 'text-sm bg-purple/25 w-max px-4 py-1 rounded-lg'
-        : 'text-sm bg-purple w-max px-4 py-1 rounded-lg',
+        ? 'text-sm bg-purple/25 max-w-2/3 px-4 py-1 rounded-lg break-all'
+        : 'text-sm bg-purple max-w-2/3 px-4 py-1 rounded-lg break-all',
     [message]
   );
 

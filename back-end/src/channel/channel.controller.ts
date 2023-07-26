@@ -92,6 +92,13 @@ export class ChannelController {
     if (!channel)
       throw new NotFoundException('Channel not found, or incorrect permission');
     if (
+      this.channelService.isBanned(
+        data.invitedId ?? user.id,
+        channel.bannedUserIds,
+      )
+    )
+      throw new ForbiddenException('User is banned');
+    if (
       !data.invitedId &&
       channel.users.find((channelUser) => channelUser.userId === user.id)
     )
@@ -156,7 +163,17 @@ export class ChannelController {
     @Query('channelId') channelId: string,
     @DUser() user: User,
   ): Promise<boolean> {
-    await this.channelService.leaveChannel(user.id, Number(channelId));
+    await this.channelService
+      .leaveChannel(user.id, Number(channelId))
+      .catch((error) => {
+        console.error({ error });
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          if (error.code === 'P2025' || error.code === 'P2015')
+            throw new NotFoundException('The Channel or User was not found');
+        } else {
+          throw error;
+        }
+      });
 
     this.channelGateway.emitChannelUpdate(Number(channelId));
     return true;
